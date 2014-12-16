@@ -25,13 +25,15 @@ extension SKNode {
     }
 }
 
-class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstitialDelegate{
+class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstitialDelegate, AVAudioPlayerDelegate{
     
     var fullAd:GADInterstitial?
+    var audioControl : AudioController?
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // banner ad view init
         var banner = GADBannerView(adSize: kGADAdSizeSmartBannerPortrait)
         banner.adUnitID = "ca-app-pub-6314301496407347/1491324510"
         banner.delegate = self
@@ -41,11 +43,16 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
         request2.testDevices = [GAD_SIMULATOR_ID]
         banner.loadRequest(request2)
     
+        //interstitial ad view init
         fullAd = GADInterstitial()
         fullAd!.adUnitID = "ca-app-pub-6314301496407347/6061124916"
         fullAd!.delegate = self
         fullAd!.loadRequest(request2)
 
+        // bgm 
+        audioControl = AudioController()
+        audioControl!.tryPlayMusic()
+        
         
         if let scene = GameScene.unarchiveFromFile("GameScene") as? GameScene {
             // Configure the view.
@@ -84,6 +91,7 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
         return true
     }
     
+    //MARK: GADIntersititialDelegate
     func interstitialDidReceiveAd(ad: GADInterstitial!) {
         fullAd!.presentFromRootViewController(self)
     }

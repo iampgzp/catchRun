@@ -16,6 +16,9 @@
 		B614676F1A408996000C3550 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B614676E1A408996000C3550 /* Images.xcassets */; };
 		B61467721A408996000C3550 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = B61467701A408996000C3550 /* LaunchScreen.xib */; };
 		B614677E1A408997000C3550 /* catchRunTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B614677D1A408997000C3550 /* catchRunTests.swift */; };
+		B63D73721A40AFB00069AB50 /* beep.wav in Resources */ = {isa = PBXBuildFile; fileRef = B63D73711A40AFB00069AB50 /* beep.wav */; };
+		B63D73761A40B1CA0069AB50 /* AudioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63D73751A40B1CA0069AB50 /* AudioController.swift */; };
+		B68DB2401A40AB6E008DA27D /* bgm.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B68DB23F1A40AB6E008DA27D /* bgm.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,7 +46,10 @@
 		B61467771A408997000C3550 /* catchRunTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = catchRunTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B614677C1A408997000C3550 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B614677D1A408997000C3550 /* catchRunTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = catchRunTests.swift; sourceTree = "<group>"; };
+		B63D73711A40AFB00069AB50 /* beep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = beep.wav; sourceTree = "<group>"; };
+		B63D73751A40B1CA0069AB50 /* AudioController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioController.swift; sourceTree = "<group>"; };
 		B68DB23D1A409AD5008DA27D /* catchRun-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "catchRun-Bridging-Header.h"; sourceTree = "<group>"; };
+		B68DB23F1A40AB6E008DA27D /* bgm.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = bgm.mp3; sourceTree = "<group>"; };
 		CB8FCD7CC1197BCA4C452E2F /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -106,6 +112,7 @@
 		B61467601A408996000C3550 /* catchRun */ = {
 			isa = PBXGroup;
 			children = (
+				B68DB23E1A40AB57008DA27D /* Sound */,
 				B61467631A408996000C3550 /* AppDelegate.swift */,
 				B61467651A408996000C3550 /* GameScene.sks */,
 				B61467671A408996000C3550 /* GameScene.swift */,
@@ -115,6 +122,7 @@
 				B61467701A408996000C3550 /* LaunchScreen.xib */,
 				B61467611A408996000C3550 /* Supporting Files */,
 				B68DB23D1A409AD5008DA27D /* catchRun-Bridging-Header.h */,
+				B63D73751A40B1CA0069AB50 /* AudioController.swift */,
 			);
 			path = catchRun;
 			sourceTree = "<group>";
@@ -142,6 +150,15 @@
 				B614677C1A408997000C3550 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B68DB23E1A40AB57008DA27D /* Sound */ = {
+			isa = PBXGroup;
+			children = (
+				B68DB23F1A40AB6E008DA27D /* bgm.mp3 */,
+				B63D73711A40AFB00069AB50 /* beep.wav */,
+			);
+			name = Sound;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -226,10 +243,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B63D73721A40AFB00069AB50 /* beep.wav in Resources */,
 				B61467721A408996000C3550 /* LaunchScreen.xib in Resources */,
 				B614676F1A408996000C3550 /* Images.xcassets in Resources */,
 				B61467661A408996000C3550 /* GameScene.sks in Resources */,
 				B614676D1A408996000C3550 /* Main.storyboard in Resources */,
+				B68DB2401A40AB6E008DA27D /* bgm.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -281,6 +300,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B61467681A408996000C3550 /* GameScene.swift in Sources */,
+				B63D73761A40B1CA0069AB50 /* AudioController.swift in Sources */,
 				B614676A1A408996000C3550 /* GameViewController.swift in Sources */,
 				B61467641A408996000C3550 /* AppDelegate.swift in Sources */,
 			);
