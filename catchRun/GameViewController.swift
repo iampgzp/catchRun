@@ -25,11 +25,28 @@ extension SKNode {
     }
 }
 
-class GameViewController: UIViewController {
-
+class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstitialDelegate{
+    
+    var fullAd:GADInterstitial?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        var banner = GADBannerView(adSize: kGADAdSizeSmartBannerPortrait)
+        banner.adUnitID = "ca-app-pub-6314301496407347/1491324510"
+        banner.delegate = self
+        banner.rootViewController = self
+        var request2:GADRequest = GADRequest()
+        self.view.addSubview(banner)
+        request2.testDevices = [GAD_SIMULATOR_ID]
+        banner.loadRequest(request2)
+    
+        fullAd = GADInterstitial()
+        fullAd!.adUnitID = "ca-app-pub-6314301496407347/6061124916"
+        fullAd!.delegate = self
+        fullAd!.loadRequest(request2)
+
+        
         if let scene = GameScene.unarchiveFromFile("GameScene") as? GameScene {
             // Configure the view.
             let skView = self.view as SKView
@@ -65,5 +82,9 @@ class GameViewController: UIViewController {
 
     override func prefersStatusBarHidden() -> Bool {
         return true
+    }
+    
+    func interstitialDidReceiveAd(ad: GADInterstitial!) {
+        fullAd!.presentFromRootViewController(self)
     }
 }
