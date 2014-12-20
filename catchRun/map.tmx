@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="sci" tilewidth="32" tileheight="32">
+  <image source="sci.png" width="448" height="192"/>
+ </tileset>
+ <layer name="Background" width="50" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzt1rEKwkAQhOE0QWJtjJWNpfggef8XyhUeLMuuHESOOfg/GIwhxY53iZkmAAAA4P+WkteJXPuPHLqXrC57cC47f+s/cqj2mL9ZzafPHFyr1sPPW7O778o97Kz1+Nd62P2l1COb92ni16H2UesR3R9vk+wa5R5232THij3887RlXyn2yGb8mIx2n7c8r1Sfu9F6jPr/Ef3+Le8mKj22ksuJPPqPDAAAAAAAgIEcfzcUNQ==
+  </data>
+ </layer>
+ <layer name="Meta" width="50" height="50" opacity="0">
+  <properties>
+   <property name="Collidable" value="true"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzt1tEJgDAMBUA3c/+t/C82Vi0mlTsQVHyQkKBuGwAAzLdPOCp4W0e1Pvbm/O2zXzuro92Z3nUvn+HJPK7uZYhqi+YQ5TNE8xjZp8p93M1V8HSvqvYxule9fLY7ta343l31+5GVn+Uv/4kAAAAA1HQAgNoeBw==
+  </data>
+ </layer>
+ <layer name="Trap" width="50" height="50" opacity="0">
+  <properties>
+   <property name="Collidable" value="true"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzt0sENwCAMA0A2Y/+tOgESqVoUo7sXQjzshDEAAICKWbznnKQdzMV55/0NbuvT1eqfdZ9/93x/SeidkPGNpF6VrEm9AAAAAOArD1vcA/E=
+  </data>
+ </layer>
+ <objectgroup name="Player 1">
+  <object name="Spawn Point 1" x="782" y="815"/>
+ </objectgroup>
+ <objectgroup name="Player 2">
+  <object name="Spawn Point 2" x="781" y="462"/>
+ </objectgroup>
+</map>
