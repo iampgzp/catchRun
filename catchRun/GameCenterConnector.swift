@@ -32,11 +32,13 @@ class GameCenterConnector: NSObject{
     
     // authenticate user in the gamecenter
     // we can call it in viewDidLoad
+    // Authentication is usually in background, so we need a handler while user is 
+    // navigating in the game scene
     func authenticatePlayer(){
         var localPlayer: GKLocalPlayer = GKLocalPlayer.localPlayer()
         localPlayer.authenticateHandler = {(viewController: UIViewController!, error:NSError!) ->Void in
             if viewController != nil{
-                //self.presentViewController(viewController, animated:true, completion: nil)
+                setAuthenticationViewController(viewController)
             }else{
                 if localPlayer.authenticated{
                     self.gameCenterEnabled = true
@@ -52,8 +54,11 @@ class GameCenterConnector: NSObject{
                     self.gameCenterEnabled = false
                 }
             }
-        
         }
+    }
+    
+    func setAuthenticationViewController(viewController: UIViewController){
+        
     }
 
 }
