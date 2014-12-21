@@ -12,6 +12,8 @@
 #import "GADBannerView.h"
 #import "GADInterstitialDelegate.h"
 #import "GADInterstitial.h"
+#import "JSTileMap.h"
+#import "LFCGzipUtility.h"
 
 
 #endif

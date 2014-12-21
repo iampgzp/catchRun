@@ -1,33 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="17" height="14" tilewidth="32" tileheight="32">
  <tileset firstgid="1" name="sci" tilewidth="32" tileheight="32">
   <image source="sci.png" width="448" height="192"/>
+  <tile id="2">
+   <properties>
+    <property name="trapCollidable" value="true"/>
+   </properties>
+  </tile>
+  <tile id="62">
+   <properties>
+    <property name="Collidable" value="True"/>
+   </properties>
+  </tile>
  </tileset>
- <layer name="Background" width="50" height="50">
+ <layer name="Background" width="17" height="14">
   <data encoding="base64" compression="zlib">
-   eJzt1rEKwkAQhOE0QWJtjJWNpfggef8XyhUeLMuuHESOOfg/GIwhxY53iZkmAAAA4P+WkteJXPuPHLqXrC57cC47f+s/cqj2mL9ZzafPHFyr1sPPW7O778o97Kz1+Nd62P2l1COb92ni16H2UesR3R9vk+wa5R5232THij3887RlXyn2yGb8mIx2n7c8r1Sfu9F6jPr/Ef3+Le8mKj22ksuJPPqPDAAAAAAAgIEcfzcUNQ==
+   eJzjZGBgUKYAcwGxGBCLomFPLGK4xEWQzGCFYlEkGh2zYlGLbAa6Whj2ROPjMsMTix587kD2Ez53gGg5JIxuP8wsQuGhjYRxqcFlhieaXdjY2MKDVL8QcgeM1kXCpIQpMfGCK31gi39S0wc2e4lJ7yAzxIGYnQIsAcQAS1wUNQ==
   </data>
  </layer>
- <layer name="Meta" width="50" height="50" opacity="0">
-  <properties>
-   <property name="Collidable" value="true"/>
-  </properties>
+ <layer name="Meta" width="17" height="14" opacity="0">
   <data encoding="base64" compression="zlib">
-   eJzt1tEJgDAMBUA3c/+t/C82Vi0mlTsQVHyQkKBuGwAAzLdPOCp4W0e1Pvbm/O2zXzuro92Z3nUvn+HJPK7uZYhqi+YQ5TNE8xjZp8p93M1V8HSvqvYxule9fLY7ta343l31+5GVn+Uv/4kAAAAA1HQAgNoeBw==
+   eJyzZ2BgsKcCpgQgm4HOxqUenz5sZqOrI2QGKe7AZh8hN+NzNyF3EPIDPjOIAcSEKaXuwGcGNvvwuYMY9xNik5o+yAXUyGsgDABm7R4H
   </data>
  </layer>
- <layer name="Trap" width="50" height="50" opacity="0">
-  <properties>
-   <property name="Collidable" value="true"/>
-  </properties>
+ <layer name="Trap" width="17" height="14">
   <data encoding="base64" compression="zlib">
-   eJzt0sENwCAMA0A2Y/+tOgESqVoUo7sXQjzshDEAAICKWbznnKQdzMV55/0NbuvT1eqfdZ9/93x/SeidkPGNpF6VrEm9AAAAAOArD1vcA/E=
+   eJxjYKANYCZRnB6AWLuZcbApNZdUu2kBcPkNn70DEWeE7KSFm8hJH9RUSwoAAFzsADE=
   </data>
  </layer>
  <objectgroup name="Player 1">
-  <object name="Spawn Point 1" x="782" y="815"/>
+  <object name="Spawn Point 1" x="270" y="399"/>
  </objectgroup>
  <objectgroup name="Player 2">
-  <object name="Spawn Point 2" x="781" y="462"/>
+  <object name="Spawn Point 2" x="269" y="46"/>
  </objectgroup>
 </map>
