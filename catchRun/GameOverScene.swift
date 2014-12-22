@@ -1,16 +1,16 @@
 //
-//  GameScene.swift
+//  GameOverScene.swift
 //  catchRun
 //
-//  Created by Shihao Ji on 12/16/14.
-//  Copyright (c) 2014 LUSS. All rights reserved.
+//  Created by seehao on 14/12/22.
+//  Copyright (c) 2014年 LUSS. All rights reserved.
 //
 
+import Foundation
 import SpriteKit
 import Social
 
-
-class GameScene: SKScene, GADInterstitialDelegate {
+class GameOverScene: SKScene, GADInterstitialDelegate {
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
         let background:SKSpriteNode = SKSpriteNode(imageNamed: "background")
@@ -25,14 +25,13 @@ class GameScene: SKScene, GADInterstitialDelegate {
         startGameButton.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5 )
         addChild(startGameButton)
         
-        let twitterButton:GGButton = GGButton(defaultButtonImage: "twitter", activeButtonImage: "twitter", buttonAction: twitter)
+        let twitterButton:GGButton = GGButton(defaultButtonImage: "twitter", activeButtonImage: "twitter", buttonAction: shareToWeibo)
         twitterButton.xScale = 0.3
         twitterButton.yScale = 0.3
         twitterButton.position = CGPoint(x: 100, y: 100)
         addChild(twitterButton)
     }
     
-
     func startGameButtonDown(){
         let startGameAction = SKAction.runBlock{
             let reval = SKTransition.flipHorizontalWithDuration(0.5)
@@ -41,10 +40,13 @@ class GameScene: SKScene, GADInterstitialDelegate {
         self.runAction(startGameAction)
     }
     
-    func twitter(){
-        UIApplication.sharedApplication().openURL(NSURL(string: "http://www.baidu.com")!)
+    func shareToWeibo(){
+        if SLComposeViewController.isAvailableForServiceType(SLServiceTypeSinaWeibo){
+            let weiboContent = SLComposeViewController(forServiceType: SLServiceTypeSinaWeibo)
+            weiboContent.setInitialText("Test")
+            self.view?.window?.rootViewController?.presentViewController(weiboContent, animated: true, completion: nil)
+        }
     }
-    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
     }
