@@ -85,7 +85,7 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
     }
     
     func setLastError(error: NSError?){
-        self.lastError = error?.copy() as NSError
+        self.lastError = error?.copy() as? NSError
         if ((self.lastError) != nil){
             println(self.lastError?.userInfo?.description)
         }
@@ -131,7 +131,7 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
         if self.match != match{
             return
         }
-        switch(state){
+        switch state {
         case GKPlayerConnectionState.StateConnected:
             NSLog("player connected")
             if !self.matchStarted && match.expectedPlayerCount == 0{
@@ -141,8 +141,10 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
         case GKPlayerConnectionState.StateDisconnected:
             NSLog("Player disconnected")
             self.matchStarted = false
-            self.delegate.matchEnded()
+            self.delegate?.matchEnded()
             break
+        default:
+            println("connection state need to be inputted")
         }
     }
     // implement GKmatchDelegate
@@ -152,25 +154,25 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
         }
         NSLog("match failed with error %", error.localizedDescription)
         self.matchStarted = false
-        self.delegate.matchEnded()
+        self.delegate?.matchEnded()
     }
-    
+}
     //func match
     
     //lookup players
-    func lookUpPlayer(){
-        NSLog("Looking up player", match.playerIDs.count)
-        GKPlayer.loadPlayersForIdentifiers(match.playerIDs, withCompletionHandler: {(players: [AnyObject]!, error: NSError?) -> Void in
-            if error != nil{
-                NSLog("Error to load player's information", error!.localizedDescription);
-                self.matchStarted = false
-                // delegate.matchEned
-            } else{
-                for player in players {
-                    NSLog("Found Player : %", player.alias)
-                }
-            }
-        })
-        
-    }
-}
+//    func lookUpPlayer(){
+//        NSLog("Looking up player", self.match.playerIDs.count)
+//        GKPlayer.loadPlayersForIdentifiers(self.match.playerIDs, withCompletionHandler: {(players: [AnyObject]!, error: NSError?) -> Void in
+//            if error != nil{
+//                NSLog("Error to load player's information", error!.localizedDescription);
+//                self.matchStarted = false
+//                // delegate.matchEned
+//            } else{
+//                for player in players {
+//                    NSLog("Found Player : %", player.alias)
+//                }
+//            }
+//        })
+//        
+//    }
+
