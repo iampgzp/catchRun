@@ -12,8 +12,6 @@ import GameKit
 
 class Multiplayer{
     
-    
-    
     func sendData(data: NSData){
         var error:NSError?;
         var gameConnector: GameCenterConnector = GameCenterConnector.sharedInstance()
