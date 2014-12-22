@@ -8,18 +8,12 @@
 
 import SpriteKit
 
-class GameScene: SKScene, GADInterstitialDelegate {
+class GamePlayScene: SKScene, GADInterstitialDelegate {
     var tiledMap:JSTileMap?
-    
+    var player = PlayerNode()
+    var playerWalkingFrames = NSArray()
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
-        let myLabel = SKLabelNode(fontNamed:"Chalkduster")
-        myLabel.text = "Hello, World!";
-        myLabel.fontSize = 65;
-        myLabel.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame));
-        
-        self.addChild(myLabel)
-
         tiledMap = JSTileMap(named:"map.tmx")
        
         let map = tiledMap!
@@ -46,6 +40,35 @@ class GameScene: SKScene, GADInterstitialDelegate {
             // collide should prevent user go in to the wall
             println("collide!!!!!!!! at \(point)")
         }
+        
+        //Create player
+        playerWalkingFrames = player.creatWalkingFrames()
+        player = PlayerNode(texture: playerWalkingFrames[0] as SKTexture)
+        player.position = CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.5)
+        player.xScale = 0.2
+        player.yScale = 0.2
+        self.addChild(player)
+        
+        //player moving by swipe
+        var swipeGesture = UISwipeGestureRecognizer(target: self, action: "handleSwipeGesture:")
+        self.view?.addGestureRecognizer(swipeGesture)
+        
+        var swipeLeftGesture = UISwipeGestureRecognizer(target: self, action: "handleSwipeGesture:")
+        swipeLeftGesture.direction = UISwipeGestureRecognizerDirection.Left
+        self.view?.addGestureRecognizer(swipeLeftGesture)
+        
+        var swipeUpGesture = UISwipeGestureRecognizer(target: self, action: "handleSwipeGesture:")
+        swipeUpGesture.direction = UISwipeGestureRecognizerDirection.Up
+        self.view?.addGestureRecognizer(swipeUpGesture)
+        
+        var swipeDownGesture = UISwipeGestureRecognizer(target: self, action: "handleSwipeGesture:")
+        swipeDownGesture.direction = UISwipeGestureRecognizerDirection.Down
+        self.view?.addGestureRecognizer(swipeDownGesture)
+        
+        var tapGesture = UITapGestureRecognizer(target: self, action: "handleTapGesture:")
+        tapGesture.numberOfTapsRequired = 2
+        self.view?.addGestureRecognizer(tapGesture)
+        
     }
     
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
@@ -59,7 +82,35 @@ class GameScene: SKScene, GADInterstitialDelegate {
 //        fullAd.presentFromRootViewController(self)
         
     }
-   
+    
+    func handleSwipeGesture(gesture: UISwipeGestureRecognizer) {
+        var direction = gesture.direction
+        switch (direction){
+        case UISwipeGestureRecognizerDirection.Left:
+            player.moving("LEFT")
+            player.walkingAnimation(playerWalkingFrames)
+            break
+        case UISwipeGestureRecognizerDirection.Right:
+            player.moving("RIGHT")
+            player.walkingAnimation(playerWalkingFrames)
+            break
+        case UISwipeGestureRecognizerDirection.Up:
+            player.moving("UP")
+            player.walkingAnimation(playerWalkingFrames)
+            break
+        case UISwipeGestureRecognizerDirection.Down:
+            player.moving("DOWN")
+            player.walkingAnimation(playerWalkingFrames)
+            break
+        default:
+            break;
+        }
+    }
+    
+    func handleTapGesture(gesture:UITapGestureRecognizer) {
+        player.stopMoving()
+    }
+    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
     }
