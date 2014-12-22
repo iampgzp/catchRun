@@ -13,9 +13,11 @@ import SpriteKit
 var instance: GameCenterConnector?
 class GameCenterConnector: NSObject{
 
-    
+    var playerDict: NSMutableDictionary!
     var gameCenterEnabled: Bool!
     var leaderboardIdentifier : String!
+    var match:GKMatch!
+    var matchStarted: Bool! = false
     override init(){
         super.init()
         gameCenterEnabled = false
@@ -38,7 +40,7 @@ class GameCenterConnector: NSObject{
         var localPlayer: GKLocalPlayer = GKLocalPlayer.localPlayer()
         localPlayer.authenticateHandler = {(viewController: UIViewController!, error:NSError!) ->Void in
             if viewController != nil{
-                setAuthenticationViewController(viewController)
+                self.setAuthenticationViewController(viewController)
             }else{
                 if localPlayer.authenticated{
                     self.gameCenterEnabled = true
@@ -48,8 +50,8 @@ class GameCenterConnector: NSObject{
                         }
                         else{
                              self.leaderboardIdentifier = leaderboardIdentifier
-                            }
-                        })
+                        }
+                    })
                 }else{
                     self.gameCenterEnabled = false
                 }
@@ -60,5 +62,21 @@ class GameCenterConnector: NSObject{
     func setAuthenticationViewController(viewController: UIViewController){
         
     }
-
+    
+    //lookup players
+    func lookUpPlayer(){
+        NSLog("Looking up player", match.playerIDs.count)
+        GKPlayer.loadPlayersForIdentifiers(match.playerIDs, withCompletionHandler: {(players: [AnyObject]!, error: NSError?) -> Void in
+            if error != nil{
+                NSLog("Error to load player's information", error!.localizedDescription);
+                self.matchStarted = false
+                // delegate.matchEned
+            } else{
+                for player in players {
+                    NSLog("Found Player : %", player.alias)
+                }
+            }
+        })
+        
+    }
 }
