@@ -25,7 +25,7 @@ extension SKNode {
     }
 }
 
-class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstitialDelegate, AVAudioPlayerDelegate{
+class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstitialDelegate, AVAudioPlayerDelegate, sceneDelegate{
     
     var fullAd:GADInterstitial?
     var audioControl : AudioController?
@@ -34,13 +34,13 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
         super.viewDidLoad()
 
         // banner ad view init
-        var banner = GADBannerView(adSize: kGADAdSizeSmartBannerPortrait)
+        var banner = GADBannerView(adSize: kGADAdSizeSmartBannerLandscape)
         banner.adUnitID = "ca-app-pub-6314301496407347/1491324510"
         banner.delegate = self
         banner.rootViewController = self
         var request2:GADRequest = GADRequest()
         self.view.addSubview(banner)
-        request2.testDevices = [GAD_SIMULATOR_ID]
+        request2.testDevices = [ GAD_SIMULATOR_ID ]
         banner.loadRequest(request2)
     
         //interstitial ad view init
@@ -65,7 +65,8 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
             
             /* Set the scale mode to scale to fit the window */
             scene.scaleMode = .AspectFill
-            
+            scene.myDelegate = self
+            scene.soundOn = true
             skView.presentScene(scene)
         }
     }
@@ -94,5 +95,13 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
     //MARK: GADIntersititialDelegate
     func interstitialDidReceiveAd(ad: GADInterstitial!) {
         fullAd!.presentFromRootViewController(self)
+    }
+    
+    func didChangeSound() {
+        if audioControl!.backgroundMusicPlaying{
+            audioControl!.stopMusic()
+        }else{
+            audioControl!.tryPlayMusic()
+        }
     }
 }

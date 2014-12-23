@@ -45,7 +45,15 @@ class AudioController : NSObject, AVAudioPlayerDelegate {
         backgroundMusicPlaying = true
         backgroundMusicPlayer!.prepareToPlay()
         backgroundMusicPlayer!.play()
+    }
+    
+    func stopMusic(){
+        if !backgroundMusicPlaying && !audioSession!.otherAudioPlaying{
+            return
+        }
         
+        backgroundMusicPlaying = false
+        backgroundMusicPlayer!.stop()
     }
     
     //MARK : AVAudioPlayerDelegate

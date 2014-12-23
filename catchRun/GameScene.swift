@@ -9,8 +9,15 @@
 import SpriteKit
 import Social
 
+protocol sceneDelegate{
+    func didChangeSound()
+}
 
 class GameScene: SKScene, GADInterstitialDelegate {
+    var myDelegate:sceneDelegate?
+    var soundButton:GGButton?
+    var soundOn:Bool?
+    
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
         let background:SKSpriteNode = SKSpriteNode(imageNamed: "background")
@@ -30,6 +37,29 @@ class GameScene: SKScene, GADInterstitialDelegate {
         twitterButton.yScale = 0.3
         twitterButton.position = CGPoint(x: 100, y: 100)
         addChild(twitterButton)
+        
+        if let isSoundOn = soundOn {
+            if isSoundOn == true{
+                soundButton = GGButton(defaultButtonImage: "sound_on", activeButtonImage: "sound_on", buttonAction: didTapOnSound)
+                soundButton!.xScale = 0.05
+                soundButton!.yScale = 0.05
+                soundButton!.position = CGPoint(x: 100, y: 50)
+                addChild(soundButton!)
+            }else{
+                soundButton = GGButton(defaultButtonImage: "sound_mute", activeButtonImage: "sound_mute", buttonAction: didTapOnSound)
+                soundButton!.xScale = 0.05
+                soundButton!.yScale = 0.05
+                soundButton!.position = CGPoint(x: 100, y: 50)
+                addChild(soundButton!)
+            }
+        }else{
+            soundButton = GGButton(defaultButtonImage: "sound_mute", activeButtonImage: "sound_mute", buttonAction: didTapOnSound)
+            soundButton!.xScale = 0.05
+            soundButton!.yScale = 0.05
+            soundButton!.position = CGPoint(x: 100, y: 50)
+            soundOn = false
+            addChild(soundButton!)
+        }
     }
     
 
@@ -43,6 +73,19 @@ class GameScene: SKScene, GADInterstitialDelegate {
     
     func twitter(){
         UIApplication.sharedApplication().openURL(NSURL(string: "http://www.baidu.com")!)
+    }
+    
+    func didTapOnSound(){
+        if soundOn! {
+            soundButton!.defaultButton.texture = SKTexture(imageNamed: "sound_mute")
+            soundButton!.activeButton.texture = SKTexture(imageNamed: "sound_mute")
+            soundOn = false
+        }else{
+            soundButton!.defaultButton.texture = SKTexture(imageNamed: "sound_on")
+            soundButton!.activeButton.texture = SKTexture(imageNamed: "sound_on")
+            soundOn = true
+        }
+        self.myDelegate?.didChangeSound()
     }
     
     override func update(currentTime: CFTimeInterval) {

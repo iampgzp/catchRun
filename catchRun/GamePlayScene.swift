@@ -18,7 +18,10 @@ class GamePlayScene: SKScene, GADInterstitialDelegate {
        
         let map = tiledMap!
         self.anchorPoint = CGPoint(x: 0, y: 0)
-        map.position = CGPoint(x: 240, y: 150)
+        // map scale is changed.  the way to calculate tilecoord may be wrong
+        map.xScale = 1.9
+        map.yScale = 1.5
+        map.position = CGPoint(x: 0, y: 0)
         self.addChild(map)
         var wall = map.layerNamed("Meta")
         
