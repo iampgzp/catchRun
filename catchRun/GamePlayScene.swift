@@ -52,6 +52,12 @@ class GamePlayScene: SKScene, GADInterstitialDelegate {
         player.yScale = 0.2
         self.addChild(player)
         
+        //var downButton = JoyStickButton(defaultButtonImage: "arrow", activeButtonImage: "button2", targetPlayerNode: player, direction: "DOWN")
+        //downButton.position = CGPoint(x: 100, y: 100)
+        //self.addChild(downButton)
+        var joyStick = JoyStick(defatultArrowImage: "arrow", activeArrowImage: "arrowdown", target: player)
+        joyStick.position = CGPoint(x: 300, y: 300)
+        self.addChild(joyStick)
         //player moving by swipe
         var swipeGesture = UISwipeGestureRecognizer(target: self, action: "handleSwipeGesture:")
         self.view?.addGestureRecognizer(swipeGesture)
