@@ -63,4 +63,11 @@ class PlayerNode: SKSpriteNode{
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    // need to update player's location according to its move direction
+    func getCurrentLoc() -> CGPoint{
+        // apply its location here according to its move
+        return CGPoint(x: 0,y: 0)
+    }
+    
 }
