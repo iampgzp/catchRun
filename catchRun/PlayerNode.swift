@@ -60,4 +60,11 @@ class PlayerNode: SKSpriteNode{
     func walkingAnimation (textureArray: NSArray) {
         self.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(textureArray, timePerFrame: 0.1, resize: false, restore: true)), withKey: "walkingAnimation")
     }
+    
+    // need to update player's location according to its move direction
+    func getCurrentLoc() -> CGPoint{
+        // apply its location here according to its move
+        return CGPoint(x: 0,y: 0)
+    }
+    
 }

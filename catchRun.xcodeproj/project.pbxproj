@@ -13,6 +13,7 @@
 		1DA8484D1A48033D0075E5BB /* BearImages.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 1DA8484C1A48033D0075E5BB /* BearImages.atlas */; };
 		1DBCE6781A48057E00030B91 /* PlayerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DBCE6771A48057E00030B91 /* PlayerNode.swift */; };
 		1DBCE67A1A480EB700030B91 /* GameOverScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DBCE6791A480EB700030B91 /* GameOverScene.swift */; };
+		2D45EC051A4BDFD100CB41B2 /* CollisionCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D45EC041A4BDFD100CB41B2 /* CollisionCheck.swift */; };
 		98B94DD1DBDB26C6C4520A2F /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 860523306E68A93F08F77325 /* libPods.a */; };
 		B61467641A408996000C3550 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61467631A408996000C3550 /* AppDelegate.swift */; };
 		B61467661A408996000C3550 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = B61467651A408996000C3550 /* GameScene.sks */; };
@@ -49,6 +50,7 @@
 		1DA8484C1A48033D0075E5BB /* BearImages.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = BearImages.atlas; sourceTree = "<group>"; };
 		1DBCE6771A48057E00030B91 /* PlayerNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerNode.swift; sourceTree = "<group>"; };
 		1DBCE6791A480EB700030B91 /* GameOverScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameOverScene.swift; sourceTree = "<group>"; };
+		2D45EC041A4BDFD100CB41B2 /* CollisionCheck.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollisionCheck.swift; sourceTree = "<group>"; };
 		860523306E68A93F08F77325 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B614675E1A408996000C3550 /* catchRun.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = catchRun.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B61467621A408996000C3550 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -151,6 +153,7 @@
 				B61467611A408996000C3550 /* Supporting Files */,
 				B68DB23D1A409AD5008DA27D /* catchRun-Bridging-Header.h */,
 				B63D73751A40B1CA0069AB50 /* AudioController.swift */,
+				2D45EC041A4BDFD100CB41B2 /* CollisionCheck.swift */,
 			);
 			path = catchRun;
 			sourceTree = "<group>";
@@ -337,6 +340,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D45EC051A4BDFD100CB41B2 /* CollisionCheck.swift in Sources */,
 				1DBCE67A1A480EB700030B91 /* GameOverScene.swift in Sources */,
 				1DA848491A4800F70075E5BB /* GamePlayScene.swift in Sources */,
 				1DA848451A47F6D40075E5BB /* Button.swift in Sources */,
