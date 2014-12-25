@@ -10,7 +10,7 @@ import SpriteKit
 
 class GamePlayScene: SKScene, GADInterstitialDelegate {
     var tiledMap:JSTileMap?
-    var player = PlayerNode()
+    var player = PlayerNode(playerTextureName: "player")
     var playerWalkingFrames = NSArray()
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
@@ -45,21 +45,17 @@ class GamePlayScene: SKScene, GADInterstitialDelegate {
         }
         
         //Create player
-        playerWalkingFrames = player.creatWalkingFrames()
-        player = PlayerNode(texture: playerWalkingFrames[0] as SKTexture)
         player.position = CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.5)
-        player.xScale = 0.2
-        player.yScale = 0.2
         self.addChild(player)
-        
-        //var downButton = JoyStickButton(defaultButtonImage: "arrow", activeButtonImage: "button2", targetPlayerNode: player, direction: "DOWN")
-        //downButton.position = CGPoint(x: 100, y: 100)
-        //self.addChild(downButton)
-        var joyStick = JoyStick(defatultArrowImage: "arrow", activeArrowImage: "arrowdown", target: player)
-        joyStick.position = CGPoint(x: 300, y: 300)
+        //virtual joystick
+        let joyStick = JoyStick(defatultArrowImage: "arrow", activeArrowImage: "arrowdown", target: player)
+        joyStick.xScale = 0.5
+        joyStick.yScale = 0.5
+        joyStick.alpha = 0.5
+        joyStick.position = CGPoint(x: 100, y: 100)
         self.addChild(joyStick)
         //player moving by swipe
-        var swipeGesture = UISwipeGestureRecognizer(target: self, action: "handleSwipeGesture:")
+        /*var swipeGesture = UISwipeGestureRecognizer(target: self, action: "handleSwipeGesture:")
         self.view?.addGestureRecognizer(swipeGesture)
         
         var swipeLeftGesture = UISwipeGestureRecognizer(target: self, action: "handleSwipeGesture:")
@@ -76,7 +72,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate {
         
         var tapGesture = UITapGestureRecognizer(target: self, action: "handleTapGesture:")
         tapGesture.numberOfTapsRequired = 2
-        self.view?.addGestureRecognizer(tapGesture)
+        self.view?.addGestureRecognizer(tapGesture)*/
         
     }
     
@@ -97,19 +93,15 @@ class GamePlayScene: SKScene, GADInterstitialDelegate {
         switch (direction){
         case UISwipeGestureRecognizerDirection.Left:
             player.moving("LEFT")
-            player.walkingAnimation(playerWalkingFrames)
             break
         case UISwipeGestureRecognizerDirection.Right:
             player.moving("RIGHT")
-            player.walkingAnimation(playerWalkingFrames)
             break
         case UISwipeGestureRecognizerDirection.Up:
             player.moving("UP")
-            player.walkingAnimation(playerWalkingFrames)
             break
         case UISwipeGestureRecognizerDirection.Down:
             player.moving("DOWN")
-            player.walkingAnimation(playerWalkingFrames)
             break
         default:
             break;

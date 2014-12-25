@@ -59,6 +59,20 @@ class JoyStickButton: SKNode {
         target.moving(movingDirection)
     }
     
+    override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
+        var touch: UITouch = touches.allObjects[0] as UITouch
+        var location: CGPoint = touch.locationInNode(self)
+        
+        if defaultButton.containsPoint(location) {
+            activeButton.hidden = false
+            defaultButton.hidden = true
+        } else {
+            activeButton.hidden = true
+            defaultButton.hidden = false
+            target.stopMoving()
+        }
+    }
+    
     override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
         activeButton.hidden = true
         defaultButton.hidden = false
