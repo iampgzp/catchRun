@@ -19,27 +19,28 @@ class CollisionCheck : NSObject{
     let mapXSize: CGFloat!
     let mapYSize: CGFloat!
     
+    
+    
     //check whether player has collision with walls
     func checkIsCollision(player: PlayerNode) -> Bool{
         if !checkIsOutOfBound(player){
             return false
         }
-        
         return true
     }
     
     func checkIsOutOfBound(player: PlayerNode) -> Bool{
         //if it is out of bound
-        if player.getCurrentLoc().x < 0 {
+        if player.position.x < 0 {
             return false
         }
-        if player.getCurrentLoc().x > self.mapXSize{
+        if player.position.x > self.mapXSize{
             return false
         }
-        if (player.getCurrentLoc().y < 0){
+        if player.position.y < 0{
             return false
         }
-        if (player.getCurrentLoc().y > self.mapYSize){
+        if player.position.y > self.mapYSize{
             return false
         }
         return true
@@ -47,7 +48,7 @@ class CollisionCheck : NSObject{
     
     
     func checkIsWall(player: PlayerNode) -> Bool{
-        if isOccupiedByWall(player.getCurrentLoc()){
+        if isOccupiedByWall(player.position){
             return false
         }
         return true
@@ -56,13 +57,12 @@ class CollisionCheck : NSObject{
     // input the current location, judge whether it is a wall
     // need to fill later
     func isOccupiedByWall(loc: CGPoint) -> Bool{
-        
         return true
     }
     
     // if the location is occupied by other player
     func checkIsOtherPlayerInTheLoc(player1:PlayerNode, player2:PlayerNode) -> Bool{
-        if player1.getCurrentLoc() != player2.getCurrentLoc(){
+        if player1.position != player2.position{
             return true
         }else{
             return false
