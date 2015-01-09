@@ -18,7 +18,9 @@ class GameNavigationController: UINavigationController{
         
     }
     
+    //example to show the authenticatedViewController
     func showAuthenticationViewController() {
+        //present this viewController
         self.topViewController .presentViewController(GameCenterConnector.sharedInstance().authenticationViewController!, animated: true, completion: nil)
         //GameCenterConnector.sharedInstance().authenticationViewController
     }

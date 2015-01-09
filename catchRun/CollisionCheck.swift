@@ -34,6 +34,7 @@ class CollisionCheck : NSObject{
     
     func checkIsTrap(player: PlayerNode, tileMap: JSTileMap) -> Bool{
         var trap = tileMap.layerNamed("trap")
+        // convert to tile coord?
         var tileGid = trap.tileGidAt(CGPoint(x: player.position.x, y: player.position.y))
         var properties:NSDictionary = tileMap.propertiesForGid(tileGid) as NSDictionary
         var collision: NSString = properties.valueForKey("Collidable") as NSString
