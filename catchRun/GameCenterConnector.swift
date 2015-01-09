@@ -16,7 +16,7 @@ protocol GameConnectorDelegate{
     func matchEnded()
     func match(match: GKMatch, didReceiveData data:NSData, fromPlayer playerID: NSString)
 }
-
+let presentAuthentication: String! = "present authentication view controller"
 var instance: GameCenterConnector?
 class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchDelegate{
 
@@ -27,7 +27,7 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
     var match:GKMatch!
     var matchStarted: Bool! = false
     var authenticationViewController: UIViewController?
-    let presentAuthentication: String! = "present authentication view controller"
+   // let presentAuthentication: String! = "present authentication view controller"
     // use to keep track of last error
     var lastError : NSError?
     override init(){
@@ -40,7 +40,6 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
         var onceToken: dispatch_once_t?
         if instance == nil{
             instance = GameCenterConnector()
-            
         }
 //        var sharedGameConnector:GameCenterConnector?
 //        var onceToken: dispatch_once_t?
@@ -55,10 +54,13 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
     // navigating in the game scene
     func authenticatePlayer(){
         var localPlayer: GKLocalPlayer = GKLocalPlayer.localPlayer()
+        //if player is not logged into game center, game kit framework will pass a view controller to authenticate.
         localPlayer.authenticateHandler = {(viewController: UIViewController!, error:NSError!) ->Void in
             if viewController != nil{
+                //self.presentViewController(viewController, animated:false, completion: nil)
                 self.setAuthenticationViewController(viewController)
             }else{
+                // authenticated is a property for GKLocalPlayer, if it is false, it means user currenly is not successfully log into game center
                 if localPlayer.authenticated{
                     self.gameCenterEnabled = true
                     localPlayer.loadDefaultLeaderboardIdentifierWithCompletionHandler({(leaderboardIdentifier: String!, error: NSError!) -> Void in

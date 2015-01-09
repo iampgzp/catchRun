@@ -19,12 +19,10 @@ class CollisionCheck : NSObject{
     let mapXSize: CGFloat!
     let mapYSize: CGFloat!
     
-    
-    
     //check whether player has collision with walls
     func checkIsCollision(player: PlayerNode, tileMap: JSTileMap) -> Bool{
         var wall = tileMap.layerNamed("Meta")
-        var tileGid = wall.tileGidAt(CGPoint(player.position.x, player.position.y))
+        var tileGid = wall.tileGidAt(CGPoint(x: player.position.x, y: player.position.y))
         var properties:NSDictionary = tileMap.propertiesForGid(tileGid) as NSDictionary
         var collision: NSString = properties.valueForKey("Collidable") as NSString
         if collision.isEqualToString("True"){
@@ -36,7 +34,7 @@ class CollisionCheck : NSObject{
     
     func checkIsTrap(player: PlayerNode, tileMap: JSTileMap) -> Bool{
         var trap = tileMap.layerNamed("trap")
-        var tileGid = trap.tileGidAt(CGPoint(player.position.x, player.position.y))
+        var tileGid = trap.tileGidAt(CGPoint(x: player.position.x, y: player.position.y))
         var properties:NSDictionary = tileMap.propertiesForGid(tileGid) as NSDictionary
         var collision: NSString = properties.valueForKey("Collidable") as NSString
         if collision.isEqualToString("True"){
