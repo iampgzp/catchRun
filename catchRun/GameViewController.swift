@@ -8,6 +8,7 @@
 
 import UIKit
 import SpriteKit
+import GameKit
 
 extension SKNode {
     class func unarchiveFromFile(file : NSString) -> SKNode? {
@@ -69,8 +70,50 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
             scene.soundOn = true
             skView.presentScene(scene)
         }
+        //super.viewDidAppear()
+//        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showAuthenticationViewController", name: presentAuthentication, object: nil);
+//        GameCenterConnector.sharedInstance().authenticatePlayer()
+        //self.authenticateLocalPlayer()
     }
 
+    
+    func authenticateLocalPlayer() {
+        let localPlayer: GKLocalPlayer = GKLocalPlayer.localPlayer()
+        //if player is not logged into game center, game kit framework will pass a view controller to authenticate.
+        localPlayer.authenticateHandler = {(viewController, error) ->Void in
+            if viewController != nil{
+                self.presentViewController(viewController, animated:true, completion: nil)
+                print("not nil")
+            }else{
+                // authenticated is a property for GKLocalPlayer, if it is false, it means user currenly is not successfully log into game center
+               // print("yes, it is nil")
+                if localPlayer.authenticated{
+                   // self.gameCenterEnabled = true
+                    print("yes, it is alreaady authenticated")
+                    localPlayer.loadDefaultLeaderboardIdentifierWithCompletionHandler({(leaderboardIdentifier: String!, error: NSError!) -> Void in
+                        if error != nil{
+                            println(error.localizedDescription)
+                        }
+                        else{
+                            //self.leaderboardIdentifier = leaderboardIdentifier
+                            
+                        }
+                    })
+                }else{
+                    print("it is not authenticated yet")
+                    //self.presentViewController(viewController, animated:true, completion: nil)
+                    //self.gameCenterEnabled = false
+                }
+            }
+        }
+    }
+    
+    func showAuthenticationViewController() {
+        //present this viewController
+        self.presentViewController(GameCenterConnector.sharedInstance().authenticationViewController!, animated: true, completion: nil)
+        //GameCenterConnector.sharedInstance().authenticationViewController
+    }
+    
     override func shouldAutorotate() -> Bool {
         return true
     }
