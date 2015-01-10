@@ -73,7 +73,7 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
         //super.viewDidAppear()
 //        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showAuthenticationViewController", name: presentAuthentication, object: nil);
 //        GameCenterConnector.sharedInstance().authenticatePlayer()
-        //self.authenticateLocalPlayer()
+        self.authenticateLocalPlayer()
     }
 
     
