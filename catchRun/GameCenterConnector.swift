@@ -27,19 +27,22 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
     var match:GKMatch!
     var matchStarted: Bool! = false
     var authenticationViewController: UIViewController?
+    var vc: UIViewController?
    // let presentAuthentication: String! = "present authentication view controller"
     // use to keep track of last error
     var lastError : NSError?
-    override init(){
+    init(viewc : UIViewController){
         super.init()
-        gameCenterEnabled = true
+       // gameCenterEnabled = true
+        self.vc = viewc
+        authenticatePlayer()
     }
     
     // create a singleton pattern here to keep all game center code into one spot
-    class func sharedInstance() -> GameCenterConnector{
+    class func sharedInstance(viewc : UIViewController) -> GameCenterConnector{
         var onceToken: dispatch_once_t?
         if instance == nil{
-            instance = GameCenterConnector()
+            instance = GameCenterConnector(viewc: viewc)
         }
 //        var sharedGameConnector:GameCenterConnector?
 //        var onceToken: dispatch_once_t?
@@ -58,7 +61,8 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
         localPlayer.authenticateHandler = {(viewController: UIViewController!, error:NSError!) ->Void in
             if viewController != nil{
                 //self.presentViewController(viewController, animated:false, completion: nil)
-                self.setAuthenticationViewController(viewController)
+                self.vc?.presentViewController(viewController, animated: true, completion: nil)
+              //  self.setAuthenticationViewController(viewController)
             }else{
                 // authenticated is a property for GKLocalPlayer, if it is false, it means user currenly is not successfully log into game center
                 if localPlayer.authenticated{

@@ -27,9 +27,13 @@ extension SKNode {
 }
 
 class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstitialDelegate, AVAudioPlayerDelegate, sceneDelegate{
+
+    
     
     var fullAd:GADInterstitial?
     var audioControl : AudioController?
+    var gameCenter: GameCenter!
+    var gameCenterConenctor: GameCenterConnector!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -70,10 +74,10 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
             scene.soundOn = true
             skView.presentScene(scene)
         }
-        //super.viewDidAppear()
-//        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showAuthenticationViewController", name: presentAuthentication, object: nil);
-//        GameCenterConnector.sharedInstance().authenticatePlayer()
-        self.authenticateLocalPlayer()
+
+    //    self.gameCenter = GameCenter(rootViewController: self)
+        self.gameCenterConenctor = GameCenterConnector.sharedInstance(self)
+       // self.authenticateLocalPlayer()
     }
 
     
@@ -108,11 +112,11 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
         }
     }
     
-    func showAuthenticationViewController() {
-        //present this viewController
-        self.presentViewController(GameCenterConnector.sharedInstance().authenticationViewController!, animated: true, completion: nil)
-        //GameCenterConnector.sharedInstance().authenticationViewController
-    }
+//    func showAuthenticationViewController() {
+//        //present this viewController
+//        self.presentViewController(GameCenterConnector.sharedInstance().authenticationViewController!, animated: true, completion: nil)
+//        //GameCenterConnector.sharedInstance().authenticationViewController
+//    }
     
     override func shouldAutorotate() -> Bool {
         return true
