@@ -20,8 +20,8 @@ let presentAuthentication: String! = "present authentication view controller"
 var instance: GameCenterConnector?
 class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchDelegate{
 
-    var delegate : GameConnectorDelegate?
-    var playerDict: NSMutableDictionary!
+    var delegate : GameConnectorDelegate!
+    var playerDict: NSMutableDictionary?
     var gameCenterEnabled: Bool!
     var leaderboardIdentifier : String!
     var match:GKMatch!
@@ -33,9 +33,9 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
     var lastError : NSError?
     init(viewc : UIViewController){
         super.init()
-       // gameCenterEnabled = true
+        gameCenterEnabled = true
         self.vc = viewc
-        authenticatePlayer()
+       // authenticatePlayer()
     }
     
     // create a singleton pattern here to keep all game center code into one spot
@@ -76,6 +76,7 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
                         }
                     })
                 }else{
+                    // due to some reason: user cancel log in or log in not success, we need to disable all game center feature
                     self.gameCenterEnabled = false
                 }
             }
@@ -105,32 +106,42 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
         self.matchStarted = false
         self.match = nil
         viewController.dismissViewControllerAnimated(false, completion: nil)
+        //GKMatchRequest is the built-in api to set min amount and max amount of players.
         var request:GKMatchRequest! = GKMatchRequest()
         request.minPlayers = minPlayer
         request.maxPlayers = maxPlayer
         var matchViewController:GKMatchmakerViewController! = GKMatchmakerViewController(matchRequest: request)
-        //matchViewController?.matchRequest(request)
         matchViewController.matchmakerDelegate = self
+        //present the game pairing view
         viewController.presentViewController(matchViewController, animated: true, completion: nil)
     }
     
-    // implement GKmatchmakerViewControllerDelegate
+    // when user cancel the game pairing
     func matchmakerViewControllerWasCancelled(viewController: GKMatchmakerViewController!){
         viewController.dismissViewControllerAnimated(true, completion: nil)
     }
-    // implement GKmatchmakerViewControllerDelegate
+    // when there is error for game pairing
     func matchmakerViewController(viewController: GKMatchmakerViewController!, didFailWithError error: NSError!){
         viewController.dismissViewControllerAnimated(true, completion: nil)
         NSLog("Erro matching: %", error.localizedDescription)
     }
-    // implement GKmatchmakerViewControllerDelegate
+    // when game pairing is ok, and game is ready to go
     func matchmakerViewController(viewController: GKMatchmakerViewController, didFindMatch match: GKMatch){
         viewController.dismissViewControllerAnimated(true, completion: nil)
         self.match = match
         match.delegate = self
+        //match object keeps track amount of players need to finish connecting, if it is 0, all set
         if !self.matchStarted && match.expectedPlayerCount == 0{
             NSLog("Ready to start game")
+            lookUpPlayer()
         }
+    }
+    // when another player sends data to you, this method will be called.
+    func match(match: GKMatch!, didReceiveData data: NSData!, fromPlayer playerID: String!) {
+        if self.match != match{
+            return;
+        }
+        self.delegate?.match(match, didReceiveData: data, fromPlayer: playerID)
     }
     // implement GKmatchDelegate
     func match(match: GKMatch, didReceiveData data: NSData, fromPlayer playerID: NSString, didChangeState state: GKPlayerConnectionState){
@@ -142,6 +153,7 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
             NSLog("player connected")
             if !self.matchStarted && match.expectedPlayerCount == 0{
                 NSLog("ready to start")
+                lookUpPlayer()
             }
             break
         case GKPlayerConnectionState.StateDisconnected:
@@ -159,26 +171,30 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
             return;
         }
         NSLog("match failed with error %", error.localizedDescription)
-        self.matchStarted = false
+        matchStarted = false
         self.delegate?.matchEnded()
     }
-}
-    //func match
-    
     //lookup players
-//    func lookUpPlayer(){
-//        NSLog("Looking up player", self.match.playerIDs.count)
-//        GKPlayer.loadPlayersForIdentifiers(self.match.playerIDs, withCompletionHandler: {(players: [AnyObject]!, error: NSError?) -> Void in
-//            if error != nil{
-//                NSLog("Error to load player's information", error!.localizedDescription);
-//                self.matchStarted = false
-//                // delegate.matchEned
-//            } else{
-//                for player in players {
-//                    NSLog("Found Player : %", player.alias)
-//                }
-//            }
-//        })
-//        
-//    }
+    func lookUpPlayer(){
+        NSLog("Looking up player", self.match.playerIDs.count)
+        GKPlayer.loadPlayersForIdentifiers(match.playerIDs, withCompletionHandler: {(players: [AnyObject]!, error: NSError?) -> Void in
+            if error != nil{
+                NSLog("Error to load player's information", error!.localizedDescription);
+                self.matchStarted = false
+                // delegate.matchEned
+            } else{
+                self.playerDict = NSMutableDictionary(capacity: players.count)
+                for player in players {
+                    NSLog("Found Player : %", player.alias)
+                    self.playerDict?.setObject(player, forKey: player.playerID)
+                }
+                self.playerDict?.setObject(GKLocalPlayer.localPlayer(), forKey: GKLocalPlayer.localPlayer().playerID)
+                self.matchStarted = true
+                self.delegate.matchStarted()
+                
+            }
+        })
+    }
+}
+
 
