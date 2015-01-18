@@ -61,11 +61,10 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     var gameState: GameState!
     var randomNumber: Int!
     var orderOfPlayers: NSMutableArray!
-    //var orderOfPlayers: Dictionary<String, UInt32>!
     var delegate: MultiplayerProtocol!
-    let playerIdKey: String = "playerID"
+    let playerIdKey: String! = "playerID"
     var viewc: UIViewController!
-    let randomNumberKey: String = "randomNumber"
+    let randomNumberKey: String! = "randomNumber"
     
     init(viewc: UIViewController){
         super.init()
@@ -163,7 +162,35 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         var message: Message!
         data.getBytes(&message, length: sizeof(Message))
         if (message.messageType == MessageType.messageTypeRandomNumber){
-//            var messageOfRandomNum: MessageRandomNumber = data.getBytes(<#buffer: UnsafeMutablePointer<Void>#>, length: <#Int#>)
+            var l: Int! = sizeof(MessageRandomNumber)
+            var messageOfRandomNum: MessageRandomNumber!
+            data.getBytes(&messageOfRandomNum, length: sizeof(MessageRandomNumber))
+            NSLog("Receive random number: %d", messageOfRandomNum.randomNumber)
+            var tie: Bool! = false
+            if messageOfRandomNum.randomNumber == randomNumber{
+                NSLog("tie")
+                tie = true
+                randomNumber = Int(arc4random())
+                sendRandomPairingNumber()
+            }else{
+                var dictionary: NSDictionary! = [playerIdKey as String: playerID as String, randomNumberKey: messageOfRandomNum.randomNumber]
+                processReceivedRandomNumber(dictionary)
+            }
+            
+//            if receiveAllRandomPairingNumber){
+//                
+//            }
+//      
+            if receiveAllRandomPairingNumber != true{
+                isP1 = isLeftPlayer()
+            }
+            if (!tie && receiveAllRandomPairingNumber != nil){
+                if gameState == GameState.waitingForRandomPairing{
+                    gameState = GameState.waitingForStart
+                }
+                tryStartGame()
+            }
+            
         }else if message.messageType == MessageType.messageTypeGameBegin{
             NSLog("Begin game")
             gameState = GameState.gameActive
@@ -171,7 +198,15 @@ class Multiplayer: NSObject, GameConnectorDelegate{
             self.processPlayerAliases()
         }else if message.messageType == MessageType.messageTypeMove{
             NSLog("Move")
+            var messageMove: MessageMove!
+            data.getBytes(&messageMove, length: sizeof(MessageMove))
+            self.delegate.movePlayerAtIndex(indexForPlayerID(playerID))
             // convert point
+        }else if message.messageType == MessageType.messageTypeGameOver{
+            NSLog("Game Over")
+            var messageGameOver: MessageGameOver!
+            data.getBytes(&messageGameOver, length: sizeof(MessageGameOver))
+            self.delegate.gameOver(messageGameOver.leftWon)
         }
         
     }
@@ -187,12 +222,25 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         var sortDescriptors: NSArray! = [sortByRandomNumber]
         orderOfPlayers.sortUsingDescriptors(sortDescriptors)
         if (self.allRandomInfoReceived()){
-            receiveAllRandomPairingNumber = true
+            receiveAllRandomPairingNumber! = true
         }
     }
     
     func indexForLocalPlayer() -> Int{
-        return 0
+        var playerId: NSString! = GKLocalPlayer.localPlayer().playerID
+        return indexForPlayerID(playerId)
+    }
+    
+    func indexForPlayerID(playerId: NSString) -> Int{
+        var index: Int = -1
+        orderOfPlayers.enumerateObjectsUsingBlock { (obj, idx, stop) -> Void in
+            var pId: NSString! = obj[self.playerIdKey] as NSString
+            if pId.isEqualToString(playerId){
+                index = idx
+                stop.initialize(true)
+            }
+        }
+        return index
     }
     
     func isLeftPlayer() -> Bool{
