@@ -21,7 +21,7 @@ var instance: GameCenterConnector?
 class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchDelegate{
 
     var delegate : GameConnectorDelegate!
-    var playerDict: NSMutableDictionary?
+    var playerDict: NSMutableDictionary!
     var gameCenterEnabled: Bool!
     var leaderboardIdentifier : String!
     var match:GKMatch!
@@ -100,9 +100,9 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
     
     func findMatchWithMinPlayer(minPlayer: Int, maxPlayers maxPlayer:Int, viewControllers viewController: UIViewController, delegate: GameConnectorDelegate){
         //if gamecenter is not enabled, do nothing
-        if !self.gameCenterEnabled{
-            return;
-        }
+//        if !self.gameCenterEnabled{
+//            return;
+//        }
         self.matchStarted = false
         self.match = nil
         viewController.dismissViewControllerAnimated(false, completion: nil)

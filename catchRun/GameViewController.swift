@@ -26,13 +26,13 @@ extension SKNode {
     }
 }
 
-class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstitialDelegate, AVAudioPlayerDelegate, sceneDelegate{
+class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstitialDelegate, AVAudioPlayerDelegate, sceneDelegate, GameConnectorDelegate{
 
     
     
     var fullAd:GADInterstitial?
     var audioControl : AudioController?
-    var gameCenter: GameCenter!
+   // var gameCenter: GameCenter!
     var gameCenterConenctor: GameCenterConnector!
     
     override func viewDidLoad() {
@@ -76,41 +76,50 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
         }
 
     //    self.gameCenter = GameCenter(rootViewController: self)
-        self.gameCenterConenctor = GameCenterConnector.sharedInstance(self)
+        GameCenterConnector.sharedInstance(self).authenticatePlayer()
+        GameCenterConnector.sharedInstance(self).findMatchWithMinPlayer(2, maxPlayers: 2, viewControllers: self, delegate: self)
        // self.authenticateLocalPlayer()
+    }
+    
+    override func viewDidAppear(animated: Bool){
+        super.viewDidAppear(animated)
+        if GameCenterConnector.sharedInstance(self).gameCenterEnabled == true {
+            GameCenterConnector.sharedInstance(self).findMatchWithMinPlayer(2, maxPlayers: 2, viewControllers: self, delegate: self)
+        }
+        
     }
 
     
-    func authenticateLocalPlayer() {
-        let localPlayer: GKLocalPlayer = GKLocalPlayer.localPlayer()
-        //if player is not logged into game center, game kit framework will pass a view controller to authenticate.
-        localPlayer.authenticateHandler = {(viewController, error) ->Void in
-            if viewController != nil{
-                self.presentViewController(viewController, animated:true, completion: nil)
-                print("not nil")
-            }else{
-                // authenticated is a property for GKLocalPlayer, if it is false, it means user currenly is not successfully log into game center
-               // print("yes, it is nil")
-                if localPlayer.authenticated{
-                   // self.gameCenterEnabled = true
-                    print("yes, it is alreaady authenticated")
-                    localPlayer.loadDefaultLeaderboardIdentifierWithCompletionHandler({(leaderboardIdentifier: String!, error: NSError!) -> Void in
-                        if error != nil{
-                            println(error.localizedDescription)
-                        }
-                        else{
-                            //self.leaderboardIdentifier = leaderboardIdentifier
-                            
-                        }
-                    })
-                }else{
-                    print("it is not authenticated yet")
-                    //self.presentViewController(viewController, animated:true, completion: nil)
-                    //self.gameCenterEnabled = false
-                }
-            }
-        }
-    }
+//    func authenticateLocalPlayer() {
+//        let localPlayer: GKLocalPlayer = GKLocalPlayer.localPlayer()
+//        //if player is not logged into game center, game kit framework will pass a view controller to authenticate.
+//        localPlayer.authenticateHandler = {(viewController, error) ->Void in
+//            if viewController != nil{
+//                self.presentViewController(viewController, animated:true, completion: nil)
+//                print("not nil")
+//            }else{
+//                // authenticated is a property for GKLocalPlayer, if it is false, it means user currenly is not successfully log into game center
+//               // print("yes, it is nil")
+//                if localPlayer.authenticated{
+//                   // self.gameCenterEnabled = true
+//                    print("yes, it is alreaady authenticated")
+//                    localPlayer.loadDefaultLeaderboardIdentifierWithCompletionHandler({(leaderboardIdentifier: String!, error: NSError!) -> Void in
+//                        if error != nil{
+//                            println(error.localizedDescription)
+//                        }
+//                        else{
+//                            //self.leaderboardIdentifier = leaderboardIdentifier
+//                            
+//                        }
+//                    })
+//                }else{
+//                    print("it is not authenticated yet")
+//                    //self.presentViewController(viewController, animated:true, completion: nil)
+//                    //self.gameCenterEnabled = false
+//                }
+//            }
+//        }
+//    }
     
 //    func showAuthenticationViewController() {
 //        //present this viewController
@@ -150,5 +159,16 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
         }else{
             audioControl!.tryPlayMusic()
         }
+    }
+    
+    func match(match: GKMatch, didReceiveData data: NSData, fromPlayer playerID: NSString) {
+        print("receive data")
+    }
+    
+    func matchEnded() {
+        print("match ended")
+    }
+    func matchStarted() {
+        print("match started")
     }
 }
