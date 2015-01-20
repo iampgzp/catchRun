@@ -22,7 +22,10 @@ class CollisionCheck : NSObject{
     //check whether player has collision with walls
     func checkIsCollision(player: PlayerNode, tileMap: JSTileMap) -> Bool{
         var wall = tileMap.layerNamed("Meta")
-        var tileGid = wall.tileGidAt(CGPoint(x: player.position.x, y: player.position.y))
+        //----------------------------------convert coordinate? 
+        var position: CGPoint! = tileCoordForPosition(CGPoint(x: player.position.x, y: player.position.y), tiledMap: tileMap)
+        var tileGid = wall.tileGidAt(position)
+        //----------------------------------
         var properties:NSDictionary = tileMap.propertiesForGid(tileGid) as NSDictionary
         var collision: NSString = properties.valueForKey("Collidable") as NSString
         if collision.isEqualToString("True"){
@@ -81,6 +84,13 @@ class CollisionCheck : NSObject{
         }else{
             return true
         }
+    }
+    
+    //convert coordinate to tilemap coordinate
+    func tileCoordForPosition(position: CGPoint, tiledMap: JSTileMap) -> CGPoint{
+        var x = Int((position.x / tiledMap.tileSize.width))
+        var y = Int((tiledMap.mapSize.height * tiledMap.tileSize.height - position.y) / tiledMap.tileSize.height)
+        return CGPoint(x: x, y: y)
     }
     
 }
