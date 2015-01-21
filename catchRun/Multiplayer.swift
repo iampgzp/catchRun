@@ -16,12 +16,17 @@ protocol MultiplayerProtocol{
     func gameOver(leftWon: Bool)
     func setPlayerAlias(playerAliases: NSArray)
 }
-
+// we need separate game state
 enum GameState: Int{
+    //waiting for a match to be connected, maybe call waiting for connection is clear
     case waitingForMatch = 0
+    //waiting for random number assigned to this player
     case waitingForRandomPairing
+    //waiting for game start
     case waitingForStart
+    //active playing in the game
     case gameActive
+    //game finish
     case gameStateDone
 }
 
@@ -57,6 +62,7 @@ struct MessageGameOver{
 class Multiplayer: NSObject, GameConnectorDelegate{
     
     var receiveAllRandomPairingNumber: Bool!
+    //use P1 to denote police
     var isP1: Bool!
     var gameState: GameState!
     var randomNumber: Int!
@@ -70,21 +76,35 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         super.init()
         self.viewc = viewc
         randomNumber = Int(arc4random())
+        //gamestate initiall should be waiting for a match connection to be established
         gameState = GameState.waitingForMatch
         orderOfPlayers = NSMutableArray()
-        //var dic: NSMutableDictionary! = new NSMutableDictionary()
         var dic = [playerIdKey as String: GKLocalPlayer.localPlayer().playerID as String, randomNumberKey: randomNumber]
         orderOfPlayers.addObject(dic)
-//        orderOfPlayers = Dictionary<String, UInt32>()
-//        orderOfPlayers.updateValue(randomNumber, forKey: GKLocalPlayer.localPlayer().playerID)
-//        orderOfPlayers.addObject((playerIdKey: GKLocalPlayer.localPlayer().playerID, randomNumberKey: randomNumber.description))
-        
     }
     
+    //if receive all random number, set game state for waiting for start
+    func matchStarted() {
+        NSLog("match start successfully")
+        if receiveAllRandomPairingNumber == true{
+            gameState = GameState.waitingForStart
+        }else{
+            gameState = GameState.waitingForRandomPairing
+        }
+        sendRandomPairingNumber()
+        tryStartGame()
+    }
+    
+    //send data information to players in the match connection
+    //all kinds of data: sending random number info, sending moving index info and so on
     func sendData(data: NSData){
         var error:NSError?;
+        //get the shared instance of gamecenterconnector
         var gameConnector: GameCenterConnector = GameCenterConnector.sharedInstance(viewc)
+        //transmit data to all players in the match, use GKMatchSendDataMode.Reliable can make sure
+        //other player receive all data.
         var success: Bool! = gameConnector.match.sendDataToAllPlayers(data, withDataMode: GKMatchSendDataMode.Reliable, error: &error)
+        //if not success, which means player is not connected, and game should end
         if (!success){
             println(error?.localizedDescription)
             matchEnded()
@@ -98,7 +118,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     }
     
 
-    
+    //cast randomMessage to NSData, send it to other player
     func sendRandomPairingNumber(){
         var message: MessageRandomNumber!
         message.message.messageType = MessageType.messageTypeRandomNumber
@@ -107,12 +127,6 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         sendData(data)
     }
     
-    func sendGameBegin(){
-        var message: MessageGameBegin!
-        message.message.messageType = MessageType.messageTypeGameBegin
-        var data = NSData(bytes: &message, length: sizeof(MessageGameBegin))
-        sendData(data)
-    }
     
     func sendGameEnd(leftWon: Bool){
         var message : MessageGameOver!
@@ -122,28 +136,22 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         sendData(data)
     }
     
+    //send gamebegin data to other player
+    func sendGameBegin(){
+        var message: MessageGameBegin!
+        message.message.messageType = MessageType.messageTypeGameBegin
+        var data = NSData(bytes: &message, length: sizeof(MessageGameBegin))
+        sendData(data)
+    }
+    //try to start game
     func tryStartGame(){
         if isP1 == true && gameState == GameState.waitingForStart{
            gameState = GameState.gameActive
             self.sendGameBegin()
-            
             self.delegate.setCurrentPlayerIndex(0)
             self.processPlayerAliases()
         }
     }
-    
-    func allRandomInfoReceived() -> Bool{
-        var receiveRandomInfo: NSMutableArray! = NSMutableArray()
-        for dict in orderOfPlayers{
-            receiveRandomInfo.addObject(dict[randomNumberKey])
-        }
-        if receiveRandomInfo.count == (GameCenterConnector.sharedInstance(viewc).match.playerIDs.count + 1){
-            return true
-        }
-        return false
-        
-    }
-    
     
     func processPlayerAliases(){
         if allRandomInfoReceived(){
@@ -158,12 +166,13 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         }
     }
     
+    //change incoming data to message structure
     func match(match: GKMatch, didReceiveData data: NSData, fromPlayer playerID: NSString) {
         var message: Message!
         data.getBytes(&message, length: sizeof(Message))
         if (message.messageType == MessageType.messageTypeRandomNumber){
-            var l: Int! = sizeof(MessageRandomNumber)
             var messageOfRandomNum: MessageRandomNumber!
+            //write data into messageOfRandomNum buffer
             data.getBytes(&messageOfRandomNum, length: sizeof(MessageRandomNumber))
             NSLog("Receive random number: %d", messageOfRandomNum.randomNumber)
             var tie: Bool! = false
@@ -176,15 +185,10 @@ class Multiplayer: NSObject, GameConnectorDelegate{
                 var dictionary: NSDictionary! = [playerIdKey as String: playerID as String, randomNumberKey: messageOfRandomNum.randomNumber]
                 processReceivedRandomNumber(dictionary)
             }
-            
-//            if receiveAllRandomPairingNumber){
-//                
-//            }
-//      
-            if receiveAllRandomPairingNumber != true{
+            if receiveAllRandomPairingNumber == true{
                 isP1 = isLeftPlayer()
             }
-            if (!tie && receiveAllRandomPairingNumber != nil){
+            if (!tie && receiveAllRandomPairingNumber == true){
                 if gameState == GameState.waitingForRandomPairing{
                     gameState = GameState.waitingForStart
                 }
@@ -211,6 +215,8 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         
     }
     
+    //make the highest random number to be police
+    //lower random number denotes the thief
     func processReceivedRandomNumber(randomNumberDetails: NSDictionary){
         if orderOfPlayers.containsObject(randomNumberDetails){
             orderOfPlayers.removeObjectAtIndex(orderOfPlayers.indexOfObject(randomNumberDetails))
@@ -224,6 +230,18 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         if (self.allRandomInfoReceived()){
             receiveAllRandomPairingNumber! = true
         }
+    }
+    
+    func allRandomInfoReceived() -> Bool{
+        var receiveRandomInfo: NSMutableArray! = NSMutableArray()
+        for dict in orderOfPlayers{
+            receiveRandomInfo.addObject(dict[randomNumberKey])
+        }
+        //var arrayOfUniqueRandomNum: NSArray! = NSSet(receivedRandomNumbers) allObjects
+        if receiveRandomInfo.count == (GameCenterConnector.sharedInstance(viewc).match.playerIDs.count + 1){
+            return true
+        }
+        return false
     }
     
     func indexForLocalPlayer() -> Int{
@@ -243,26 +261,15 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         return index
     }
     
+    //P1 player
     func isLeftPlayer() -> Bool{
         var dictionary: NSDictionary! = orderOfPlayers[0] as NSDictionary
         //optional are no longer considerred as boolean expression
         if dictionary[playerIdKey]!.isEqualToString(GKLocalPlayer.localPlayer().playerID){
-            NSLog("this is left player")
+            NSLog("this is P1")
             return true
         }
-        
         return false
-    }
-    
-    func matchStarted() {
-        NSLog("match start successfully")
-        if receiveAllRandomPairingNumber == true{
-            gameState = GameState.waitingForStart
-        }else{
-            gameState = GameState.waitingForRandomPairing
-        }
-        sendRandomPairingNumber()
-        tryStartGame()
     }
     
     func matchEnded(){
