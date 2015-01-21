@@ -21,6 +21,7 @@ var instance: GameCenterConnector?
 class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchDelegate{
 
     var delegate : GameConnectorDelegate!
+    //use to for easily look up player
     var playerDict: NSMutableDictionary!
     var gameCenterEnabled: Bool!
     var leaderboardIdentifier : String!
@@ -175,8 +176,10 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
         self.delegate?.matchEnded()
     }
     //lookup players
+    //call lookupPlayer() when match is ready. store playerid and player object into dictionary
     func lookUpPlayer(){
         NSLog("Looking up player", self.match.playerIDs.count)
+        // withCompletionHandler returns GKPlayer object for each player in the match.
         GKPlayer.loadPlayersForIdentifiers(match.playerIDs, withCompletionHandler: {(players: [AnyObject]!, error: NSError?) -> Void in
             if error != nil{
                 NSLog("Error to load player's information", error!.localizedDescription);
@@ -188,7 +191,7 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
                     NSLog("Found Player : %", player.alias)
                     self.playerDict?.setObject(player, forKey: player.playerID)
                 }
-                self.playerDict?.setObject(GKLocalPlayer.localPlayer(), forKey: GKLocalPlayer.localPlayer().playerID)
+                self.playerDict!.setObject(GKLocalPlayer.localPlayer(), forKey: GKLocalPlayer.localPlayer().playerID)
                 self.matchStarted = true
                 self.delegate.matchStarted()
                 
