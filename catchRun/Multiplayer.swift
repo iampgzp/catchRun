@@ -12,7 +12,7 @@ import GameKit
 protocol MultiplayerProtocol{
     func matchEnded()
     func setCurrentPlayerIndex(index: Int)
-    func movePlayerAtIndex(index: Int)
+    func movePlayerAtIndex(index: Int, direction: String)
     func gameOver(leftWon: Bool)
     func setPlayerAlias(playerAliases: NSArray)
 }
@@ -51,6 +51,8 @@ struct MessageGameBegin{
 }
 
 struct MessageMove{
+    // in move message, we need a direction
+    var direction: String
     var message: Message
 }
 
@@ -204,7 +206,8 @@ class Multiplayer: NSObject, GameConnectorDelegate{
             NSLog("Move")
             var messageMove: MessageMove!
             data.getBytes(&messageMove, length: sizeof(MessageMove))
-            self.delegate.movePlayerAtIndex(indexForPlayerID(playerID))
+            //get playerindex and direction
+            self.delegate.movePlayerAtIndex(indexForPlayerID(playerID), direction: messageMove.direction)
             // convert point
         }else if message.messageType == MessageType.messageTypeGameOver{
             NSLog("Game Over")

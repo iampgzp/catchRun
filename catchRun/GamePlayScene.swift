@@ -8,10 +8,21 @@
 
 import SpriteKit
 
-class GamePlayScene: SKScene, GADInterstitialDelegate {
+//gameplayerscene need to implement MultiplayerProtocol.
+// it contains 5 method. moveplayeratindex api helps one of the player in the game to get the information of another player's move information. Such as P1 get the info of P2 moving to right.
+class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     var tiledMap:JSTileMap?
     var player = PlayerNode(playerTextureName: "player")
     var playerWalkingFrames = NSArray()
+    
+    // this is used to transfer moving data
+    var networkEngine: Multiplayer!
+    
+    //------network layer var
+    var currentIndex: Int! // which player
+    var players: NSMutableArray!
+    //-----------------
+    
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
         tiledMap = JSTileMap(named:"map.tmx")
@@ -39,6 +50,17 @@ class GamePlayScene: SKScene, GADInterstitialDelegate {
         // if it is the trap dict, there is a key called trapCollidable and it will return true
         var collision: NSString = properties.valueForKey("Collidable") as NSString
         
+        
+        //-----------------------------------------------------------
+        
+        // to use the network engine, we need to initialize the players here
+        // we can first set two player into players instance. And we can define
+        // two enums for player type: police and thief
+        
+        //-----------------------------------------------------------
+        
+        
+
         if collision.isEqualToString("True"){
             // collide should prevent user go in to the wall
             println("collide!!!!!!!! at \(point)")
@@ -73,7 +95,6 @@ class GamePlayScene: SKScene, GADInterstitialDelegate {
         var tapGesture = UITapGestureRecognizer(target: self, action: "handleTapGesture:")
         tapGesture.numberOfTapsRequired = 2
         self.view?.addGestureRecognizer(tapGesture)*/
-        
     }
     
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
@@ -127,4 +148,31 @@ class GamePlayScene: SKScene, GADInterstitialDelegate {
         var y = Int((tiledMap!.mapSize.height * tiledMap!.tileSize.height - position.y) / tiledMap!.tileSize.height)
         return CGPoint(x: x, y: y)
     }
+    
+  //conform multiplayer protocol
+    func matchEnded(){
+        
+    }
+    
+    // set current player index, such as P1
+    func setCurrentPlayerIndex(index: Int){
+        currentIndex = index
+    }
+    
+    
+    // move p1 or p2, to which direction
+    func movePlayerAtIndex(index: Int, direction: String){
+        var player: PlayerNode! = players[index] as PlayerNode
+        player.moving(direction)
+    }
+    
+    // we can check game over by only one side
+    // for example: P1 wins, we only check P1. then send game over info to P2
+    func gameOver(leftWon: Bool){
+        
+    }
+    func setPlayerAlias(playerAliases: NSArray){
+        
+    }
+    
 }

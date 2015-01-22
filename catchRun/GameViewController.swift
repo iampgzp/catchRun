@@ -29,10 +29,10 @@ extension SKNode {
 class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstitialDelegate, AVAudioPlayerDelegate, sceneDelegate, GameConnectorDelegate{
 
     
-    
+    var networkEngine: Multiplayer!
     var fullAd:GADInterstitial?
     var audioControl : AudioController?
-   // var gameCenter: GameCenter!
+   
     var gameCenterConenctor: GameCenterConnector!
     
     override func viewDidLoad() {
@@ -86,6 +86,15 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
         if GameCenterConnector.sharedInstance(self).gameCenterEnabled == true {
             GameCenterConnector.sharedInstance(self).findMatchWithMinPlayer(2, maxPlayers: 2, viewControllers: self, delegate: self)
         }
+        
+    }
+    
+    func playerAuthenticated(){
+        var skview: SKView! = self.view as SKView
+        var scene: GamePlayScene! = skview.scene as GamePlayScene
+        self.networkEngine = Multiplayer(viewc: self)
+        networkEngine.delegate = scene
+        
         
     }
 

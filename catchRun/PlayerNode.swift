@@ -12,6 +12,9 @@ import SpriteKit
 
 class PlayerNode: SKSpriteNode{
     var playerWalkingFrames : NSArray
+    
+    // this is engine used for sending data to game center
+    var networkEngine: Multiplayer!
 
     init(playerTextureName: NSString){
         var playerWalkingFramesTemp = NSMutableArray()
@@ -59,6 +62,7 @@ class PlayerNode: SKSpriteNode{
         default:
             break;
         }
+        networkEngine.sendMove()
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
