@@ -9,6 +9,10 @@
 import Foundation
 import GameKit
 
+// for this class, there is api for sending info to game center: such as sendMove(), sendRandomPairingnum(), sendGameOver)_
+// there is also api for receiving info from game center: such as match(:didReceivedData; fromPlayerID), it deals all the situation, such as player moving info, prepare to start game info, pairing info.
+
+
 protocol MultiplayerProtocol{
     func matchEnded()
     func setCurrentPlayerIndex(index: Int)
@@ -169,6 +173,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     }
     
     //change incoming data to message structure
+    //this method is used for decoding incoming other player's game data
     func match(match: GKMatch, didReceiveData data: NSData, fromPlayer playerID: NSString) {
         var message: Message!
         data.getBytes(&message, length: sizeof(Message))
