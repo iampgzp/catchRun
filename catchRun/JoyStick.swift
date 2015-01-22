@@ -37,6 +37,9 @@ class JoyStick: SKNode {
 }
 
 class JoyStickButton: SKNode {
+    // this is the engine used to transfer move infomation: such as current index to another player
+    var networkEngine: Multiplayer!
+    
     var defaultButton: SKSpriteNode
     var activeButton: SKSpriteNode
     var target: PlayerNode
@@ -59,6 +62,7 @@ class JoyStickButton: SKNode {
         target.moving(movingDirection)
     }
     
+    // we should add network layer here once player moves
     override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
         var touch: UITouch = touches.allObjects[0] as UITouch
         var location: CGPoint = touch.locationInNode(self)
@@ -71,7 +75,10 @@ class JoyStickButton: SKNode {
             defaultButton.hidden = false
             target.stopMoving()
         }
+        //send current index to another player
+        networkEngine.sendMove()
     }
+    
     
     override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
         activeButton.hidden = true
