@@ -101,6 +101,16 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         tryStartGame()
     }
     
+    //try to start game
+    func tryStartGame(){
+        if isP1 == true && gameState == GameState.waitingForStart{
+            gameState = GameState.gameActive
+            self.sendGameBegin()
+            self.delegate.setCurrentPlayerIndex(0)
+            self.processPlayerAliases()
+        }
+    }
+    
     //send data information to players in the match connection
     //all kinds of data: sending random number info, sending moving index info and so on
     func sendData(data: NSData){
@@ -118,8 +128,11 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     }
     
     // send move infomation to game center
-    func sendMove(){
-        var data: NSData!
+    func sendMove(direction: String){
+        var messageMove: MessageMove!
+        messageMove.message.messageType = MessageType.messageTypeMove
+        messageMove.direction = direction
+        var data = NSData(bytes: &messageMove, length: sizeof(MessageMove))
         sendData(data)
     }
     
@@ -148,15 +161,6 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         message.message.messageType = MessageType.messageTypeGameBegin
         var data = NSData(bytes: &message, length: sizeof(MessageGameBegin))
         sendData(data)
-    }
-    //try to start game
-    func tryStartGame(){
-        if isP1 == true && gameState == GameState.waitingForStart{
-           gameState = GameState.gameActive
-            self.sendGameBegin()
-            self.delegate.setCurrentPlayerIndex(0)
-            self.processPlayerAliases()
-        }
     }
     
     func processPlayerAliases(){

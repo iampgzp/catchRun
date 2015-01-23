@@ -20,9 +20,9 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     
     //------network layer var
     var currentIndex: Int! // which player
-    var players: NSMutableArray!
+    var players: Array<PlayerNode>!
     //-----------------
-    
+    var capacityOfPlayerInGame: Int! = 2
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
         tiledMap = JSTileMap(named:"map.tmx")
@@ -58,8 +58,19 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         // two enums for player type: police and thief
         
         //-----------------------------------------------------------
+        // For test purpose, we initialize two player in the screen
+        players = Array<PlayerNode>()
+        var player1: PlayerNode! = PlayerNode(playerTextureName: "player")
+        var player2: PlayerNode! = PlayerNode(playerTextureName: "player")
         
+        player1.position = CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.5)
+        player2.position = CGPoint(x: self.size.width * 0.2, y: self.size.height * 0.2)
+        // add into players
+        players.append(player1)
+        players.append(player2)
+        currentIndex = -1
         
+        //-------------------------------------------------------------
 
         if collision.isEqualToString("True"){
             // collide should prevent user go in to the wall
@@ -106,23 +117,39 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
 //        fullAd.loadRequest(request2)
 //        
 //        fullAd.presentFromRootViewController(self)
+        if (currentIndex == -1){
+            return
+        }
+       
+        
         
     }
     
+    
+    // once we swipe
+    // we need to send the move information to other players
     func handleSwipeGesture(gesture: UISwipeGestureRecognizer) {
         var direction = gesture.direction
         switch (direction){
         case UISwipeGestureRecognizerDirection.Left:
-            player.moving("LEFT")
+            players[currentIndex].moving("LEFT")
+            networkEngine.sendMove("LEFT")
+            // player.moving("LEFT")
             break
         case UISwipeGestureRecognizerDirection.Right:
-            player.moving("RIGHT")
+            players[currentIndex].moving("RIGHT")
+            networkEngine.sendMove("RIGHT")
+            //player.moving("RIGHT")
             break
         case UISwipeGestureRecognizerDirection.Up:
-            player.moving("UP")
+            players[currentIndex].moving("UP")
+            networkEngine.sendMove("UP")
+            //player.moving("UP")
             break
         case UISwipeGestureRecognizerDirection.Down:
-            player.moving("DOWN")
+            players[currentIndex].moving("DOWN")
+            networkEngine.sendMove("DOWN")
+            //player.moving("DOWN")
             break
         default:
             break;

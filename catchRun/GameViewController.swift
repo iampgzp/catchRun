@@ -94,8 +94,7 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
         var scene: GamePlayScene! = skview.scene as GamePlayScene
         self.networkEngine = Multiplayer(viewc: self)
         networkEngine.delegate = scene
-        
-        
+        GameCenterConnector.sharedInstance(self).findMatchWithMinPlayer(2, maxPlayers: 2, viewControllers: self, delegate: self)
     }
 
     
