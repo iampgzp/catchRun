@@ -279,7 +279,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         var dictionary: NSDictionary! = orderOfPlayers[0] as NSDictionary
         //optional are no longer considerred as boolean expression
         if dictionary[playerIdKey]!.isEqualToString(GKLocalPlayer.localPlayer().playerID){
-            NSLog("this is GKLocalPlayer.localPlayer().playerID")
+            NSLog("this is %s", GKLocalPlayer.localPlayer().playerID)
             return true
         }
         return false
