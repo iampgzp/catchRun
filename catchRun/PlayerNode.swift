@@ -62,7 +62,7 @@ class PlayerNode: SKSpriteNode{
         default:
             break;
         }
-        networkEngine.sendMove()
+        //networkEngine.sendMove()
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

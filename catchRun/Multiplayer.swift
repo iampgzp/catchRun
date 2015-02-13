@@ -67,10 +67,10 @@ struct MessageGameOver{
 
 class Multiplayer: NSObject, GameConnectorDelegate{
     
-    var receiveAllRandomPairingNumber: Bool!
+    var receiveAllRandomPairingNumber: Bool?
     //use P1 to denote police
     var isP1: Bool!
-    var gameState: GameState!
+    var gameState: GameState?
     var randomNumber: Int!
     var orderOfPlayers: NSMutableArray!
     var delegate: MultiplayerProtocol!
@@ -103,7 +103,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     
     //try to start game
     func tryStartGame(){
-        if isP1 == true && gameState == GameState.waitingForStart{
+        if isP1 != nil && isP1 == true && gameState == GameState.waitingForStart{
             gameState = GameState.gameActive
             self.sendGameBegin()
             self.delegate.setCurrentPlayerIndex(0)
@@ -139,9 +139,10 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     
     //cast randomMessage to NSData, send it to other player
     func sendRandomPairingNumber(){
-        var message: MessageRandomNumber!
-        message.message.messageType = MessageType.messageTypeRandomNumber
-        message.randomNumber = self.randomNumber
+        var message = MessageRandomNumber(message: Message(messageType: MessageType.messageTypeRandomNumber), randomNumber: self.randomNumber)
+        //        var message: MessageRandomNumber!
+        //        message.message.messageType = MessageType.messageTypeRandomNumber
+        //        message.randomNumber = self.randomNumber
         var data = NSData(bytes: &message, length: sizeof(MessageRandomNumber))
         sendData(data)
     }
@@ -157,8 +158,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     
     //send gamebegin data to other player
     func sendGameBegin(){
-        var message: MessageGameBegin!
-        message.message.messageType = MessageType.messageTypeGameBegin
+        var message = MessageGameBegin(message: Message(messageType: MessageType.messageTypeRandomNumber))
         var data = NSData(bytes: &message, length: sizeof(MessageGameBegin))
         sendData(data)
     }
@@ -197,6 +197,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
                 processReceivedRandomNumber(dictionary)
             }
             if receiveAllRandomPairingNumber == true{
+                NSLog("receive all number")
                 isP1 = isLeftPlayer()
             }
             if (!tie && receiveAllRandomPairingNumber == true){
@@ -240,7 +241,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         var sortDescriptors: NSArray! = [sortByRandomNumber]
         orderOfPlayers.sortUsingDescriptors(sortDescriptors)
         if (self.allRandomInfoReceived()){
-            receiveAllRandomPairingNumber! = true
+            receiveAllRandomPairingNumber = true
         }
     }
     
@@ -278,7 +279,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         var dictionary: NSDictionary! = orderOfPlayers[0] as NSDictionary
         //optional are no longer considerred as boolean expression
         if dictionary[playerIdKey]!.isEqualToString(GKLocalPlayer.localPlayer().playerID){
-            NSLog("this is P1")
+            NSLog("this is GKLocalPlayer.localPlayer().playerID")
             return true
         }
         return false
