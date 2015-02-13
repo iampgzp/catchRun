@@ -78,21 +78,21 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     var viewc: UIViewController!
     let randomNumberKey: String! = "randomNumber"
     
-    init(viewc: UIViewController){
+    override init(){
         super.init()
-        self.viewc = viewc
         randomNumber = Int(arc4random())
+        NSLog("this is my rand number %d \n" , randomNumber)
         //gamestate initiall should be waiting for a match connection to be established
         gameState = GameState.waitingForMatch
         orderOfPlayers = NSMutableArray()
-        var dic = [playerIdKey as String: GKLocalPlayer.localPlayer().playerID as String, randomNumberKey: randomNumber]
+        var dic = [playerIdKey: GKLocalPlayer.localPlayer().playerID as String, randomNumberKey: randomNumber]
         orderOfPlayers.addObject(dic)
     }
     
     //if receive all random number, set game state for waiting for start
     func matchStarted() {
         NSLog("match start successfully")
-        if receiveAllRandomPairingNumber == true{
+        if receiveAllRandomPairingNumber != nil && receiveAllRandomPairingNumber == true{
             gameState = GameState.waitingForStart
         }else{
             gameState = GameState.waitingForRandomPairing
@@ -116,7 +116,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     func sendData(data: NSData){
         var error:NSError?;
         //get the shared instance of gamecenterconnector
-        var gameConnector: GameCenterConnector = GameCenterConnector.sharedInstance(viewc)
+        var gameConnector: GameCenterConnector = GameCenterConnector.sharedInstance()
         //transmit data to all players in the match, use GKMatchSendDataMode.Reliable can make sure
         //other player receive all data.
         var success: Bool! = gameConnector.match.sendDataToAllPlayers(data, withDataMode: GKMatchSendDataMode.Reliable, error: &error)
@@ -136,7 +136,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         sendData(data)
     }
     
-
+    
     //cast randomMessage to NSData, send it to other player
     func sendRandomPairingNumber(){
         var message: MessageRandomNumber!
@@ -168,7 +168,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
             var playerAliases: NSMutableArray! = NSMutableArray(capacity: orderOfPlayers.count)
             for playerDetail in orderOfPlayers{
                 var playerID: NSString! = playerDetail[playerIdKey] as NSString
-                    playerAliases.addObject(GameCenterConnector.sharedInstance(viewc).playerDict[playerID]!.alias)
+                playerAliases.addObject(GameCenterConnector.sharedInstance().playerDict[playerID]!.alias)
             }
             if playerAliases.count > 0{
                 self.delegate.setPlayerAlias(playerAliases)
@@ -250,7 +250,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
             receiveRandomInfo.addObject(dict[randomNumberKey])
         }
         //var arrayOfUniqueRandomNum: NSArray! = NSSet(receivedRandomNumbers) allObjects
-        if receiveRandomInfo.count == (GameCenterConnector.sharedInstance(viewc).match.playerIDs.count + 1){
+        if receiveRandomInfo.count == (GameCenterConnector.sharedInstance().match.playerIDs.count + 1){
             return true
         }
         return false
@@ -288,5 +288,5 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         println("Match ended")
         //delegate.matchEnded()
     }
-
+    
 }

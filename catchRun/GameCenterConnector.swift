@@ -17,9 +17,10 @@ protocol GameConnectorDelegate{
     func match(match: GKMatch, didReceiveData data:NSData, fromPlayer playerID: NSString)
 }
 let presentAuthentication: String! = "present authentication view controller"
+let LocalPlayerIsAuthenticated = "local_player_authenticated"
 var instance: GameCenterConnector?
 class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchDelegate{
-
+    
     var delegate : GameConnectorDelegate!
     //use to for easily look up player
     var playerDict: NSMutableDictionary!
@@ -29,54 +30,52 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
     var matchStarted: Bool! = false
     var authenticationViewController: UIViewController?
     var vc: UIViewController?
-   // let presentAuthentication: String! = "present authentication view controller"
+    // let presentAuthentication: String! = "present authentication view controller"
     // use to keep track of last error
     var lastError : NSError?
-    init(viewc : UIViewController){
+    override init(){
         super.init()
         gameCenterEnabled = true
-        self.vc = viewc
-       // authenticatePlayer()
+        // authenticatePlayer()
     }
     
     // create a singleton pattern here to keep all game center code into one spot
-    class func sharedInstance(viewc : UIViewController) -> GameCenterConnector{
+    class func sharedInstance() -> GameCenterConnector{
         var onceToken: dispatch_once_t?
         if instance == nil{
-            instance = GameCenterConnector(viewc: viewc)
+            instance = GameCenterConnector()
         }
-//        var sharedGameConnector:GameCenterConnector?
-//        var onceToken: dispatch_once_t?
-//        dispatch_once(&onceToken, {sharedGameConnector = GameCenterConnector()} )
+        //        var sharedGameConnector:GameCenterConnector?
+        //        var onceToken: dispatch_once_t?
+        //        dispatch_once(&onceToken, {sharedGameConnector = GameCenterConnector()} )
         return instance!
     }
     
     
     // authenticate user in the gamecenter
     // we can call it in viewDidLoad
-    // Authentication is usually in background, so we need a handler while user is 
+    // Authentication is usually in background, so we need a handler while user is
     // navigating in the game scene
     func authenticatePlayer(){
+        print("start authenticate player \n")
         var localPlayer: GKLocalPlayer = GKLocalPlayer.localPlayer()
+        if localPlayer.authenticated{
+            NSNotificationCenter.defaultCenter().postNotificationName(LocalPlayerIsAuthenticated, object: nil)
+        }
         //if player is not logged into game center, game kit framework will pass a view controller to authenticate.
         localPlayer.authenticateHandler = {(viewController: UIViewController!, error:NSError!) ->Void in
+            self.setLastError(error)
             if viewController != nil{
-                //self.presentViewController(viewController, animated:false, completion: nil)
-                self.vc?.presentViewController(viewController, animated: true, completion: nil)
-              //  self.setAuthenticationViewController(viewController)
+                self.setAuthenticationViewController(viewController)
+                println("prepare to show log in page \n")
             }else{
                 // authenticated is a property for GKLocalPlayer, if it is false, it means user currenly is not successfully log into game center
-                if localPlayer.authenticated{
+                if localPlayer.authenticated {
+                    println("local player is authenticaed \n")
                     self.gameCenterEnabled = true
-                    localPlayer.loadDefaultLeaderboardIdentifierWithCompletionHandler({(leaderboardIdentifier: String!, error: NSError!) -> Void in
-                        if error != nil{
-                            println(error.localizedDescription)
-                        }
-                        else{
-                             self.leaderboardIdentifier = leaderboardIdentifier
-                        }
-                    })
+                    NSNotificationCenter.defaultCenter().postNotificationName(LocalPlayerIsAuthenticated, object: nil)
                 }else{
+                    println("it is failed log in \n")
                     // due to some reason: user cancel log in or log in not success, we need to disable all game center feature
                     self.gameCenterEnabled = false
                 }
@@ -99,11 +98,16 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
         }
     }
     
+    
+    /*search player for game matching
+    */
     func findMatchWithMinPlayer(minPlayer: Int, maxPlayers maxPlayer:Int, viewControllers viewController: UIViewController, delegate: GameConnectorDelegate){
         //if gamecenter is not enabled, do nothing
-//        if !self.gameCenterEnabled{
-//            return;
-//        }
+        if !self.gameCenterEnabled{
+            return;
+        }
+        print("auto match started")
+        self.delegate = delegate
         self.matchStarted = false
         self.match = nil
         viewController.dismissViewControllerAnimated(false, completion: nil)
@@ -111,6 +115,7 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
         var request:GKMatchRequest! = GKMatchRequest()
         request.minPlayers = minPlayer
         request.maxPlayers = maxPlayer
+        print("set up GKMatchRequest")
         var matchViewController:GKMatchmakerViewController! = GKMatchmakerViewController(matchRequest: request)
         matchViewController.matchmakerDelegate = self
         //present the game pairing view

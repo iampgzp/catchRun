@@ -37,8 +37,7 @@ class JoyStick: SKNode {
 }
 
 class JoyStickButton: SKNode {
-    // this is the engine used to transfer move infomation: such as current index to another player
-    var networkEngine: Multiplayer!
+
     
     var defaultButton: SKSpriteNode
     var activeButton: SKSpriteNode
@@ -75,8 +74,7 @@ class JoyStickButton: SKNode {
             defaultButton.hidden = false
             target.stopMoving()
         }
-        //send current index to another player
-        networkEngine.sendMove()
+
     }
     
     

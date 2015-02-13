@@ -21,13 +21,15 @@
       "scale" : "2x"
     },
     {
-      "idiom" : "ipad",
       "size" : "76x76",
+      "idiom" : "ipad",
+      "filename" : "d41d8cd98f00b204e9800998ecf8427e.png",
       "scale" : "1x"
     },
     {
-      "idiom" : "ipad",
       "size" : "76x76",
+      "idiom" : "ipad",
+      "filename" : "74be16979710d4c4e7c6647856088456.png",
       "scale" : "2x"
     }
   ],

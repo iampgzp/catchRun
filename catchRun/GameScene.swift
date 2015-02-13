@@ -13,11 +13,17 @@ protocol sceneDelegate{
     func didChangeSound()
 }
 
-class GameScene: SKScene, GADInterstitialDelegate {
+class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     var myDelegate:sceneDelegate?
     var soundButton:GGButton?
     var soundOn:Bool?
     
+    // this is used to transfer moving data
+    var networkEngine: Multiplayer!
+    
+    //------network layer var
+    var currentIndex: Int! // which player
+    var players: Array<PlayerNode>!
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
         let background:SKSpriteNode = SKSpriteNode(imageNamed: "background")
@@ -62,7 +68,7 @@ class GameScene: SKScene, GADInterstitialDelegate {
         }
     }
     
-
+    
     func startGameButtonDown(){
         let startGameAction = SKAction.runBlock{
             let reval = SKTransition.flipHorizontalWithDuration(0.5)
@@ -91,4 +97,31 @@ class GameScene: SKScene, GADInterstitialDelegate {
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
     }
+    
+    //conform multiplayer protocol
+    func matchEnded(){
+        
+    }
+    
+    // set current player index, such as P1
+    func setCurrentPlayerIndex(index: Int){
+        currentIndex = index
+    }
+    
+    
+    // move p1 or p2, to which direction
+    func movePlayerAtIndex(index: Int, direction: String){
+        var player: PlayerNode! = players[index] as PlayerNode
+        player.moving(direction)
+    }
+    
+    // we can check game over by only one side
+    // for example: P1 wins, we only check P1. then send game over info to P2
+    func gameOver(leftWon: Bool){
+        
+    }
+    func setPlayerAlias(playerAliases: NSArray){
+        
+    }
+    
 }
