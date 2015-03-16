@@ -29,20 +29,18 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
        
         let map = tiledMap!
         self.anchorPoint = CGPoint(x: 0, y: 0)
-        // map scale is changed.  the way to calculate tilecoord may be wrong
         map.xScale = 1.9
         map.yScale = 1.5
         map.position = CGPoint(x: 0, y: 0)
         self.addChild(map)
         var wall = map.layerNamed("Meta")
         
-        
         // example for how to use tiledMap
         // point is to tell you which tile is it in
         // for example this tile is in (2, 11) which is a wall
         var point = tileCoordForPosition(CGPoint(x: 90.0, y: 70))
         // tileGid will give you a reference of this position
-        var tileGid = wall.tileGidAt(CGPoint(x: 90.0, y: 70.0))
+        var tileGid = wall.tileGidAt(CGPoint(x: 90, y: 70))
         // use this tilegid you can find the dictionary, if there is no dict it will crash so add some warper
         var properties:NSDictionary = map.propertiesForGid(tileGid) as NSDictionary
         // this is the actuall string
@@ -78,7 +76,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         }
         
         //Create player
-        player.position = CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.5)
+        player.position = CGPoint(x: self.size.width * 0.5 - 50, y: self.size.height * 0.5 - 50)
         self.addChild(player)
         //virtual joystick
         let joyStick = JoyStick(defatultArrowImage: "arrow", activeArrowImage: "arrowdown", target: player)
@@ -161,7 +159,16 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     }
     
     override func update(currentTime: CFTimeInterval) {
-        /* Called before each frame is rendered */
+        // we need to check if collide here
+        if isCollideWithTrap(player.position) || isCollideWithWall(player.position) {
+            if  isCollideWithWall(player.position) {
+                print("collide with wall \n")
+            }else{
+                print("collide with trap \n")
+            }
+        }else{
+            print("not collide \n")
+        }
     }
     
     // function to change coordinates to tile coordinates
@@ -201,5 +208,63 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     func setPlayerAlias(playerAliases: NSArray){
         
     }
+    
+    func isCollideWithWall(position:CGPoint) -> Bool{
+        // wall's layer name is Meta
+        let map = tiledMap!
+        var wall = map.layerNamed("Meta")
+        
+        // divide by the factor because of the scaling of the map
+        var adjustPosition = CGPointMake(position.x/1.9, position.y/1.5)
+        
+        // get the point for record the point means which tell it is from top left
+        var point = tileCoordForPosition(adjustPosition)
+        
+        // tileGid will give you a reference of this position
+        var tileGid = wall.tileGidAt(adjustPosition)
+        if  tileGid != 0{
+            // check collide with wall
+            var properties:NSDictionary = map.propertiesForGid(tileGid) as NSDictionary
+            // if it is the wall dict, there is a key called Collidable and it will return "true"
+            // if it is the trap dict, there is a key called trapCollidable and it will return true
+            var collision: NSString = properties.valueForKey("Collidable") as NSString
+            if collision == "True" {
+                return  true
+            }else{
+                return  false
+            }
+        }else{
+            return  false
+        }
+    }
+    
+    func isCollideWithTrap(position:CGPoint) -> Bool{
+        // wall's layer name is Meta
+        let map = tiledMap!
+        var trap = map.layerNamed("Trap")
+        
+        // divide by the factor because of the scaling of the map
+        var adjustPosition = CGPointMake(position.x/1.9, position.y/1.5)
+        
+        // get the point for record the point means which tell it is from top left
+        var point = tileCoordForPosition(adjustPosition)
+        
+        // tileGid will give you a reference of this position
+        var tileGid = trap.tileGidAt(adjustPosition)
+        if  tileGid != 0{
+            // check collide with wall
+            var properties:NSDictionary = map.propertiesForGid(tileGid) as NSDictionary
+            // if it is the trap dict, there is a key called trapCollidable and it will return true
+            var collision: NSString = properties.valueForKey("trapCollidable") as NSString
+            if collision == "true" {
+                return  true
+            }else{
+                return  false
+            }
+        }else{
+            return  false
+        }
+    }
+
     
 }

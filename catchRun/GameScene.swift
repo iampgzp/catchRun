@@ -68,7 +68,6 @@ class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         }
     }
     
-    
     func startGameButtonDown(){
         let startGameAction = SKAction.runBlock{
             let reval = SKTransition.flipHorizontalWithDuration(0.5)

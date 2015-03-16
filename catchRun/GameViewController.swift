@@ -27,8 +27,6 @@ extension SKNode {
 }
 
 class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstitialDelegate, AVAudioPlayerDelegate, sceneDelegate{
-    
-    
     var networkEngine: Multiplayer!
     var fullAd:GADInterstitial?
     var audioControl : AudioController?
@@ -59,7 +57,6 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
         audioControl = AudioController()
         audioControl!.tryPlayMusic()
         
-        
         if let scene = GameScene.unarchiveFromFile("GameScene") as? GameScene {
             // Configure the view.
             let skView = self.view as SKView
@@ -76,10 +73,7 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
             skView.presentScene(scene)
         }
         
-        
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "playerAuthenticated", name: LocalPlayerIsAuthenticated, object: nil)
-        
-        
     }
     
     
@@ -93,26 +87,6 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
     ////        if GameCenterConnector.sharedInstance(self).gameCenterEnabled == true {
     ////            GameCenterConnector.sharedInstance(self).findMatchWithMinPlayer(2, maxPlayers: 2, viewControllers: self, delegate: self)
     ////        }
-    //
-    //    }
-    
-    //    override func viewWillLayoutSubviews() {
-    //        super.viewWillLayoutSubviews()
-    //        if let scene = GameScene.unarchiveFromFile("GameScene") as? GameScene {
-    //            // Configure the view.
-    //            let skView = self.view as SKView
-    //            skView.showsFPS = true
-    //            skView.showsNodeCount = true
-    //
-    //            /* Sprite Kit applies additional optimizations to improve rendering performance */
-    //            skView.ignoresSiblingOrder = true
-    //
-    //            /* Set the scale mode to scale to fit the window */
-    //            scene.scaleMode = .AspectFill
-    //            scene.myDelegate = self
-    //            scene.soundOn = true
-    //            skView.presentScene(scene)
-    //        }
     //
     //    }
     
@@ -163,6 +137,10 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
     //        //GameCenterConnector.sharedInstance().authenticationViewController
     //    }
     
+    override func prefersStatusBarHidden() -> Bool {
+        return true
+    }
+    
     override func shouldAutorotate() -> Bool {
         return true
     }
@@ -175,20 +153,12 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
         }
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Release any cached data, images, etc that aren't in use.
-    }
-    
-    override func prefersStatusBarHidden() -> Bool {
-        return true
-    }
-    
     //MARK: GADIntersititialDelegate
     func interstitialDidReceiveAd(ad: GADInterstitial!) {
         fullAd!.presentFromRootViewController(self)
     }
     
+    //MARK: AVAudioPlayerDelegate
     func didChangeSound() {
         if audioControl!.backgroundMusicPlaying{
             audioControl!.stopMusic()
@@ -197,6 +167,7 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
         }
     }
     
+    //MARK: match delegate
     func match(match: GKMatch, didReceiveData data: NSData, fromPlayer playerID: NSString) {
         print("receive data")
     }
