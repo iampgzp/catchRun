@@ -33,7 +33,6 @@ class JoyStick: SKNode {
     required init(coder aDecoder: NSCoder) {
         fatalError("needed")
     }
-
 }
 
 class JoyStickButton: SKNode {
