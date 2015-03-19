@@ -34,11 +34,17 @@ class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         background.size = CGSize(width: self.size.width, height: self.size.height)
         addChild(background)
         
-        let startGameButton: GGButton = GGButton(defaultButtonImage: "button1", activeButtonImage: "button2", buttonAction: startGameButtonDown)
-        startGameButton.xScale = 0.3
-        startGameButton.yScale = 0.3
-        startGameButton.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5 )
-        addChild(startGameButton)
+        let startSinglePlayerGameButton: GGButton = GGButton(defaultButtonImage: "button1", activeButtonImage: "button2", buttonAction: startGameButtonDown)
+        startSinglePlayerGameButton.xScale = 0.3
+        startSinglePlayerGameButton.yScale = 0.3
+        startSinglePlayerGameButton.position = CGPoint(x: size.width * 0.5, y: size.height * 0.45 )
+        addChild(startSinglePlayerGameButton)
+        
+        let startMultiPlayerGameButton: GGButton = GGButton(defaultButtonImage: "button1", activeButtonImage: "button2", buttonAction: startMultiPlayerGameButtonDown)
+        startMultiPlayerGameButton.xScale = 0.3
+        startMultiPlayerGameButton.yScale = 0.3
+        startMultiPlayerGameButton.position = CGPoint(x: size.width * 0.5, y: size.height * 0.55 )
+        addChild(startMultiPlayerGameButton)
         
         let twitterButton:GGButton = GGButton(defaultButtonImage: "twitter", activeButtonImage: "twitter", buttonAction: twitter)
         twitterButton.xScale = 0.3
@@ -79,6 +85,14 @@ class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         self.runAction(startGameAction)
     }
 
+    
+    
+    func startMultiPlayerGameButtonDown(){
+        //TODO implement the networking button here!
+        
+        
+        
+    }
     
     func twitter(){
         UIApplication.sharedApplication().openURL(NSURL(string: "http://www.baidu.com")!)
