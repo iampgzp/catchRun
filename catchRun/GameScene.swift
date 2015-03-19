@@ -13,7 +13,6 @@ protocol sceneDelegate{
     func didChangeSound()
 }
 
-let gameStarted :Bool = false
 class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     var myDelegate:sceneDelegate?
     var soundButton:GGButton?
@@ -81,18 +80,41 @@ class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
             let reval = SKTransition.flipHorizontalWithDuration(0.5)
             self.view?.presentScene( GamePlayScene(size: self.size), transition: reval)
         }
-        gameStarted = true
+        //gameStarted = True
         self.runAction(startGameAction)
     }
 
-    
+    var vc: GameViewController! = GameViewController()
     
     func startMultiPlayerGameButtonDown(){
         //TODO implement the networking button here!
-        
-        
-        
+        let startGameAction = SKAction.runBlock{
+            let reval = SKTransition.flipHorizontalWithDuration(0.5)
+            NSNotificationCenter.defaultCenter().addObserver(self.vc, selector: "showAuthenticaionViewController", name: presentAuthentication, object: nil)
+            //GameCenterConnector.sharedInstance().authenticatePlayer()
+            NSNotificationCenter.defaultCenter().addObserver(self.vc, selector: "playerAuthenticated", name: LocalPlayerIsAuthenticated, object: nil)
+           // self.view?.presentScene( GameCenterConnector.sharedInstance().authenticationViewController, transition: reval)
+        }
+        self.runAction(startGameAction)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showAuthenticaionViewController", name: presentAuthentication, object: nil)
+        GameCenterConnector.sharedInstance().authenticatePlayer()
     }
+    
+    func showAuthenticaionViewController(){
+        self.vc.presentViewController(GameCenterConnector.sharedInstance().authenticationViewController!, animated: true, completion: nil)
+    }
+    
+    
+    func playerAuthenticated(){
+        var skview: SKView! = self.vc.view as SKView
+        var scene: GameScene! = skview.scene as GameScene
+        self.vc.networkEngine = Multiplayer()
+        networkEngine.delegate = scene
+        scene.networkEngine = self.vc.networkEngine
+        GameCenterConnector.sharedInstance().findMatchWithMinPlayer(2, maxPlayers: 2, viewControllers: vc, delegate: self.vc.networkEngine)
+    }
+    
+    
     
     func twitter(){
         UIApplication.sharedApplication().openURL(NSURL(string: "http://www.baidu.com")!)

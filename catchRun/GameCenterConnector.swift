@@ -29,6 +29,7 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
     var match:GKMatch!
     var matchStarted: Bool! = false
     var authenticationViewController: UIViewController?
+
     var vc: UIViewController?
     // let presentAuthentication: String! = "present authentication view controller"
     // use to keep track of last error
@@ -60,6 +61,7 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
         print("start authenticate player \n")
         var localPlayer: GKLocalPlayer = GKLocalPlayer.localPlayer()
         if localPlayer.authenticated{
+            print("user is already authenticated")
             NSNotificationCenter.defaultCenter().postNotificationName(LocalPlayerIsAuthenticated, object: nil)
         }
         //if player is not logged into game center, game kit framework will pass a view controller to authenticate.

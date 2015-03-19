@@ -33,26 +33,12 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
     
     override func viewDidLoad() {
         super.viewDidLoad()
+       
         
-        // banner ad view init
-        //        var banner = GADBannerView(adSize: kGADAdSizeSmartBannerLandscape)
-        //        banner.adUnitID = "ca-app-pub-6314301496407347/1491324510"
-        //        banner.delegate = self
-        //        banner.rootViewController = self
-        //        var request2:GADRequest = GADRequest()
-        //        self.view.addSubview(banner)
-        //        request2.testDevices = [ GAD_SIMULATOR_ID ]
-        //        banner.loadRequest(request2)
-        //
-        //        //interstitial ad view init
-        //        fullAd = GADInterstitial()
-        //        fullAd!.adUnitID = "ca-app-pub-6314301496407347/6061124916"
-        //        fullAd!.delegate = self
-        //        fullAd!.loadRequest(request2)
-        
-        // bgm
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "showAuthenticaionViewController", name: presentAuthentication, object: nil)
         GameCenterConnector.sharedInstance().authenticatePlayer()
+     
+        
         //self.presentViewController(GameCenterConnector.sharedInstance().authenticationViewController!, animated: true, completion: nil)
         audioControl = AudioController()
         audioControl!.tryPlayMusic()
@@ -81,15 +67,7 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
         self.presentViewController(GameCenterConnector.sharedInstance().authenticationViewController!, animated: true, completion: nil)
     }
     
-    //    override func viewDidAppear(animated: Bool){
-    //        super.viewDidAppear(animated)
-    //        NSNotificationCenter.defaultCenter().addObserver(self, selector: "playerAuthenticated", name: LocalPlayerIsAuthenticated, object: nil)
-    ////        if GameCenterConnector.sharedInstance(self).gameCenterEnabled == true {
-    ////            GameCenterConnector.sharedInstance(self).findMatchWithMinPlayer(2, maxPlayers: 2, viewControllers: self, delegate: self)
-    ////        }
-    //
-    //    }
-    
+
     func playerAuthenticated(){
         var skview: SKView! = self.view as SKView
         var scene: GameScene! = skview.scene as GameScene
@@ -100,42 +78,7 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
     }
     
     
-    //    func authenticateLocalPlayer() {
-    //        let localPlayer: GKLocalPlayer = GKLocalPlayer.localPlayer()
-    //        //if player is not logged into game center, game kit framework will pass a view controller to authenticate.
-    //        localPlayer.authenticateHandler = {(viewController, error) ->Void in
-    //            if viewController != nil{
-    //                self.presentViewController(viewController, animated:true, completion: nil)
-    //                print("not nil")
-    //            }else{
-    //                // authenticated is a property for GKLocalPlayer, if it is false, it means user currenly is not successfully log into game center
-    //               // print("yes, it is nil")
-    //                if localPlayer.authenticated{
-    //                   // self.gameCenterEnabled = true
-    //                    print("yes, it is alreaady authenticated")
-    //                    localPlayer.loadDefaultLeaderboardIdentifierWithCompletionHandler({(leaderboardIdentifier: String!, error: NSError!) -> Void in
-    //                        if error != nil{
-    //                            println(error.localizedDescription)
-    //                        }
-    //                        else{
-    //                            //self.leaderboardIdentifier = leaderboardIdentifier
-    //
-    //                        }
-    //                    })
-    //                }else{
-    //                    print("it is not authenticated yet")
-    //                    //self.presentViewController(viewController, animated:true, completion: nil)
-    //                    //self.gameCenterEnabled = false
-    //                }
-    //            }
-    //        }
-    //    }
-    
-    //    func showAuthenticationViewController() {
-    //        //present this viewController
-    //        self.presentViewController(GameCenterConnector.sharedInstance().authenticationViewController!, animated: true, completion: nil)
-    //        //GameCenterConnector.sharedInstance().authenticationViewController
-    //    }
+
     
     override func prefersStatusBarHidden() -> Bool {
         return true
