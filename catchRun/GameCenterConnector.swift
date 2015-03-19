@@ -193,7 +193,7 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
             } else{
                 self.playerDict = NSMutableDictionary(capacity: players.count)
                 for player in players {
-                    NSLog("Found Player : %", player.alias)
+                    NSLog("Found Player : %s", player.alias)
                     self.playerDict?.setObject(player, forKey: player.playerID)
                 }
                 self.playerDict!.setObject(GKLocalPlayer.localPlayer(), forKey: GKLocalPlayer.localPlayer().playerID)

@@ -108,6 +108,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
             self.sendGameBegin()
             self.delegate.setCurrentPlayerIndex(0)
             self.processPlayerAliases()
+            NSLog("Match started")
         }
     }
     
@@ -208,7 +209,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
             }
             
         }else if message.messageType == MessageType.messageTypeGameBegin{
-            NSLog("Begin game")
+            NSLog("other player begin game")
             gameState = GameState.gameActive
             self.delegate .setCurrentPlayerIndex(indexForLocalPlayer())
             self.processPlayerAliases()

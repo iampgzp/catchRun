@@ -13,11 +13,13 @@ protocol sceneDelegate{
     func didChangeSound()
 }
 
+let gameStarted :Bool = false
 class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     var myDelegate:sceneDelegate?
     var soundButton:GGButton?
     var soundOn:Bool?
-    
+
+
     // this is used to transfer moving data
     var networkEngine: Multiplayer!
     
@@ -73,8 +75,10 @@ class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
             let reval = SKTransition.flipHorizontalWithDuration(0.5)
             self.view?.presentScene( GamePlayScene(size: self.size), transition: reval)
         }
+        gameStarted = true
         self.runAction(startGameAction)
     }
+
     
     func twitter(){
         UIApplication.sharedApplication().openURL(NSURL(string: "http://www.baidu.com")!)
@@ -122,5 +126,8 @@ class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     func setPlayerAlias(playerAliases: NSArray){
         
     }
+    
+    
+    
     
 }
