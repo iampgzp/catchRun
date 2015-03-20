@@ -59,7 +59,9 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
             skView.presentScene(scene)
         }
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "playerAuthenticated", name: LocalPlayerIsAuthenticated, object: nil)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "playerAuthenticated", name: multiplayerButtonPressed, object: nil)
+//        NSNotificationCenter.defaultCenter().addObserver(self, selector: "playerAuthenticated", name: LocalPlayerIsAuthenticated, object: nil)
     }
     
     
@@ -71,6 +73,7 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
     func playerAuthenticated(){
         var skview: SKView! = self.view as SKView
         var scene: GameScene! = skview.scene as GameScene
+        print("game scene")
         self.networkEngine = Multiplayer()
         networkEngine.delegate = scene
         scene.networkEngine = self.networkEngine
@@ -109,6 +112,14 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
             audioControl!.tryPlayMusic()
         }
     }
+    
+    
+    func autoMatch() {
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "playerAuthenticated", name: LocalPlayerIsAuthenticated, object: nil)
+        print("notification is triggered")
+    }
+    
+    
     
     //MARK: match delegate
     func match(match: GKMatch, didReceiveData data: NSData, fromPlayer playerID: NSString) {

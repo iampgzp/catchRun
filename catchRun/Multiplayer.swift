@@ -19,6 +19,7 @@ protocol MultiplayerProtocol{
     func movePlayerAtIndex(index: Int, direction: String)
     func gameOver(leftWon: Bool)
     func setPlayerAlias(playerAliases: NSArray)
+    
 }
 // we need separate game state
 enum GameState: Int{
@@ -93,6 +94,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     func matchStarted() {
         NSLog("match start successfully")
         if receiveAllRandomPairingNumber != nil && receiveAllRandomPairingNumber == true{
+            
             gameState = GameState.waitingForStart
         }else{
             gameState = GameState.waitingForRandomPairing

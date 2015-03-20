@@ -11,8 +11,10 @@ import Social
 
 protocol sceneDelegate{
     func didChangeSound()
+    func autoMatch()
 }
 
+let multiplayerButtonPressed: String! = "multiplayer button pressed"
 class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     var myDelegate:sceneDelegate?
     var soundButton:GGButton?
@@ -21,6 +23,7 @@ class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
 
     // this is used to transfer moving data
     var networkEngine: Multiplayer!
+    var vc: GameViewController!
     
     //------network layer var
     var currentIndex: Int! // which player
@@ -84,35 +87,42 @@ class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         self.runAction(startGameAction)
     }
 
-    var vc: GameViewController! = GameViewController()
     
     func startMultiPlayerGameButtonDown(){
+        
+        NSNotificationCenter.defaultCenter().postNotificationName(multiplayerButtonPressed, object: nil)
         //TODO implement the networking button here!
         let startGameAction = SKAction.runBlock{
+//            NSNotificationCenter.defaultCenter().addObserver(self, selector: "playerAuthenticated", name: LocalPlayerIsAuthenticated, object: nil)
             let reval = SKTransition.flipHorizontalWithDuration(0.5)
-            NSNotificationCenter.defaultCenter().addObserver(self.vc, selector: "showAuthenticaionViewController", name: presentAuthentication, object: nil)
+           //  self.myDelegate?.autoMatch()
+//            NSNotificationCenter.defaultCenter().addObserver(self.vc, selector: "showAuthenticaionViewController", name: presentAuthentication, object: nil)
             //GameCenterConnector.sharedInstance().authenticatePlayer()
-            NSNotificationCenter.defaultCenter().addObserver(self.vc, selector: "playerAuthenticated", name: LocalPlayerIsAuthenticated, object: nil)
+            //NSNotificationCenter.defaultCenter().addObserver(self.vc, selector: "playerAuthenticated", name: LocalPlayerIsAuthenticated, object: nil)
            // self.view?.presentScene( GameCenterConnector.sharedInstance().authenticationViewController, transition: reval)
         }
         self.runAction(startGameAction)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showAuthenticaionViewController", name: presentAuthentication, object: nil)
-        GameCenterConnector.sharedInstance().authenticatePlayer()
+//        self.myDelegate?.autoMatch()
+        
+        print("auto- match start")
+       // NSNotificationCenter.defaultCenter().addObserver(self.vc, selector: "playerAuthenticated", name: LocalPlayerIsAuthenticated, object: nil)
+//        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showAuthenticaionViewController", name: presentAuthentication, object: nil)
+//        GameCenterConnector.sharedInstance().authenticatePlayer()
     }
     
-    func showAuthenticaionViewController(){
-        self.vc.presentViewController(GameCenterConnector.sharedInstance().authenticationViewController!, animated: true, completion: nil)
-    }
+//    func showAuthenticaionViewController(){
+//        self.vc.presentViewController(GameCenterConnector.sharedInstance().authenticationViewController!, animated: true, completion: nil)
+//    }
     
     
-    func playerAuthenticated(){
-        var skview: SKView! = self.vc.view as SKView
-        var scene: GameScene! = skview.scene as GameScene
-        self.vc.networkEngine = Multiplayer()
-        networkEngine.delegate = scene
-        scene.networkEngine = self.vc.networkEngine
-        GameCenterConnector.sharedInstance().findMatchWithMinPlayer(2, maxPlayers: 2, viewControllers: vc, delegate: self.vc.networkEngine)
-    }
+//    func playerAuthenticated(){
+//        //var skview: SKView! = self.vc.view as SKView
+//       // var scene: GameScene! = skview.scene as GameScene
+////        self.vc.networkEngine = Multiplayer()
+//        networkEngine.delegate = self
+//        self.networkEngine = Multiplayer()
+//        GameCenterConnector.sharedInstance().findMatchWithMinPlayer(2, maxPlayers: 2, viewControllers: vc, delegate: self.vc.networkEngine)
+//    }
     
     
     
