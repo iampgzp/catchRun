@@ -217,7 +217,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
             self.delegate .setCurrentPlayerIndex(indexForLocalPlayer())
             self.processPlayerAliases()
         }else if message.messageType == MessageType.messageTypeMove{
-            NSLog("Move")
+            NSLog("receive Move message")
             var messageMove: MessageMove!
             data.getBytes(&messageMove, length: sizeof(MessageMove))
             //get playerindex and direction

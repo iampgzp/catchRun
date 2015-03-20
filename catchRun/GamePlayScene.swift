@@ -195,9 +195,9 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     
     
     // move p1 or p2, to which direction
-    func movePlayerAtIndex(index: Int, direction: String){
-        var player: PlayerNode! = players[index] as PlayerNode
-        player.moving(direction)
+    func movePlayerAtIndex(index: Int, position: Point){
+       // var player: PlayerNode! = players[index] as PlayerNode
+        players[index].moving(direction)
     }
     
     // we can check game over by only one side
