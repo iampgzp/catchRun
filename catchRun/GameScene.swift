@@ -92,22 +92,29 @@ class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         
         NSNotificationCenter.defaultCenter().postNotificationName(multiplayerButtonPressed, object: nil)
         //TODO implement the networking button here!
-        let startGameAction = SKAction.runBlock{
-//            NSNotificationCenter.defaultCenter().addObserver(self, selector: "playerAuthenticated", name: LocalPlayerIsAuthenticated, object: nil)
-            let reval = SKTransition.flipHorizontalWithDuration(0.5)
+
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "navigateToGameScene", name: gameBegin, object: nil)
            //  self.myDelegate?.autoMatch()
 //            NSNotificationCenter.defaultCenter().addObserver(self.vc, selector: "showAuthenticaionViewController", name: presentAuthentication, object: nil)
             //GameCenterConnector.sharedInstance().authenticatePlayer()
             //NSNotificationCenter.defaultCenter().addObserver(self.vc, selector: "playerAuthenticated", name: LocalPlayerIsAuthenticated, object: nil)
            // self.view?.presentScene( GameCenterConnector.sharedInstance().authenticationViewController, transition: reval)
-        }
-        self.runAction(startGameAction)
+        
 //        self.myDelegate?.autoMatch()
         
         print("auto- match start")
        // NSNotificationCenter.defaultCenter().addObserver(self.vc, selector: "playerAuthenticated", name: LocalPlayerIsAuthenticated, object: nil)
 //        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showAuthenticaionViewController", name: presentAuthentication, object: nil)
 //        GameCenterConnector.sharedInstance().authenticatePlayer()
+    }
+    
+    func navigateToGameScene(){
+        let startGameAction = SKAction.runBlock{
+            let reval = SKTransition.flipHorizontalWithDuration(0.5)
+            self.view?.presentScene( GamePlayScene(size: self.size), transition: reval)
+        }
+        //gameStarted = True
+        self.runAction(startGameAction)
     }
     
 //    func showAuthenticaionViewController(){

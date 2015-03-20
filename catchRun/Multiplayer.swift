@@ -66,6 +66,7 @@ struct MessageGameOver{
     var leftWon: Bool
 }
 
+let gameBegin : String! = "game begin"
 class Multiplayer: NSObject, GameConnectorDelegate{
     
     var receiveAllRandomPairingNumber: Bool?
@@ -94,7 +95,6 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     func matchStarted() {
         NSLog("match start successfully")
         if receiveAllRandomPairingNumber != nil && receiveAllRandomPairingNumber == true{
-            
             gameState = GameState.waitingForStart
         }else{
             gameState = GameState.waitingForRandomPairing
@@ -107,6 +107,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     func tryStartGame(){
         if isP1 != nil && isP1 == true && gameState == GameState.waitingForStart{
             gameState = GameState.gameActive
+            NSNotificationCenter.defaultCenter().postNotificationName(gameBegin, object: nil)
             self.sendGameBegin()
             self.delegate.setCurrentPlayerIndex(0)
             self.processPlayerAliases()

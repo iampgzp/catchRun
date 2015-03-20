@@ -60,13 +60,17 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
         }
         
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "playerAuthenticated", name: multiplayerButtonPressed, object: nil)
-//        NSNotificationCenter.defaultCenter().addObserver(self, selector: "playerAuthenticated", name: LocalPlayerIsAuthenticated, object: nil)
+       // NSNotificationCenter.defaultCenter().addObserver(self, selector: "playerAuthenticated", name: multiplayerButtonPressed, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showMultiButton", name: LocalPlayerIsAuthenticated, object: nil)
     }
     
     
     func showAuthenticaionViewController(){
         self.presentViewController(GameCenterConnector.sharedInstance().authenticationViewController!, animated: true, completion: nil)
+    }
+    
+    func showMultiButton(){
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "playerAuthenticated", name: multiplayerButtonPressed, object: nil)
     }
     
 
