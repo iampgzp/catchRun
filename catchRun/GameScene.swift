@@ -95,10 +95,8 @@ class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "navigateToGameScene", name: gameBegin, object: nil)
 
-        print("auto- match start")
-       // NSNotificationCenter.defaultCenter().addObserver(self.vc, selector: "playerAuthenticated", name: LocalPlayerIsAuthenticated, object: nil)
-//        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showAuthenticaionViewController", name: presentAuthentication, object: nil)
-//        GameCenterConnector.sharedInstance().authenticatePlayer()
+        NSLog("auto- match start")
+
     }
     
     func navigateToGameScene(){
@@ -110,19 +108,7 @@ class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         self.runAction(startGameAction)
     }
     
-//    func showAuthenticaionViewController(){
-//        self.vc.presentViewController(GameCenterConnector.sharedInstance().authenticationViewController!, animated: true, completion: nil)
-//    }
-    
-    
-//    func playerAuthenticated(){
-//        //var skview: SKView! = self.vc.view as SKView
-//       // var scene: GameScene! = skview.scene as GameScene
-////        self.vc.networkEngine = Multiplayer()
-//        networkEngine.delegate = self
-//        self.networkEngine = Multiplayer()
-//        GameCenterConnector.sharedInstance().findMatchWithMinPlayer(2, maxPlayers: 2, viewControllers: vc, delegate: self.vc.networkEngine)
-//    }
+
     
     
     

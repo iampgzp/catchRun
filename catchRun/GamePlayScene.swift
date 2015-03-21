@@ -75,21 +75,6 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         var collision: NSString = properties.valueForKey("Collidable") as NSString
         
         
-        //-----------------------------------------------------------
-        
-        // to use the network engine, we need to initialize the players here
-        // we can first set two player into players instance. And we can define
-        // two enums for player type: police and thief
-        
-        //-----------------------------------------------------------
-        // For test purpose, we initialize two player in the screen
-
-        
-//        player1.position = CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.5)
-//        player2.position = CGPoint(x: self.size.width * 0.2, y: self.size.height * 0.2)
-//        // add into players
-//        players.append(player1)
-//        players.append(player2)
         currentIndex = -1
         
         //-------------------------------------------------------------
@@ -109,36 +94,10 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         joyStick.alpha = 0.5
         joyStick.position = CGPoint(x: 100, y: 100)
         self.addChild(joyStick)
-        //player moving by swipe
-        /*var swipeGesture = UISwipeGestureRecognizer(target: self, action: "handleSwipeGesture:")
-        self.view?.addGestureRecognizer(swipeGesture)
-        
-        var swipeLeftGesture = UISwipeGestureRecognizer(target: self, action: "handleSwipeGesture:")
-        swipeLeftGesture.direction = UISwipeGestureRecognizerDirection.Left
-        self.view?.addGestureRecognizer(swipeLeftGesture)
-        
-        var swipeUpGesture = UISwipeGestureRecognizer(target: self, action: "handleSwipeGesture:")
-        swipeUpGesture.direction = UISwipeGestureRecognizerDirection.Up
-        self.view?.addGestureRecognizer(swipeUpGesture)
-        
-        var swipeDownGesture = UISwipeGestureRecognizer(target: self, action: "handleSwipeGesture:")
-        swipeDownGesture.direction = UISwipeGestureRecognizerDirection.Down
-        self.view?.addGestureRecognizer(swipeDownGesture)
-        
-        var tapGesture = UITapGestureRecognizer(target: self, action: "handleTapGesture:")
-        tapGesture.numberOfTapsRequired = 2
-        self.view?.addGestureRecognizer(tapGesture)*/
     }
     
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-        /* Called when a touch begins */
-        
-//        var fullAd = GADInterstitial()
-//        fullAd.adUnitID = "ca-app-pub-6314301496407347/6061124916"
-//        fullAd.delegate = self
-//        fullAd.loadRequest(request2)
-//        
-//        fullAd.presentFromRootViewController(self)
+
         if (currentIndex == -1){
             return
         }
