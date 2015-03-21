@@ -13,10 +13,11 @@ import GameKit
 // there is also api for receiving info from game center: such as match(:didReceivedData; fromPlayerID), it deals all the situation, such as player moving info, prepare to start game info, pairing info.
 
 
+
 protocol MultiplayerProtocol{
     func matchEnded()
     func setCurrentPlayerIndex(index: Int)
-    func movePlayerAtIndex(index: Int, direction: String)
+    func movePlayerAtIndex(index: Int, position: CGPoint)
     func gameOver(leftWon: Bool)
     func setPlayerAlias(playerAliases: NSArray)
     
@@ -57,7 +58,7 @@ struct MessageGameBegin{
 
 struct MessageMove{
     // in move message, we need a direction
-    var direction: String
+    var position: CGPoint
     var message: Message
 }
 
@@ -80,6 +81,9 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     var viewc: UIViewController!
     let randomNumberKey: String! = "randomNumber"
     
+    
+    
+    //orderOfPlayers is made up by key randomnumber and value localplayerID.
     override init(){
         super.init()
         randomNumber = Int(arc4random())
@@ -105,7 +109,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     
     //try to start game
     func tryStartGame(){
-        if isP1 != nil && isP1 == true && gameState == GameState.waitingForStart{
+        if gameState == GameState.waitingForStart{
             gameState = GameState.gameActive
             NSNotificationCenter.defaultCenter().postNotificationName(gameBegin, object: nil)
             self.sendGameBegin()
@@ -132,10 +136,10 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     }
     
     // send move infomation to game center
-    func sendMove(direction: String){
+    func sendMove(position: CGPoint){
         var messageMove: MessageMove!
         messageMove.message.messageType = MessageType.messageTypeMove
-        messageMove.direction = direction
+        messageMove.position = position
         var data = NSData(bytes: &messageMove, length: sizeof(MessageMove))
         sendData(data)
     }
@@ -221,7 +225,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
             var messageMove: MessageMove!
             data.getBytes(&messageMove, length: sizeof(MessageMove))
             //get playerindex and direction
-            self.delegate.movePlayerAtIndex(indexForPlayerID(playerID), direction: messageMove.direction)
+            self.delegate.movePlayerAtIndex(indexForPlayerID(playerID), position: messageMove.position)
             // convert point
         }else if message.messageType == MessageType.messageTypeGameOver{
             NSLog("Game Over")

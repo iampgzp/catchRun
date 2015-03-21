@@ -131,22 +131,26 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         switch (direction){
         case UISwipeGestureRecognizerDirection.Left:
             players[currentIndex].moving("LEFT")
-            networkEngine.sendMove("LEFT")
+            var player: PlayerNode! = players[currentIndex]
+            networkEngine.sendMove(player.position)
             // player.moving("LEFT")
             break
         case UISwipeGestureRecognizerDirection.Right:
             players[currentIndex].moving("RIGHT")
-            networkEngine.sendMove("RIGHT")
+            var player: PlayerNode! = players[currentIndex]
+            networkEngine.sendMove(player.position)
             //player.moving("RIGHT")
             break
         case UISwipeGestureRecognizerDirection.Up:
             players[currentIndex].moving("UP")
-            networkEngine.sendMove("UP")
+            var player: PlayerNode! = players[currentIndex]
+            networkEngine.sendMove(player.position)
             //player.moving("UP")
             break
         case UISwipeGestureRecognizerDirection.Down:
             players[currentIndex].moving("DOWN")
-            networkEngine.sendMove("DOWN")
+            var player: PlayerNode! = players[currentIndex]
+            networkEngine.sendMove(player.position)
             //player.moving("DOWN")
             break
         default:
@@ -195,9 +199,9 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     
     
     // move p1 or p2, to which direction
-    func movePlayerAtIndex(index: Int, position: Point){
+    func movePlayerAtIndex(index: Int, position: CGPoint){
        // var player: PlayerNode! = players[index] as PlayerNode
-        players[index].moving(direction)
+        players[index].moving(position)
     }
     
     // we can check game over by only one side

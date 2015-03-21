@@ -65,10 +65,10 @@ class PlayerNode: SKSpriteNode{
         //networkEngine.sendMove()
     }
     
-
+    
     
     //fill this part
-    func moving(position: Point){
+    func moving(position: CGPoint){
         
     }
     
