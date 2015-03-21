@@ -9,15 +9,17 @@
 import SpriteKit
 
 //gameplayerscene need to implement MultiplayerProtocol.
-// it contains 5 method. moveplayeratindex api helps one of the player in the game to get the information of another player's move information. Such as P1 get the info of P2 moving to right.
+// it contains 5 method. moveplayeratindex api helps one of the player in the game to get the information of another player's move information. Such as P1 get the info of P2's current position
+
+
+
 class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     var tiledMap:JSTileMap?
     var player = PlayerNode(playerTextureName: "player")
     var playerWalkingFrames = NSArray()
-    
     // this is used to transfer moving data
     var networkEngine: Multiplayer!
-    
+
     //------network layer var
     var currentIndex: Int! // which player
     var players = Array<PlayerNode>()
@@ -32,12 +34,23 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         /* Setup your scene here */
         tiledMap = JSTileMap(named:"map.tmx")
         
+
+        // GET SIZE OF REMOTE PLAYER, BUILD ARRAY TO STORE
+        var size : Int! = GameCenterConnector.sharedInstance().getRemoteCount()
+        NSLog("get size %d", size)
+        
+        for var index = 0; index < size; ++index{
+            var player_remote = PlayerNode(playerTextureName: "player")
+            self.players.append(player_remote)
+            player_remote.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height * 0.5 - 50)
+            self.addChild(player_remote)
+        }
         
         //append player1 and player2
         //test purpose
-        
-        self.players.append(player1)
-        self.players.append(player2)
+//        
+//        self.players.append(player1)
+//        self.players.append(player2)
         
         let map = tiledMap!
         self.anchorPoint = CGPoint(x: 0, y: 0)
@@ -85,12 +98,8 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
             println("collide!!!!!!!! at \(point)")
         }
         
-        //Create player
-        player1.position = CGPoint(x: self.size.width * 0.5 - 50, y: self.size.height * 0.5 - 50)
-        player2.position = CGPoint(x: self.size.width * 0.5 - 40, y: self.size.height * 0.5 - 50)
+        //Create local player
         player.position = CGPoint(x: self.size.width * 0.5 - 50, y: self.size.height * 0.5 - 50)
-        self.addChild(player1)
-        self.addChild(player2)
         self.addChild(player)
         //virtual joystick
         let joyStick = JoyStick(defatultArrowImage: "arrow", activeArrowImage: "arrowdown", target: player)
@@ -138,43 +147,45 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     }
     
     
-    // once we swipe
-    // we need to send the move information to other players
+    //LOCAL PLAYER MOVE
     func handleSwipeGesture(gesture: UISwipeGestureRecognizer) {
         var direction = gesture.direction
         switch (direction){
         case UISwipeGestureRecognizerDirection.Left:
-            players[currentIndex].moving("LEFT")
+           
             var player: PlayerNode! = players[currentIndex]
+            player.moving("LEFT")
             networkEngine.sendMove(player.position)
-            // player.moving("LEFT")
             break
         case UISwipeGestureRecognizerDirection.Right:
-            players[currentIndex].moving("RIGHT")
+            
             var player: PlayerNode! = players[currentIndex]
+            player.moving("RIGHT")
             networkEngine.sendMove(player.position)
-            //player.moving("RIGHT")
             break
         case UISwipeGestureRecognizerDirection.Up:
-            players[currentIndex].moving("UP")
+            
             var player: PlayerNode! = players[currentIndex]
+            player.moving("UP")
             networkEngine.sendMove(player.position)
-            //player.moving("UP")
             break
         case UISwipeGestureRecognizerDirection.Down:
-            players[currentIndex].moving("DOWN")
+            
             var player: PlayerNode! = players[currentIndex]
+            player.moving("DOWN")
             networkEngine.sendMove(player.position)
-            //player.moving("DOWN")
             break
         default:
             break;
         }
     }
     
+    
     func handleTapGesture(gesture:UITapGestureRecognizer) {
         player.stopMoving()
     }
+    
+    
     
     override func update(currentTime: CFTimeInterval) {
         // we need to check if collide here
@@ -212,7 +223,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     }
     
     
-    // move p1 or p2, to which direction
+    // THE INDEX IS THE PLAYERID
     func movePlayerAtIndex(index: Int, position: CGPoint){
        // var player: PlayerNode! = players[index] as PlayerNode
         players[index].moving(position)
@@ -223,6 +234,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     func gameOver(leftWon: Bool){
         
     }
+    
     func setPlayerAlias(playerAliases: NSArray){
         
     }

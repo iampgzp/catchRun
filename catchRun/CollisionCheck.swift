@@ -95,4 +95,6 @@ class CollisionCheck : NSObject{
         return CGPoint(x: x, y: y)
     }
     
+    
+    
 }

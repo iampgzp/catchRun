@@ -29,7 +29,6 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
     var match:GKMatch!
     var matchStarted: Bool! = false
     var authenticationViewController: UIViewController?
-
     var vc: UIViewController?
     // let presentAuthentication: String! = "present authentication view controller"
     // use to keep track of last error
@@ -192,7 +191,8 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
     //CALLED AFTER PEER TO PEER IS FOUND
     //call lookupPlayer() when match is ready. store playerid and player object into dictionary
     func lookUpPlayer(){
-        NSLog("Looking up player %d", self.match.playerIDs.count)
+        NSLog("Looking up remote player %d", self.match.playerIDs.count)
+        
         // withCompletionHandler returns GKPlayer object for each player in the match.
         GKPlayer.loadPlayersForIdentifiers(match.playerIDs, withCompletionHandler: {(players: [AnyObject]!, error: NSError?) -> Void in
             if error != nil{
@@ -213,6 +213,14 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
             }
         })
     }
+    
+    func getRemoteCount() -> Int{
+        NSLog("get remote count for remote players")
+        return self.match.playerIDs.count
+    }
+    
+
+    
 }
 
 
