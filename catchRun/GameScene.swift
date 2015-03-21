@@ -159,7 +159,7 @@ class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     
     
     // move p1 or p2, to which direction
-    func movePlayerAtIndex(index: Int, position: CGPoint){
+    func movePlayerAtIndex(index: String, position: CGPoint){
 //        var player: PlayerNode! = players[index] as PlayerNode
 //        player.moving(direction)
     }

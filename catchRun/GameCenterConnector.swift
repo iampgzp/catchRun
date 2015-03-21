@@ -33,6 +33,7 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
     // let presentAuthentication: String! = "present authentication view controller"
     // use to keep track of last error
     var lastError : NSError?
+    var playerIds : Array<String>? = Array<String>()
     override init(){
         super.init()
         gameCenterEnabled = true
@@ -205,6 +206,7 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
                     NSLog("Found Player : %s", player.alias)
                     // PLAYERDICT CONTAINS ID --> PLAYER OBJECT
                     self.playerDict?.setObject(player, forKey: player.playerID)
+                    self.playerIds?.append(player.playerID)
                 }
                 self.playerDict!.setObject(GKLocalPlayer.localPlayer(), forKey: GKLocalPlayer.localPlayer().playerID)
                 self.matchStarted = true
@@ -219,8 +221,13 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
         return self.match.playerIDs.count
     }
     
-
+    func getPlayerIds() -> Array<String>{
+        return self.playerIds!
+    }
     
+    func getLocalPlayerID() -> String{
+        return GKLocalPlayer.localPlayer().playerID
+    }
 }
 
 

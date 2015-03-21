@@ -68,6 +68,7 @@ class PlayerNode: SKSpriteNode{
     
     
     //fill this part
+    // this part will be used when moving remote-player object
     func moving(position: CGPoint){
         
     }
