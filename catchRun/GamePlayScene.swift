@@ -20,13 +20,25 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     
     //------network layer var
     var currentIndex: Int! // which player
-    var players: Array<PlayerNode>!
+    var players = Array<PlayerNode>()
+
     //-----------------
     var capacityOfPlayerInGame: Int! = 2
+    
+    var player1: PlayerNode! = PlayerNode(playerTextureName: "player")
+    var player2: PlayerNode! = PlayerNode(playerTextureName: "player")
+
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
         tiledMap = JSTileMap(named:"map.tmx")
-       
+        
+        
+        //append player1 and player2
+        //test purpose
+        
+        self.players.append(player1)
+        self.players.append(player2)
+        
         let map = tiledMap!
         self.anchorPoint = CGPoint(x: 0, y: 0)
         map.xScale = 1.9
@@ -57,15 +69,13 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         
         //-----------------------------------------------------------
         // For test purpose, we initialize two player in the screen
-        players = Array<PlayerNode>()
-        var player1: PlayerNode! = PlayerNode(playerTextureName: "player")
-        var player2: PlayerNode! = PlayerNode(playerTextureName: "player")
+
         
-        player1.position = CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.5)
-        player2.position = CGPoint(x: self.size.width * 0.2, y: self.size.height * 0.2)
-        // add into players
-        players.append(player1)
-        players.append(player2)
+//        player1.position = CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.5)
+//        player2.position = CGPoint(x: self.size.width * 0.2, y: self.size.height * 0.2)
+//        // add into players
+//        players.append(player1)
+//        players.append(player2)
         currentIndex = -1
         
         //-------------------------------------------------------------
@@ -76,7 +86,11 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         }
         
         //Create player
+        player1.position = CGPoint(x: self.size.width * 0.5 - 50, y: self.size.height * 0.5 - 50)
+        player2.position = CGPoint(x: self.size.width * 0.5 - 40, y: self.size.height * 0.5 - 50)
         player.position = CGPoint(x: self.size.width * 0.5 - 50, y: self.size.height * 0.5 - 50)
+        self.addChild(player1)
+        self.addChild(player2)
         self.addChild(player)
         //virtual joystick
         let joyStick = JoyStick(defatultArrowImage: "arrow", activeArrowImage: "arrowdown", target: player)

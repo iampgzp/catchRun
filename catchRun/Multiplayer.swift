@@ -95,14 +95,17 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         orderOfPlayers.addObject(dic)
     }
     
+    // CALLED BY METHOD LOOKUPPLAYER() IN GAMECENTERCONNECTOR
     //if receive all random number, set game state for waiting for start
     func matchStarted() {
         NSLog("match start successfully")
+        //DETECT WHETHER RECEIVE OTHER PEOPLE'S RANDOM NUMBER
         if receiveAllRandomPairingNumber != nil && receiveAllRandomPairingNumber == true{
             gameState = GameState.waitingForStart
         }else{
             gameState = GameState.waitingForRandomPairing
         }
+        // SEND ITS OWN RANDOM NUMBER
         sendRandomPairingNumber()
         tryStartGame()
     }
@@ -147,6 +150,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     
     //cast randomMessage to NSData, send it to other player
     func sendRandomPairingNumber(){
+        NSLog("my random number %d", self.randomNumber)
         var message = MessageRandomNumber(message: Message(messageType: MessageType.messageTypeRandomNumber), randomNumber: self.randomNumber)
         //        var message: MessageRandomNumber!
         //        message.message.messageType = MessageType.messageTypeRandomNumber

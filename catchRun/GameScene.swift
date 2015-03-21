@@ -92,16 +92,9 @@ class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         
         NSNotificationCenter.defaultCenter().postNotificationName(multiplayerButtonPressed, object: nil)
         //TODO implement the networking button here!
-
+        
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "navigateToGameScene", name: gameBegin, object: nil)
-           //  self.myDelegate?.autoMatch()
-//            NSNotificationCenter.defaultCenter().addObserver(self.vc, selector: "showAuthenticaionViewController", name: presentAuthentication, object: nil)
-            //GameCenterConnector.sharedInstance().authenticatePlayer()
-            //NSNotificationCenter.defaultCenter().addObserver(self.vc, selector: "playerAuthenticated", name: LocalPlayerIsAuthenticated, object: nil)
-           // self.view?.presentScene( GameCenterConnector.sharedInstance().authenticationViewController, transition: reval)
-        
-//        self.myDelegate?.autoMatch()
-        
+
         print("auto- match start")
        // NSNotificationCenter.defaultCenter().addObserver(self.vc, selector: "playerAuthenticated", name: LocalPlayerIsAuthenticated, object: nil)
 //        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showAuthenticaionViewController", name: presentAuthentication, object: nil)
