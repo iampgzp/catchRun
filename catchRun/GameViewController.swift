@@ -77,6 +77,7 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
         var skview: SKView! = self.view as SKView
         var scene: GameScene! = skview.scene as GameScene
         print("game scene")
+        // DELEGATE POINT TO MULTIPLAYER 
         self.networkEngine = Multiplayer()
         networkEngine.delegate = scene
         scene.networkEngine = self.networkEngine

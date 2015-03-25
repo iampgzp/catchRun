@@ -29,11 +29,11 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
     var match:GKMatch!
     var matchStarted: Bool! = false
     var authenticationViewController: UIViewController?
-
     var vc: UIViewController?
     // let presentAuthentication: String! = "present authentication view controller"
     // use to keep track of last error
     var lastError : NSError?
+    var playerIds : Array<String>? = Array<String>()
     override init(){
         super.init()
         gameCenterEnabled = true
@@ -128,11 +128,15 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
     func matchmakerViewControllerWasCancelled(viewController: GKMatchmakerViewController!){
         viewController.dismissViewControllerAnimated(true, completion: nil)
     }
+    
+    
     // when there is error for game pairing
     func matchmakerViewController(viewController: GKMatchmakerViewController!, didFailWithError error: NSError!){
         viewController.dismissViewControllerAnimated(true, completion: nil)
         NSLog("Erro matching: %", error.localizedDescription)
     }
+    
+    // CALLED WHEN PEER TO PEER IS FOUND
     // when game pairing is ok, and game is ready to go
     func matchmakerViewController(viewController: GKMatchmakerViewController, didFindMatch match: GKMatch){
         viewController.dismissViewControllerAnimated(true, completion: nil)
@@ -144,6 +148,7 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
             lookUpPlayer()
         }
     }
+    // DECODE INCOMING DATA
     // when another player sends data to you, this method will be called.
     func match(match: GKMatch!, didReceiveData data: NSData!, fromPlayer playerID: String!) {
         if self.match != match{
@@ -151,6 +156,8 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
         }
         self.delegate?.match(match, didReceiveData: data, fromPlayer: playerID)
     }
+    
+    // CALLED WHEN STATE CHANGES
     // implement GKmatchDelegate
     func match(match: GKMatch, didReceiveData data: NSData, fromPlayer playerID: NSString, didChangeState state: GKPlayerConnectionState){
         if self.match != match{
@@ -182,21 +189,24 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
         matchStarted = false
         self.delegate?.matchEnded()
     }
-    //lookup players
+    //CALLED AFTER PEER TO PEER IS FOUND
     //call lookupPlayer() when match is ready. store playerid and player object into dictionary
     func lookUpPlayer(){
-        NSLog("Looking up player", self.match.playerIDs.count)
+        NSLog("Looking up remote player %d", self.match.playerIDs.count)
+        
         // withCompletionHandler returns GKPlayer object for each player in the match.
         GKPlayer.loadPlayersForIdentifiers(match.playerIDs, withCompletionHandler: {(players: [AnyObject]!, error: NSError?) -> Void in
             if error != nil{
-                NSLog("Error to load player's information", error!.localizedDescription);
+                NSLog("Error to load player's information %s", error!.localizedDescription);
                 self.matchStarted = false
                 // delegate.matchEned
             } else{
                 self.playerDict = NSMutableDictionary(capacity: players.count)
                 for player in players {
                     NSLog("Found Player : %s", player.alias)
+                    // PLAYERDICT CONTAINS ID --> PLAYER OBJECT
                     self.playerDict?.setObject(player, forKey: player.playerID)
+                    self.playerIds?.append(player.playerID)
                 }
                 self.playerDict!.setObject(GKLocalPlayer.localPlayer(), forKey: GKLocalPlayer.localPlayer().playerID)
                 self.matchStarted = true
@@ -204,6 +214,19 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
                 
             }
         })
+    }
+    
+    func getRemoteCount() -> Int{
+        NSLog("get remote count for remote players")
+        return self.match.playerIDs.count
+    }
+    
+    func getPlayerIds() -> Array<String>{
+        return self.playerIds!
+    }
+    
+    func getLocalPlayerID() -> String{
+        return GKLocalPlayer.localPlayer().playerID
     }
 }
 

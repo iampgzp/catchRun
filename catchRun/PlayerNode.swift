@@ -66,6 +66,15 @@ class PlayerNode: SKSpriteNode{
         //networkEngine.sendMove()
     }
     
+    
+    
+    //fill this part
+    // this part will be used when moving remote-player object
+    func moving(position: CGPoint){
+        
+    }
+    
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
