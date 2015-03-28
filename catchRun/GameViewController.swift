@@ -75,13 +75,19 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
     
 
     func playerAuthenticated(){
-        var skview: SKView! = self.view as SKView
-        var scene: GameScene! = skview.scene as GameScene
+
         print("game scene")
         // DELEGATE POINT TO MULTIPLAYER 
+//        var skview: SKView! = self.view as SKView
+//        var scene : GameScene! = skview.scene as GameScene
+//        var playScene: GamePlayScene? = GamePlayScene.sharedInstance(scene.size)
         self.networkEngine = Multiplayer()
-        networkEngine.delegate = scene
-        scene.networkEngine = self.networkEngine
+//        networkEngine.delegate = playScene
+//        playScene?.networkEngine = self.networkEngine
+        //networkEngine.delegate = playerScene
+        //playerScene.networkEngine = self.networkEngine
+        //networkEngine.delegate = scene
+        //scene.networkEngine = self.networkEngine
         GameCenterConnector.sharedInstance().findMatchWithMinPlayer(2, maxPlayers: 2, viewControllers: self, delegate: self.networkEngine)
     }
     

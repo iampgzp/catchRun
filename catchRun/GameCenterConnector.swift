@@ -108,7 +108,8 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
         if !self.gameCenterEnabled{
             return;
         }
-        print("auto match started")
+
+        
         self.delegate = delegate
         self.matchStarted = false
         self.match = nil
@@ -121,6 +122,7 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
         var matchViewController:GKMatchmakerViewController! = GKMatchmakerViewController(matchRequest: request)
         matchViewController.matchmakerDelegate = self
         //present the game pairing view
+        NSLog("Present auto-match view for players \n")
         viewController.presentViewController(matchViewController, animated: true, completion: nil)
     }
     
@@ -148,12 +150,14 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
             lookUpPlayer()
         }
     }
+    // IMPLEMENT GKMATCHDELEGATE
     // DECODE INCOMING DATA
     // when another player sends data to you, this method will be called.
     func match(match: GKMatch!, didReceiveData data: NSData!, fromPlayer playerID: String!) {
         if self.match != match{
             return;
         }
+        NSLog("decoding incoming data")
         self.delegate?.match(match, didReceiveData: data, fromPlayer: playerID)
     }
     
@@ -203,7 +207,7 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
             } else{
                 self.playerDict = NSMutableDictionary(capacity: players.count)
                 for player in players {
-                    NSLog("Found Player : %s", player.alias)
+                    NSLog("Found Player alias \(player.alias) \n")
                     // PLAYERDICT CONTAINS ID --> PLAYER OBJECT
                     self.playerDict?.setObject(player, forKey: player.playerID)
                     self.playerIds?.append(player.playerID)
@@ -228,6 +232,7 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
     func getLocalPlayerID() -> String{
         return GKLocalPlayer.localPlayer().playerID
     }
+ 
 }
 
 

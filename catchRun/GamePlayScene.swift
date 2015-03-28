@@ -12,14 +12,19 @@ import GameKit
 // it contains 5 method. moveplayeratindex api helps one of the player in the game to get the information of another player's move information. Such as P1 get the info of P2's current position
 
 
+protocol playerSceneDelegate{
+    func sendMove(position: CGPoint, id: String)
+}
 
+var instance1: GamePlayScene!
 class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     var tiledMap:JSTileMap?
     var player = PlayerNode(playerTextureName: "player")
     var playerWalkingFrames = NSArray()
     // this is used to transfer moving data
+    //var networkEngineDelegate: playerSceneDelegate?
     var networkEngine: Multiplayer!
-
+    var networkEngineDelegate: Multiplayer! = Multiplayer()
     //------network layer var
     var currentIndex: Int! // which player
     var players = Array<PlayerNode>()
@@ -30,13 +35,26 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     var player1: PlayerNode! = PlayerNode(playerTextureName: "player")
     var player2: PlayerNode! = PlayerNode(playerTextureName: "player")
     var remote_players = Dictionary<String, PlayerNode>()
+
     
+    
+    class func sharedInstance(size: CGSize) -> GamePlayScene{
+        if instance1 == nil{
+            instance1 = GamePlayScene(size: size)
+        }
+        return instance1!
+    }
+    
+
     override func didMoveToView(view: SKView) {
+
+        
         /* Setup your scene here */
         tiledMap = JSTileMap(named:"map.tmx")
         
 
         // GET SIZE OF REMOTE PLAYER, BUILD ARRAY TO STORE
+        
         var size : Int! = GameCenterConnector.sharedInstance().getRemoteCount()
         NSLog("get size %d", size)
         var playerIds = GameCenterConnector.sharedInstance().getPlayerIds()
@@ -107,49 +125,53 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     }
     
     
-    //LOCAL PLAYER MOVE
-    func handleSwipeGesture(gesture: UISwipeGestureRecognizer) {
-        var direction = gesture.direction
-        var localId = GameCenterConnector.sharedInstance().getLocalPlayerID()
-        switch (direction){
-        case UISwipeGestureRecognizerDirection.Left:
-           
-            var player: PlayerNode! = players[currentIndex]
-            player.moving("LEFT")
-            networkEngine.sendMove(player.position, id: localId)
-            break
-        case UISwipeGestureRecognizerDirection.Right:
-            
-            var player: PlayerNode! = players[currentIndex]
-            player.moving("RIGHT")
-            networkEngine.sendMove(player.position, id: localId)
-            break
-        case UISwipeGestureRecognizerDirection.Up:
-            
-            var player: PlayerNode! = players[currentIndex]
-            player.moving("UP")
-            networkEngine.sendMove(player.position, id: localId)
-            break
-        case UISwipeGestureRecognizerDirection.Down:
-            
-            var player: PlayerNode! = players[currentIndex]
-            player.moving("DOWN")
-            networkEngine.sendMove(player.position, id: localId)
-            break
-        default:
-            break;
-        }
-    }
+//    //LOCAL PLAYER MOVE
+//    func handleSwipeGesture(gesture: UISwipeGestureRecognizer) {
+//        var direction = gesture.direction
+//        var localId = GameCenterConnector.sharedInstance().getLocalPlayerID()
+//        NSLog("swipe for playerid %s", localId)
+//        switch (direction){
+//        case UISwipeGestureRecognizerDirection.Left:
+//           
+//            //var player: PlayerNode! = players[currentIndex]
+//            player.moving("LEFT")
+//            networkEngine.sendMove(player.position, id: localId)
+//            break
+//        case UISwipeGestureRecognizerDirection.Right:
+//            
+//            //var player: PlayerNode! = players[currentIndex]
+//            player.moving("RIGHT")
+//            networkEngine.sendMove(player.position, id: localId)
+//            break
+//        case UISwipeGestureRecognizerDirection.Up:
+//            
+//            //var player: PlayerNode! = players[currentIndex]
+//            player.moving("UP")
+//            networkEngine.sendMove(player.position, id: localId)
+//            break
+//        case UISwipeGestureRecognizerDirection.Down:
+//            
+//            //var player: PlayerNode! = players[currentIndex]
+//            player.moving("DOWN")
+//            networkEngine.sendMove(player.position, id: localId)
+//            break
+//        default:
+//            break;
+//        }
+//    }
     
     
     func handleTapGesture(gesture:UITapGestureRecognizer) {
         player.stopMoving()
     }
     
-    
+ 
     
     override func update(currentTime: CFTimeInterval) {
         // we need to check if collide here
+        NSLog("update move information \n")
+        var localId = GameCenterConnector.sharedInstance().getLocalPlayerID()
+        NSLog(String(format: "the locaid is \(localId)" ))
         if isCollideWithTrap(player.position) || isCollideWithWall(player.position) {
             if  isCollideWithWall(player.position) {
                 print("collide with wall \n")
@@ -159,6 +181,9 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         }else{
             print("not collide \n")
         }
+        NSLog("send move: player's location \(player.position) and its id \(localId)")
+        self.networkEngine!.sendMove(player.position, id: localId)
+        
     }
     
     // function to change coordinates to tile coordinates
@@ -187,8 +212,9 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     // THE INDEX IS THE PLAYERID
     func movePlayerAtIndex(index: String, position: CGPoint){
        // var player: PlayerNode! = players[index] as PlayerNode
+        NSLog("move player at index %s", index)
         var remote_p : PlayerNode! = remote_players[index]
-        remote_p.moving(position)
+        remote_p.position = position
     }
     
     // we can check game over by only one side

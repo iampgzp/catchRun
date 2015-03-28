@@ -58,9 +58,9 @@ struct MessageGameBegin{
 
 struct MessageMove{
     // in move message, we need a direction
+    var message: Message
     var position: CGPoint
     var id: String
-    var message: Message
 }
 
 struct MessageGameOver{
@@ -69,7 +69,7 @@ struct MessageGameOver{
 }
 
 let gameBegin : String! = "game begin"
-class Multiplayer: NSObject, GameConnectorDelegate{
+class Multiplayer: NSObject, GameConnectorDelegate, playerSceneDelegate{
     
     var receiveAllRandomPairingNumber: Bool?
     //use P1 to denote police
@@ -99,11 +99,13 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     // CALLED BY METHOD LOOKUPPLAYER() IN GAMECENTERCONNECTOR
     //if receive all random number, set game state for waiting for start
     func matchStarted() {
-        NSLog("match start successfully")
+        NSLog("auto match connect successfully, check for current game state \n")
         //DETECT WHETHER RECEIVE OTHER PEOPLE'S RANDOM NUMBER
         if receiveAllRandomPairingNumber != nil && receiveAllRandomPairingNumber == true{
+            NSLog("game wait to start \n")
             gameState = GameState.waitingForStart
         }else{
+            NSLog("game wait for remote player's random number \n")
             gameState = GameState.waitingForRandomPairing
         }
         // SEND ITS OWN RANDOM NUMBER
@@ -117,9 +119,9 @@ class Multiplayer: NSObject, GameConnectorDelegate{
             gameState = GameState.gameActive
             NSNotificationCenter.defaultCenter().postNotificationName(gameBegin, object: nil)
             self.sendGameBegin()
-            self.delegate.setCurrentPlayerIndex(0)
-            self.processPlayerAliases()
-            NSLog("Match started")
+            //self.delegate.setCurrentPlayerIndex(0)
+            //self.processPlayerAliases()
+            NSLog("send out game begin message")
         }
     }
     
@@ -141,10 +143,11 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     
     // send move infomation to game center, add id
     func sendMove(position: CGPoint, id: String){
-        var messageMove: MessageMove!
-        messageMove.message.messageType = MessageType.messageTypeMove
-        messageMove.position = position
-        messageMove.id = id
+        NSLog("send move message")
+        var messageMove = MessageMove(message: Message(messageType: MessageType.messageTypeMove), position: position, id: id)
+ //       messageMove.message.messageType = MessageType.messageTypeMove
+//        messageMove.position = position
+//        messageMove.id = id
         var data = NSData(bytes: &messageMove, length: sizeof(MessageMove))
         sendData(data)
     }
@@ -172,6 +175,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     
     //send gamebegin data to other player
     func sendGameBegin(){
+        NSLog("send begin message")
         var message = MessageGameBegin(message: Message(messageType: MessageType.messageTypeRandomNumber))
         var data = NSData(bytes: &message, length: sizeof(MessageGameBegin))
         sendData(data)
@@ -198,8 +202,9 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         if (message.messageType == MessageType.messageTypeRandomNumber){
             var messageOfRandomNum: MessageRandomNumber!
             //write data into messageOfRandomNum buffer
-            data.getBytes(&messageOfRandomNum, length: sizeof(MessageRandomNumber))
-            NSLog("Receive random number: %d", messageOfRandomNum.randomNumber)
+            data.getBytes(&messageOfRandomNum,
+                length: sizeof(MessageRandomNumber))
+            NSLog("Receive random number\(messageOfRandomNum.randomNumber)")
             var tie: Bool! = false
             if messageOfRandomNum.randomNumber == randomNumber{
                 NSLog("tie")
@@ -224,14 +229,23 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         }else if message.messageType == MessageType.messageTypeGameBegin{
             NSLog("other player begin game")
             gameState = GameState.gameActive
-            self.delegate.setCurrentPlayerIndex(indexForLocalPlayer())
-            self.processPlayerAliases()
+            //self.delegate.setCurrentPlayerIndex(indexForLocalPlayer())
+            //self.processPlayerAliases()
         }else if message.messageType == MessageType.messageTypeMove{
             NSLog("receive Move message")
             var messageMove: MessageMove!
             data.getBytes(&messageMove, length: sizeof(MessageMove))
             //get playerindex and direction
-            self.delegate.movePlayerAtIndex(messageMove.id, position: messageMove.position)
+//            if messageMove! == nil{
+//                NSLog("message move is nil")
+//            }
+            // this is null if we have not set networking.engine = GamePlayScene
+            
+            var pos = messageMove?.position
+            NSLog("remote player loc \(pos)")
+            NSLog("receive a remote player's position \(messageMove.position.x)")
+            NSLog("move message id \(messageMove!.id) and position \(messageMove!.position)")
+            self.delegate.movePlayerAtIndex(messageMove!.id, position: messageMove!.position)
             // convert point
         }else if message.messageType == MessageType.messageTypeGameOver{
             NSLog("Game Over")
@@ -302,7 +316,8 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         var dictionary: NSDictionary! = orderOfPlayers[0] as NSDictionary
         //optional are no longer considerred as boolean expression
         if dictionary[playerIdKey]!.isEqualToString(GKLocalPlayer.localPlayer().playerID){
-            NSLog("this is %s", GKLocalPlayer.localPlayer().playerID)
+            println("this is id \(GKLocalPlayer.localPlayer().playerID)")
+            //NSLog("this is %s", GKLocalPlayer.localPlayer().playerID)
             return true
         }
         return false

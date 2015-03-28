@@ -19,10 +19,10 @@ class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     var myDelegate:sceneDelegate?
     var soundButton:GGButton?
     var soundOn:Bool?
-
+    
 
     // this is used to transfer moving data
-    var networkEngine: Multiplayer!
+    //var networkEngine: Multiplayer!
     var vc: GameViewController!
     
     //------network layer var
@@ -90,19 +90,28 @@ class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     
     func startMultiPlayerGameButtonDown(){
         
+        
         NSNotificationCenter.defaultCenter().postNotificationName(multiplayerButtonPressed, object: nil)
         //TODO implement the networking button here!
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "navigateToGameScene", name: gameBegin, object: nil)
+        
 
         NSLog("auto- match start")
 
     }
     
+    
+    //NAVIGATE TO PLAY SCENE
     func navigateToGameScene(){
+        var gameplayscene = GamePlayScene(size: self.size)
+        var multiplayer = GameCenterConnector.sharedInstance().delegate as Multiplayer!
+        multiplayer.delegate = gameplayscene
+        gameplayscene.networkEngine = multiplayer
         let startGameAction = SKAction.runBlock{
             let reval = SKTransition.flipHorizontalWithDuration(0.5)
-            self.view?.presentScene( GamePlayScene(size: self.size), transition: reval)
+            var playScene = gameplayscene
+            self.view?.presentScene(playScene, transition: reval)
         }
         //gameStarted = True
         self.runAction(startGameAction)

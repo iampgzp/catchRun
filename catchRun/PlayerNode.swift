@@ -14,7 +14,7 @@ class PlayerNode: SKSpriteNode{
     var playerWalkingFrames : NSArray
     
     // this is engine used for sending data to game center
-    var networkEngine: Multiplayer!
+    var networkEngine: Multiplayer! = Multiplayer()
 
     init(playerTextureName: NSString){
         var playerWalkingFramesTemp = NSMutableArray()
@@ -37,12 +37,15 @@ class PlayerNode: SKSpriteNode{
     }
     
     func moving(Direction: String){
+        NSLog("moving to direction %s", Direction)
+        var localId = GameCenterConnector.sharedInstance().getLocalPlayerID()
         var frame_4 = playerWalkingFrames.count / 4
         switch(Direction){
         case "LEFT":
             stopMoving()
             self.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(playerWalkingFrames.subarrayWithRange(NSMakeRange(frame_4*2, frame_4)), timePerFrame: 0.1, resize: false, restore: true)), withKey: "walkingAnimation")
             self.runAction(SKAction.repeatActionForever(SKAction.moveByX(-30, y: 0, duration: 1)), withKey: "movingLeft")
+            
             break
         case "RIGHT":
             stopMoving()
@@ -62,6 +65,7 @@ class PlayerNode: SKSpriteNode{
         default:
             break;
         }
+//        networkEngine.sendMove(self.position, id: localId)
         //networkEngine.sendMove()
     }
     
