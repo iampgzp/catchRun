@@ -14,7 +14,7 @@ class PlayerNode: SKSpriteNode{
     var playerWalkingFrames : NSArray
     
     // this is engine used for sending data to game center
-    var networkEngine: Multiplayer! = Multiplayer()
+    
 
     init(playerTextureName: NSString){
         var playerWalkingFramesTemp = NSMutableArray()

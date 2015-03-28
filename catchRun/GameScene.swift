@@ -105,13 +105,13 @@ class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     //NAVIGATE TO PLAY SCENE
     func navigateToGameScene(){
         var gameplayscene = GamePlayScene(size: self.size)
-        var multiplayer = GameCenterConnector.sharedInstance().delegate as Multiplayer!
+        var multiplayer: Multiplayer! = GameCenterConnector.sharedInstance().delegate as Multiplayer
         multiplayer.delegate = gameplayscene
         gameplayscene.networkEngine = multiplayer
         let startGameAction = SKAction.runBlock{
             let reval = SKTransition.flipHorizontalWithDuration(0.5)
-            var playScene = gameplayscene
-            self.view?.presentScene(playScene, transition: reval)
+            
+            self.view?.presentScene(gameplayscene, transition: reval)
         }
         //gameStarted = True
         self.runAction(startGameAction)

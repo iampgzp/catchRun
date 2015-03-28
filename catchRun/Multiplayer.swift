@@ -69,7 +69,7 @@ struct MessageGameOver{
 }
 
 let gameBegin : String! = "game begin"
-class Multiplayer: NSObject, GameConnectorDelegate, playerSceneDelegate{
+class Multiplayer: NSObject, GameConnectorDelegate{
     
     var receiveAllRandomPairingNumber: Bool?
     //use P1 to denote police
@@ -117,8 +117,8 @@ class Multiplayer: NSObject, GameConnectorDelegate, playerSceneDelegate{
     func tryStartGame(){
         if gameState == GameState.waitingForStart{
             gameState = GameState.gameActive
-            NSNotificationCenter.defaultCenter().postNotificationName(gameBegin, object: nil)
             self.sendGameBegin()
+            NSNotificationCenter.defaultCenter().postNotificationName(gameBegin, object: nil)
             //self.delegate.setCurrentPlayerIndex(0)
             //self.processPlayerAliases()
             NSLog("send out game begin message")
@@ -143,7 +143,7 @@ class Multiplayer: NSObject, GameConnectorDelegate, playerSceneDelegate{
     
     // send move infomation to game center, add id
     func sendMove(position: CGPoint, id: String){
-        NSLog("send move message")
+       // NSLog("send move message")
         var messageMove = MessageMove(message: Message(messageType: MessageType.messageTypeMove), position: position, id: id)
  //       messageMove.message.messageType = MessageType.messageTypeMove
 //        messageMove.position = position
@@ -155,7 +155,7 @@ class Multiplayer: NSObject, GameConnectorDelegate, playerSceneDelegate{
     
     //cast randomMessage to NSData, send it to other player
     func sendRandomPairingNumber(){
-        NSLog("my random number %d", self.randomNumber)
+        NSLog("send my random number %d", self.randomNumber)
         var message = MessageRandomNumber(message: Message(messageType: MessageType.messageTypeRandomNumber), randomNumber: self.randomNumber)
         //        var message: MessageRandomNumber!
         //        message.message.messageType = MessageType.messageTypeRandomNumber
@@ -204,7 +204,7 @@ class Multiplayer: NSObject, GameConnectorDelegate, playerSceneDelegate{
             //write data into messageOfRandomNum buffer
             data.getBytes(&messageOfRandomNum,
                 length: sizeof(MessageRandomNumber))
-            NSLog("Receive random number\(messageOfRandomNum.randomNumber)")
+            NSLog("Receive random number\(messageOfRandomNum.randomNumber) \n")
             var tie: Bool! = false
             if messageOfRandomNum.randomNumber == randomNumber{
                 NSLog("tie")
@@ -233,19 +233,11 @@ class Multiplayer: NSObject, GameConnectorDelegate, playerSceneDelegate{
             //self.processPlayerAliases()
         }else if message.messageType == MessageType.messageTypeMove{
             NSLog("receive Move message")
+            var test: String! = "i am test"
             var messageMove: MessageMove!
             data.getBytes(&messageMove, length: sizeof(MessageMove))
-            //get playerindex and direction
-//            if messageMove! == nil{
-//                NSLog("message move is nil")
-//            }
-            // this is null if we have not set networking.engine = GamePlayScene
-            
-            var pos = messageMove?.position
-            NSLog("remote player loc \(pos)")
-            NSLog("receive a remote player's position \(messageMove.position.x)")
-            NSLog("move message id \(messageMove!.id) and position \(messageMove!.position)")
-            self.delegate.movePlayerAtIndex(messageMove!.id, position: messageMove!.position)
+            self.delegate.movePlayerAtIndex(messageMove.id, position: messageMove.position)
+            //self.delegate.movePlayerAtIndex(messageMove!.id, position: messageMove!.position)
             // convert point
         }else if message.messageType == MessageType.messageTypeGameOver{
             NSLog("Game Over")
@@ -253,7 +245,6 @@ class Multiplayer: NSObject, GameConnectorDelegate, playerSceneDelegate{
             data.getBytes(&messageGameOver, length: sizeof(MessageGameOver))
             self.delegate.gameOver(messageGameOver.leftWon)
         }
-        
     }
     
     //make the highest random number to be police

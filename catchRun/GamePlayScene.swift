@@ -12,11 +12,7 @@ import GameKit
 // it contains 5 method. moveplayeratindex api helps one of the player in the game to get the information of another player's move information. Such as P1 get the info of P2's current position
 
 
-protocol playerSceneDelegate{
-    func sendMove(position: CGPoint, id: String)
-}
 
-var instance1: GamePlayScene!
 class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     var tiledMap:JSTileMap?
     var player = PlayerNode(playerTextureName: "player")
@@ -24,27 +20,19 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     // this is used to transfer moving data
     //var networkEngineDelegate: playerSceneDelegate?
     var networkEngine: Multiplayer!
-    var networkEngineDelegate: Multiplayer! = Multiplayer()
     //------network layer var
     var currentIndex: Int! // which player
-    var players = Array<PlayerNode>()
+
 
     //-----------------
     var capacityOfPlayerInGame: Int! = 2
     
-    var player1: PlayerNode! = PlayerNode(playerTextureName: "player")
-    var player2: PlayerNode! = PlayerNode(playerTextureName: "player")
+
     var remote_players = Dictionary<String, PlayerNode>()
 
     
     
-    class func sharedInstance(size: CGSize) -> GamePlayScene{
-        if instance1 == nil{
-            instance1 = GamePlayScene(size: size)
-        }
-        return instance1!
-    }
-    
+
 
     override func didMoveToView(view: SKView) {
 
@@ -169,20 +157,20 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     
     override func update(currentTime: CFTimeInterval) {
         // we need to check if collide here
-        NSLog("update move information \n")
+      //  NSLog("update move information \n")
         var localId = GameCenterConnector.sharedInstance().getLocalPlayerID()
-        NSLog(String(format: "the locaid is \(localId)" ))
+      //  NSLog(String(format: "the locaid is \(localId)" ))
         if isCollideWithTrap(player.position) || isCollideWithWall(player.position) {
             if  isCollideWithWall(player.position) {
-                print("collide with wall \n")
+             //   print("collide with wall \n")
             }else{
-                print("collide with trap \n")
+             //   print("collide with trap \n")
             }
         }else{
-            print("not collide \n")
+          //  print("not collide \n")
         }
-        NSLog("send move: player's location \(player.position) and its id \(localId)")
-        self.networkEngine!.sendMove(player.position, id: localId)
+      //  NSLog("send move: player's location \(player.position) and its id \(localId)")
+        self.networkEngine!.sendMove(player.position, id: GKLocalPlayer.localPlayer().playerID)
         
     }
     
@@ -213,6 +201,10 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     func movePlayerAtIndex(index: String, position: CGPoint){
        // var player: PlayerNode! = players[index] as PlayerNode
         NSLog("move player at index %s", index)
+        if remote_players[index] == nil{
+            NSLog("invalid playerid send")
+            return
+        }
         var remote_p : PlayerNode! = remote_players[index]
         remote_p.position = position
     }
