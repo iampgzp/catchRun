@@ -28,6 +28,7 @@ class PlayerNode: SKSpriteNode{
         playerWalkingFrames = playerWalkingFramesTemp
         super.init(texture: playerWalkingFrames[0] as SKTexture, color: UIColor.clearColor(), size: (playerWalkingFrames[0] as SKTexture).size())
     }
+    
     func stopMoving(){
         self.removeActionForKey("walkingAnimation")
         self.removeActionForKey("movingUp")
@@ -85,7 +86,6 @@ class PlayerNode: SKSpriteNode{
     // need to update player's location according to its move direction
     func getCurrentLoc() -> CGPoint{
         // apply its location here according to its move
-        return CGPoint(x: 0,y: 0)
+        return self.position;
     }
-    
 }

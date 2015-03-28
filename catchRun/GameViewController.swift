@@ -33,7 +33,6 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "showAuthenticaionViewController", name: presentAuthentication, object: nil)
         GameCenterConnector.sharedInstance().authenticatePlayer()
