@@ -170,7 +170,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
           //  print("not collide \n")
         }
       //  NSLog("send move: player's location \(player.position) and its id \(localId)")
-        self.networkEngine!.sendMove(player.position, id: GKLocalPlayer.localPlayer().playerID)
+        self.networkEngine!.sendMove(player.position)
         
     }
     
@@ -198,15 +198,15 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     
     
     // THE INDEX IS THE PLAYERID
-    func movePlayerAtIndex(index: String, position: CGPoint){
+    func movePlayerAtIndex(position: CGPoint){
        // var player: PlayerNode! = players[index] as PlayerNode
-        NSLog("move player at index %s", index)
-        if remote_players[index] == nil{
-            NSLog("invalid playerid send")
-            return
+       
+        //var remote_p : PlayerNode! = remote_players[index]
+        for key in remote_players.keys {
+            var p = remote_players[key] as PlayerNode!
+            p.position = position
         }
-        var remote_p : PlayerNode! = remote_players[index]
-        remote_p.position = position
+        //remote_p.position = position
     }
     
     // we can check game over by only one side

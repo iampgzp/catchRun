@@ -15,7 +15,7 @@ protocol sceneDelegate{
 }
 
 let multiplayerButtonPressed: String! = "multiplayer button pressed"
-class GameScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
+class GameScene: SKScene, GADInterstitialDelegate {
     var myDelegate:sceneDelegate?
     var soundButton:GGButton?
     var soundOn:Bool?

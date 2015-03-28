@@ -17,7 +17,7 @@ import GameKit
 protocol MultiplayerProtocol{
     func matchEnded()
     func setCurrentPlayerIndex(index: Int)
-    func movePlayerAtIndex(index: String, position: CGPoint)
+    func movePlayerAtIndex(position: CGPoint)
     func gameOver(leftWon: Bool)
     func setPlayerAlias(playerAliases: NSArray)
     
@@ -60,7 +60,7 @@ struct MessageMove{
     // in move message, we need a direction
     var message: Message
     var position: CGPoint
-    var id: String
+    
 }
 
 struct MessageGameOver{
@@ -142,9 +142,9 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     }
     
     // send move infomation to game center, add id
-    func sendMove(position: CGPoint, id: String){
+    func sendMove(position: CGPoint){
        // NSLog("send move message")
-        var messageMove = MessageMove(message: Message(messageType: MessageType.messageTypeMove), position: position, id: id)
+        var messageMove = MessageMove(message: Message(messageType: MessageType.messageTypeMove), position: position)
  //       messageMove.message.messageType = MessageType.messageTypeMove
 //        messageMove.position = position
 //        messageMove.id = id
@@ -236,7 +236,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
             var test: String! = "i am test"
             var messageMove: MessageMove!
             data.getBytes(&messageMove, length: sizeof(MessageMove))
-            self.delegate.movePlayerAtIndex(messageMove.id, position: messageMove.position)
+            self.delegate.movePlayerAtIndex(messageMove.position)
             //self.delegate.movePlayerAtIndex(messageMove!.id, position: messageMove!.position)
             // convert point
         }else if message.messageType == MessageType.messageTypeGameOver{
