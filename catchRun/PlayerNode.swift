@@ -12,10 +12,9 @@ import SpriteKit
 
 class PlayerNode: SKSpriteNode{
     var playerWalkingFrames : NSArray
-    
+    var previousPosition : CGPoint?
     // this is engine used for sending data to game center
     
-
     init(playerTextureName: NSString){
         var playerWalkingFramesTemp = NSMutableArray()
         let playerAnimatedAtlas:SKTextureAtlas = SKTextureAtlas(named: playerTextureName)
@@ -38,6 +37,7 @@ class PlayerNode: SKSpriteNode{
     }
     
     func moving(Direction: String){
+        previousPosition = position
         NSLog("moving to direction %s", Direction)
         var localId = GameCenterConnector.sharedInstance().getLocalPlayerID()
         var frame_4 = playerWalkingFrames.count / 4
@@ -46,7 +46,6 @@ class PlayerNode: SKSpriteNode{
             stopMoving()
             self.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(playerWalkingFrames.subarrayWithRange(NSMakeRange(frame_4*2, frame_4)), timePerFrame: 0.1, resize: false, restore: true)), withKey: "walkingAnimation")
             self.runAction(SKAction.repeatActionForever(SKAction.moveByX(-30, y: 0, duration: 1)), withKey: "movingLeft")
-            
             break
         case "RIGHT":
             stopMoving()
@@ -70,14 +69,11 @@ class PlayerNode: SKSpriteNode{
         //networkEngine.sendMove()
     }
     
-    
-    
     //fill this part
     // this part will be used when moving remote-player object
     func moving(position: CGPoint){
         
     }
-    
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

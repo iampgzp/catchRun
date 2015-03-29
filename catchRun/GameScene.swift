@@ -20,7 +20,6 @@ class GameScene: SKScene, GADInterstitialDelegate {
     var soundButton:GGButton?
     var soundOn:Bool?
     
-
     // this is used to transfer moving data
     //var networkEngine: Multiplayer!
     var vc: GameViewController!
@@ -28,6 +27,7 @@ class GameScene: SKScene, GADInterstitialDelegate {
     //------network layer var
     var currentIndex: Int! // which player
     var players: Array<PlayerNode>!
+    
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
         let background:SKSpriteNode = SKSpriteNode(imageNamed: "background")
@@ -89,18 +89,11 @@ class GameScene: SKScene, GADInterstitialDelegate {
 
     
     func startMultiPlayerGameButtonDown(){
-        
-        
         NSNotificationCenter.defaultCenter().postNotificationName(multiplayerButtonPressed, object: nil)
         //TODO implement the networking button here!
-        
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "navigateToGameScene", name: gameBegin, object: nil)
-        
-
         NSLog("auto- match start")
-
     }
-    
     
     //NAVIGATE TO PLAY SCENE
     func navigateToGameScene(){
@@ -108,18 +101,14 @@ class GameScene: SKScene, GADInterstitialDelegate {
         var multiplayer: Multiplayer! = GameCenterConnector.sharedInstance().delegate as Multiplayer
         multiplayer.delegate = gameplayscene
         gameplayscene.networkEngine = multiplayer
+        gameplayscene.isSinglePlayer = false
         let startGameAction = SKAction.runBlock{
             let reval = SKTransition.flipHorizontalWithDuration(0.5)
-            
             self.view?.presentScene(gameplayscene, transition: reval)
         }
         //gameStarted = True
         self.runAction(startGameAction)
     }
-    
-
-    
-    
     
     func twitter(){
         UIApplication.sharedApplication().openURL(NSURL(string: "http://www.baidu.com")!)
@@ -152,7 +141,6 @@ class GameScene: SKScene, GADInterstitialDelegate {
         currentIndex = index
     }
     
-    
     // move p1 or p2, to which direction
     func movePlayerAtIndex(index: String, position: CGPoint){
 //        var player: PlayerNode! = players[index] as PlayerNode
@@ -164,11 +152,8 @@ class GameScene: SKScene, GADInterstitialDelegate {
     func gameOver(leftWon: Bool){
         
     }
+    
     func setPlayerAlias(playerAliases: NSArray){
         
     }
-    
-    
-    
-    
 }

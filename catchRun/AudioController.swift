@@ -24,8 +24,6 @@ class AudioController : NSObject, AVAudioPlayerDelegate {
         //AVAudioSession init
         audioSession = AVAudioSession.sharedInstance()
         audioSession!.setCategory(AVAudioSessionCategoryAmbient, error: nil)
-        
-
     }
     
     func configurePlayer(){
