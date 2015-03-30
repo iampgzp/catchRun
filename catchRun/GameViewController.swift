@@ -26,7 +26,7 @@ extension SKNode {
     }
 }
 
-class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstitialDelegate, AVAudioPlayerDelegate, sceneDelegate{
+class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstitialDelegate, sceneDelegate{
     var networkEngine: Multiplayer!
     var fullAd:GADInterstitial?
     var audioControl : AudioController?
@@ -36,9 +36,8 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "showAuthenticaionViewController", name: presentAuthentication, object: nil)
         GameCenterConnector.sharedInstance().authenticatePlayer()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showMultiButton", name: LocalPlayerIsAuthenticated, object: nil)
      
-        
-        //self.presentViewController(GameCenterConnector.sharedInstance().authenticationViewController!, animated: true, completion: nil)
         audioControl = AudioController()
         audioControl!.tryPlayMusic()
         
@@ -57,10 +56,6 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
             scene.soundOn = true
             skView.presentScene(scene)
         }
-        
-        
-       // NSNotificationCenter.defaultCenter().addObserver(self, selector: "playerAuthenticated", name: multiplayerButtonPressed, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showMultiButton", name: LocalPlayerIsAuthenticated, object: nil)
     }
     
     
@@ -74,7 +69,6 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
     
 
     func playerAuthenticated(){
-
         print("game scene")
         // DELEGATE POINT TO MULTIPLAYER 
 //        var skview: SKView! = self.view as SKView
@@ -90,9 +84,6 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
         GameCenterConnector.sharedInstance().findMatchWithMinPlayer(2, maxPlayers: 2, viewControllers: self, delegate: self.networkEngine)
     }
     
-    
-
-    
     override func prefersStatusBarHidden() -> Bool {
         return true
     }
@@ -102,11 +93,7 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
     }
     
     override func supportedInterfaceOrientations() -> Int {
-        if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
-            return Int(UIInterfaceOrientationMask.AllButUpsideDown.rawValue)
-        } else {
-            return Int(UIInterfaceOrientationMask.All.rawValue)
-        }
+        return Int(UIInterfaceOrientationMask.Landscape.rawValue)
     }
     
     //MARK: GADIntersititialDelegate
@@ -114,7 +101,7 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
         fullAd!.presentFromRootViewController(self)
     }
     
-    //MARK: AVAudioPlayerDelegate
+    //MARK: Scene Delegate
     func didChangeSound() {
         if audioControl!.backgroundMusicPlaying{
             audioControl!.stopMusic()
@@ -123,13 +110,10 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
         }
     }
     
-    
     func autoMatch() {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "playerAuthenticated", name: LocalPlayerIsAuthenticated, object: nil)
         print("notification is triggered")
     }
-    
-    
     
     //MARK: match delegate
     func match(match: GKMatch, didReceiveData data: NSData, fromPlayer playerID: NSString) {
@@ -139,6 +123,7 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
     func matchEnded() {
         print("match ended")
     }
+    
     func matchStarted() {
         print("match started")
     }

@@ -17,81 +17,46 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     var tiledMap:JSTileMap?
     var player = PlayerNode(playerTextureName: "player")
     var playerWalkingFrames = NSArray()
+    var isSinglePlayer = true
+    
     // this is used to transfer moving data
     //var networkEngineDelegate: playerSceneDelegate?
     var networkEngine: Multiplayer!
     //------network layer var
     var currentIndex: Int! // which player
 
-
     //-----------------
     var capacityOfPlayerInGame: Int! = 2
-    
-
     var remote_players = Dictionary<String, PlayerNode>()
 
-    
-    
-
-
     override func didMoveToView(view: SKView) {
-
-        
         /* Setup your scene here */
         tiledMap = JSTileMap(named:"map.tmx")
-        
-
-        // GET SIZE OF REMOTE PLAYER, BUILD ARRAY TO STORE
-        
-        var size : Int! = GameCenterConnector.sharedInstance().getRemoteCount()
-        NSLog("get size %d", size)
-        var playerIds = GameCenterConnector.sharedInstance().getPlayerIds()
-        for var index = 0; index < size; ++index{
-            var player_remote = PlayerNode(playerTextureName: "player")
-            player_remote.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height * 0.5 - 50)
-            self.remote_players[playerIds[index]] = player_remote
-            self.addChild(player_remote)
-        }
-        
-        //append player1 and player2
-        //test purpose
-//        
-//        self.players.append(player1)
-//        self.players.append(player2)
-        
         let map = tiledMap!
         self.anchorPoint = CGPoint(x: 0, y: 0)
         map.xScale = 1.9
         map.yScale = 1.5
         map.position = CGPoint(x: 0, y: 0)
         self.addChild(map)
-        var wall = map.layerNamed("Meta")
         
-        // example for how to use tiledMap
-        // point is to tell you which tile is it in
-        // for example this tile is in (2, 11) which is a wall
-        var point = tileCoordForPosition(CGPoint(x: 90.0, y: 70))
-        // tileGid will give you a reference of this position
-        var tileGid = wall.tileGidAt(CGPoint(x: 90, y: 70))
-        // use this tilegid you can find the dictionary, if there is no dict it will crash so add some warper
-        var properties:NSDictionary = map.propertiesForGid(tileGid) as NSDictionary
-        // this is the actuall string
-        // if it is the wall dict, there is a key called Collidable and it will return "true"
-        // if it is the trap dict, there is a key called trapCollidable and it will return true
-        var collision: NSString = properties.valueForKey("Collidable") as NSString
-        
-        
-        currentIndex = -1
-        
-        //-------------------------------------------------------------
 
-        if collision.isEqualToString("True"){
-            // collide should prevent user go in to the wall
-            println("collide!!!!!!!! at \(point)")
-        }
+        // GET SIZE OF REMOTE PLAYER, BUILD ARRAY TO STORE
+        
+//        var gameSize : Int! = GameCenterConnector.sharedInstance().getRemoteCount()
+//        NSLog("get size %d", gameSize)
+//        var playerIds = GameCenterConnector.sharedInstance().getPlayerIds()
+//        for var index = 0; index < gameSize; ++index{
+//            var player_remote = PlayerNode(playerTextureName: "player")
+//            player_remote.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height * 0.5 - 50)
+//            self.remote_players[playerIds[index]] = player_remote
+//            self.addChild(player_remote)
+//        }
+//        currentIndex = -1
         
         //Create local player
         player.position = CGPoint(x: self.size.width * 0.5 - 50, y: self.size.height * 0.5 - 50)
+        player.xScale = 0.8
+        player.yScale = 0.8
         self.addChild(player)
         //virtual joystick
         let joyStick = JoyStick(defatultArrowImage: "arrow", activeArrowImage: "arrowdown", target: player)
@@ -100,18 +65,29 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         joyStick.alpha = 0.5
         joyStick.position = CGPoint(x: 100, y: 100)
         self.addChild(joyStick)
+        
+        //Add a button to end game
+        let pauseButton = GGButton(defaultButtonImage: "pause", activeButtonImage: "pause", buttonAction:didTapOnPause)
+        pauseButton.xScale = 1.0
+        pauseButton.yScale = 1.0
+        pauseButton.position = CGPoint(x: size.width * 0.85, y: size.height * 0.15 )
+        self.addChild(pauseButton)
     }
     
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-
-        if (currentIndex == -1){
-            return
-        }
-       
-        
-        
+//        if (currentIndex == -1){
+//            return
+//        }
     }
     
+    func didTapOnPause() {
+        let pauseGameAction = SKAction.runBlock{
+            let reval = SKTransition.flipHorizontalWithDuration(0.5)
+            self.view?.presentScene( GameScene(size: self.size), transition: reval)
+        }
+        //gameStarted = True
+        self.runAction(pauseGameAction)
+    }
     
 //    //LOCAL PLAYER MOVE
 //    func handleSwipeGesture(gesture: UISwipeGestureRecognizer) {
@@ -153,26 +129,39 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         player.stopMoving()
     }
     
- 
-    
     override func update(currentTime: CFTimeInterval) {
-        // we need to check if collide here
-      //  NSLog("update move information \n")
         var localId = GameCenterConnector.sharedInstance().getLocalPlayerID()
-      //  NSLog(String(format: "the locaid is \(localId)" ))
         if isCollideWithTrap(player.position) || isCollideWithWall(player.position) {
             if  isCollideWithWall(player.position) {
              //   print("collide with wall \n")
+                player.position = player.previousPosition!
             }else{
              //   print("collide with trap \n")
+                
+                let map = tiledMap!
+                var trap = map.layerNamed("Trap")
+                
+                
+                trap.removeTileAtCoord(tileCoordForPosition(player.position))
+                var background = map.layerNamed("Background")
+                
+                
+                background.removeTileAtCoord(tileCoordForPosition(player.position))
+                
             }
         }else{
           //  print("not collide \n")
         }
+<<<<<<< HEAD
       //  NSLog("send move: player's location \(player.position) and its id \(localId)")
        // var id = localId.toInt()
         self.networkEngine!.sendMove(player.position, id: localId)
         
+=======
+        if !isSinglePlayer{
+            self.networkEngine!.sendMove(player.position)
+        }
+>>>>>>> 2303098836912fe89d9271a627d3ecc3bf423610
     }
     
     // function to change coordinates to tile coordinates
@@ -182,12 +171,12 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     //        (0, 16) ......  (16, 16)
     //while spritekit origin is bottom left so we need to reverse y
     func tileCoordForPosition(position: CGPoint) -> CGPoint{
-        var x = Int((position.x / tiledMap!.tileSize.width))
-        var y = Int((tiledMap!.mapSize.height * tiledMap!.tileSize.height - position.y) / tiledMap!.tileSize.height)
+        var x = Int((position.x / (tiledMap!.tileSize.width*1.9)))
+        var y = Int((tiledMap!.mapSize.height * tiledMap!.tileSize.height*1.5 - position.y) / (tiledMap!.tileSize.height*1.5))
         return CGPoint(x: x, y: y)
     }
     
-  //conform multiplayer protocol
+    //conform multiplayer protocol
     func matchEnded(){
         
     }
@@ -196,7 +185,6 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     func setCurrentPlayerIndex(index: Int){
         currentIndex = index
     }
-    
     
     // THE INDEX IS THE PLAYERID
     func movePlayerAtIndex(position: CGPoint, id: String){
@@ -281,9 +269,4 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
             return  false
         }
     }
-    
-    
-
-
-    
 }

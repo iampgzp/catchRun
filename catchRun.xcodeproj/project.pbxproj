@@ -21,9 +21,12 @@
 		B61467641A408996000C3550 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61467631A408996000C3550 /* AppDelegate.swift */; };
 		B614676A1A408996000C3550 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61467691A408996000C3550 /* GameViewController.swift */; };
 		B614676D1A408996000C3550 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B614676B1A408996000C3550 /* Main.storyboard */; };
-		B614676F1A408996000C3550 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B614676E1A408996000C3550 /* Images.xcassets */; };
 		B61467721A408996000C3550 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = B61467701A408996000C3550 /* LaunchScreen.xib */; };
 		B614677E1A408997000C3550 /* catchRunTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B614677D1A408997000C3550 /* catchRunTests.swift */; };
+		B633371E1AC8417E00D6618A /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = B633371D1AC8417E00D6618A /* GameScene.sks */; };
+		B63337221AC84FB200D6618A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B63337211AC84FB200D6618A /* Images.xcassets */; };
+		B63337241AC84FC800D6618A /* player.atlas in Resources */ = {isa = PBXBuildFile; fileRef = B63337231AC84FC800D6618A /* player.atlas */; };
+		B63337261AC8534300D6618A /* sci.png in Resources */ = {isa = PBXBuildFile; fileRef = B63337251AC8534300D6618A /* sci.png */; };
 		B63D73721A40AFB00069AB50 /* beep.wav in Resources */ = {isa = PBXBuildFile; fileRef = B63D73711A40AFB00069AB50 /* beep.wav */; };
 		B63D73761A40B1CA0069AB50 /* AudioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63D73751A40B1CA0069AB50 /* AudioController.swift */; };
 		B645355A1A452ACC000BBEA3 /* JSTileMap.m in Sources */ = {isa = PBXBuildFile; fileRef = B64535591A452ACC000BBEA3 /* JSTileMap.m */; };
@@ -61,11 +64,14 @@
 		B61467631A408996000C3550 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B61467691A408996000C3550 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		B614676C1A408996000C3550 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		B614676E1A408996000C3550 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B61467711A408996000C3550 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		B61467771A408997000C3550 /* catchRunTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = catchRunTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B614677C1A408997000C3550 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B614677D1A408997000C3550 /* catchRunTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = catchRunTests.swift; sourceTree = "<group>"; };
+		B633371D1AC8417E00D6618A /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
+		B63337211AC84FB200D6618A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		B63337231AC84FC800D6618A /* player.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = player.atlas; path = Images.xcassets/player.atlas; sourceTree = "<group>"; };
+		B63337251AC8534300D6618A /* sci.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sci.png; path = Images.xcassets/sci.imageset/sci.png; sourceTree = "<group>"; };
 		B63D73711A40AFB00069AB50 /* beep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = beep.wav; sourceTree = "<group>"; };
 		B63D73751A40B1CA0069AB50 /* AudioController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioController.swift; sourceTree = "<group>"; };
 		B64535581A452ACC000BBEA3 /* JSTileMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSTileMap.h; sourceTree = "<group>"; };
@@ -178,6 +184,7 @@
 				B64535581A452ACC000BBEA3 /* JSTileMap.h */,
 				B64535591A452ACC000BBEA3 /* JSTileMap.m */,
 				B64535601A453220000BBEA3 /* map.tmx */,
+				B63337251AC8534300D6618A /* sci.png */,
 			);
 			name = Maps;
 			sourceTree = "<group>";
@@ -223,11 +230,13 @@
 				1DA8484A1A4800FC0075E5BB /* GameScene.swift */,
 				1DA848481A4800F70075E5BB /* GamePlayScene.swift */,
 				1DBCE6791A480EB700030B91 /* GameOverScene.swift */,
-				B614676E1A408996000C3550 /* Images.xcassets */,
 				B6013C7F1ABCA61100D71039 /* Maps */,
 				B68DB23E1A40AB57008DA27D /* Sound */,
 				B61467611A408996000C3550 /* Supporting Files */,
+				B63337211AC84FB200D6618A /* Images.xcassets */,
+				B63337231AC84FC800D6618A /* player.atlas */,
 				B61467631A408996000C3550 /* AppDelegate.swift */,
+				B633371D1AC8417E00D6618A /* GameScene.sks */,
 			);
 			path = catchRun;
 			sourceTree = "<group>";
@@ -355,11 +364,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B63337261AC8534300D6618A /* sci.png in Resources */,
 				B63D73721A40AFB00069AB50 /* beep.wav in Resources */,
 				B61467721A408996000C3550 /* LaunchScreen.xib in Resources */,
-				B614676F1A408996000C3550 /* Images.xcassets in Resources */,
+				B63337221AC84FB200D6618A /* Images.xcassets in Resources */,
 				B64535611A453220000BBEA3 /* map.tmx in Resources */,
+				B63337241AC84FC800D6618A /* player.atlas in Resources */,
 				B614676D1A408996000C3550 /* Main.storyboard in Resources */,
+				B633371E1AC8417E00D6618A /* GameScene.sks in Resources */,
 				B68DB2401A40AB6E008DA27D /* bgm.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
