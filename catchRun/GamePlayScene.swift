@@ -42,15 +42,15 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
 
         // GET SIZE OF REMOTE PLAYER, BUILD ARRAY TO STORE
         
-//        var gameSize : Int! = GameCenterConnector.sharedInstance().getRemoteCount()
-//        NSLog("get size %d", gameSize)
-//        var playerIds = GameCenterConnector.sharedInstance().getPlayerIds()
-//        for var index = 0; index < gameSize; ++index{
-//            var player_remote = PlayerNode(playerTextureName: "player")
-//            player_remote.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height * 0.5 - 50)
-//            self.remote_players[playerIds[index]] = player_remote
-//            self.addChild(player_remote)
-//        }
+        var gameSize : Int! = GameCenterConnector.sharedInstance().getRemoteCount()
+        NSLog("get size %d", gameSize)
+        var playerIds = GameCenterConnector.sharedInstance().getPlayerIds()
+        for var index = 0; index < gameSize; ++index{
+            var player_remote = PlayerNode(playerTextureName: "player")
+            player_remote.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height * 0.5 - 50)
+            self.remote_players[playerIds[index]] = player_remote
+            self.addChild(player_remote)
+        }
 //        currentIndex = -1
         
         //Create local player
@@ -152,16 +152,11 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         }else{
           //  print("not collide \n")
         }
-<<<<<<< HEAD
-      //  NSLog("send move: player's location \(player.position) and its id \(localId)")
-       // var id = localId.toInt()
-        self.networkEngine!.sendMove(player.position, id: localId)
-        
-=======
+
         if !isSinglePlayer{
-            self.networkEngine!.sendMove(player.position)
+            self.networkEngine!.sendMove(player.position, id: localId)
         }
->>>>>>> 2303098836912fe89d9271a627d3ecc3bf423610
+
     }
     
     // function to change coordinates to tile coordinates
