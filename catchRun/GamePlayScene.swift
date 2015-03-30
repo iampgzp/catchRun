@@ -170,7 +170,8 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
           //  print("not collide \n")
         }
       //  NSLog("send move: player's location \(player.position) and its id \(localId)")
-        self.networkEngine!.sendMove(player.position)
+       // var id = localId.toInt()
+        self.networkEngine!.sendMove(player.position, id: localId)
         
     }
     
@@ -198,14 +199,19 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     
     
     // THE INDEX IS THE PLAYERID
-    func movePlayerAtIndex(position: CGPoint){
+    func movePlayerAtIndex(position: CGPoint, id: String){
        // var player: PlayerNode! = players[index] as PlayerNode
        
         //var remote_p : PlayerNode! = remote_players[index]
-        for key in remote_players.keys {
-            var p = remote_players[key] as PlayerNode!
-            p.position = position
-        }
+        
+        
+        remote_players[id]?.position = position
+        
+        
+//        for key in remote_players.keys {
+//            var p = remote_players[key] as PlayerNode!
+//            p.position = position
+//        }
         //remote_p.position = position
     }
     

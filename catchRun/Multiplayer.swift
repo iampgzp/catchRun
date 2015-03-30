@@ -17,7 +17,7 @@ import GameKit
 protocol MultiplayerProtocol{
     func matchEnded()
     func setCurrentPlayerIndex(index: Int)
-    func movePlayerAtIndex(position: CGPoint)
+    func movePlayerAtIndex(position: CGPoint, id: String)
     func gameOver(leftWon: Bool)
     func setPlayerAlias(playerAliases: NSArray)
     
@@ -56,11 +56,11 @@ struct MessageGameBegin{
     var message: Message
 }
 
+
 struct MessageMove{
     // in move message, we need a direction
     var message: Message
     var position: CGPoint
-    
 }
 
 struct MessageGameOver{
@@ -142,16 +142,34 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     }
     
     // send move infomation to game center, add id
-    func sendMove(position: CGPoint){
+    func sendMove(position: CGPoint, id: String){
        // NSLog("send move message")
+//        let dataid = (id as NSString).dataUsingEncoding(NSUTF8StringEncoding)
         var messageMove = MessageMove(message: Message(messageType: MessageType.messageTypeMove), position: position)
+        var data = encode(messageMove)
+
+       // var messageMove = MessageMove(message: Message(messageType: MessageType.messageTypeMove), position_id: MessageMoveHelper(position: position, id: id))
  //       messageMove.message.messageType = MessageType.messageTypeMove
 //        messageMove.position = position
 //        messageMove.id = id
-        var data = NSData(bytes: &messageMove, length: sizeof(MessageMove))
+        //var data = NSData(bytes: &messageMove, length: sizeof(MessageMove))
         sendData(data)
     }
     
+    
+    func encode<T>(var value: T) -> NSData {
+        return withUnsafePointer(&value) { p in
+            NSData(bytes: p, length: sizeofValue(value))
+        }
+    }
+    
+    func decode<T>(data: NSData) -> T {
+        let pointer = UnsafeMutablePointer<T>.alloc(sizeof(T.Type))
+        data.getBytes(pointer)
+        
+        return pointer.move()
+    }
+
     
     //cast randomMessage to NSData, send it to other player
     func sendRandomPairingNumber(){
@@ -198,6 +216,10 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     //this method is used for decoding incoming game data
     func match(match: GKMatch, didReceiveData data: NSData, fromPlayer playerID: NSString) {
         var message: Message!
+//        var decoded = decode(data: data)
+        
+        
+        
         data.getBytes(&message, length: sizeof(Message))
         if (message.messageType == MessageType.messageTypeRandomNumber){
             var messageOfRandomNum: MessageRandomNumber!
@@ -232,11 +254,18 @@ class Multiplayer: NSObject, GameConnectorDelegate{
             //self.delegate.setCurrentPlayerIndex(indexForLocalPlayer())
             //self.processPlayerAliases()
         }else if message.messageType == MessageType.messageTypeMove{
+            var whole_message: MessageMove = decode(data)
+//            NSLog("The id should be 1 which is \(whole_message.id)")
+
+            self.delegate.movePlayerAtIndex(whole_message.position, id: playerID)
+            
             NSLog("receive Move message")
-            var test: String! = "i am test"
-            var messageMove: MessageMove!
-            data.getBytes(&messageMove, length: sizeof(MessageMove))
-            self.delegate.movePlayerAtIndex(messageMove.position)
+//            var test: String! = "i am test"
+//            var messageMove: MessageMove!
+//            data.getBytes(&messageMove, length: sizeof(MessageMove))
+//            var position = messageMove.position
+//            var id = messageMove.id
+//            self.delegate.movePlayerAtIndex(position, id: id)
             //self.delegate.movePlayerAtIndex(messageMove!.id, position: messageMove!.position)
             // convert point
         }else if message.messageType == MessageType.messageTypeGameOver{
