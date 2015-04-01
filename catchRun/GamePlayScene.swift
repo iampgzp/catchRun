@@ -14,6 +14,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     // the map we gonna use for this game
     var tiledMap:JSTileMap?
     var timer:NSTimer!
+    var countDown:SKLabelNode?
     var physicEngine:CollisionCheck?
     
     // network layer var
@@ -95,6 +96,25 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         pauseButton.position = CGPoint(x: size.width * 0.85, y: size.height * 0.15 )
         self.addChild(pauseButton)
         
+        timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: Selector("updateTimer"), userInfo: nil, repeats: true)
+        // Add A Label to count down
+        countDown = SKLabelNode(text:"30")
+        countDown!.fontName = "Helvetica Neue"
+        countDown!.xScale = 1.0
+        countDown!.yScale = 1.0
+        countDown!.position = CGPoint(x: size.width * 0.98, y: size.height * 0.83)
+        addChild(countDown!)
+    }
+    
+    func updateTimer(){
+        let nf = NSNumberFormatter()
+        nf.numberStyle = .DecimalStyle
+        let number = nf.numberFromString(countDown!.text)
+        let number2 = number!.integerValue - 1
+        if  number2 <= 0 {
+            gameOver(false)
+        }
+        countDown!.text = "\(number2)"
     }
     
     func didTapOnPause() {
@@ -131,26 +151,64 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         localPlayer.stopMoving()
     }
     
-    // We need to test if the ghost is found by the ghostbuster
-    // If not, check if the ghost hit any trap
-    // at last, make sure no one pass the wall
+    // record localplayer position in case it hit the wall
     override func update(currentTime: CFTimeInterval) {
         localPlayer.previousPosition = localPlayer.position
     }
     
+    // We need to test if the ghost is found by the ghostbuster
+    // If not, check if the ghost hit any trap
+    // at last, make sure local player doesn't pass the wall
     override func didEvaluateActions() {
-        if physicEngine!.isCollideWithTrap(localPlayer.position) || physicEngine!.isCollideWithWall(localPlayer.position) {
-            if  physicEngine!.isCollideWithWall(localPlayer.position) {
-                localPlayer.position = localPlayer.previousPosition!
-            }else{
-                // Change tile map to indicate ghost interect trap
-                let map = tiledMap!
-                var trap = map.layerNamed("Trap")
-                trap.removeTileAtCoord(physicEngine!.tileCoordForPosition(localPlayer.position))
-                var background = map.layerNamed("Background")
-                background.removeTileAtCoord(physicEngine!.tileCoordForPosition(localPlayer.position))
+        // get the ghost node and check if caught
+        var ghost:PlayerNode?
+        if  localPlayer.playerRole == "Ghost"{
+            ghost = localPlayer
+
+            // check if caught
+            for (key, remotePlayer) in remote_players{
+                if physicEngine!.isCollideWithGhost(remotePlayer.position, ghostPosition: ghost!.position){
+                    gameOver(true)
+                }
             }
+            
         }else{
+            var ghostKey:NSString?
+            for (key, remotePlayer) in remote_players{
+                if remotePlayer.playerRole == "Ghost" {
+                    ghost = remotePlayer
+                    ghostKey = key
+                }
+            }
+            
+            // check if caught by local player
+            if physicEngine!.isCollideWithGhost(localPlayer.position, ghostPosition: ghost!.position){
+                gameOver(true)
+            }
+            
+            // check if caught by other remote players
+            for (key, remotePlayer) in remote_players{
+                if  key != ghostKey {
+                    if physicEngine!.isCollideWithGhost(remotePlayer.position, ghostPosition: ghost!.position){
+                        gameOver(true)
+                    }
+                }
+            }
+        }
+        
+        // check if ghost touch trp
+        if  physicEngine!.isCollideWithTrap(ghost!.position) {
+            // Change tile map to indicate ghost interect trap
+            let map = tiledMap!
+            var trap = map.layerNamed("Trap")
+            trap.removeTileAtCoord(physicEngine!.tileCoordForPosition(localPlayer.position))
+            var background = map.layerNamed("Background")
+            background.removeTileAtCoord(physicEngine!.tileCoordForPosition(localPlayer.position))
+        }
+        
+        // check if local player hit the wall
+        if physicEngine!.isCollideWithWall(localPlayer.position) {
+            localPlayer.position = localPlayer.previousPosition!
         }
         
         if !isSinglePlayer{
@@ -175,7 +233,12 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     }
     
     func gameOver(leftWon: Bool){
-        
+        let endGameAction = SKAction.runBlock{
+            let reval = SKTransition.flipHorizontalWithDuration(0.5)
+            self.view?.presentScene( GameOverScene(size: self.size), transition: reval)
+        }
+        //gameStarted = True
+        self.runAction(endGameAction)
     }
     
     func setPlayerAlias(playerAliases: NSArray){

@@ -12,17 +12,16 @@ import Social
 
 class GameOverScene: SKScene, GADInterstitialDelegate {
     override func didMoveToView(view: SKView) {
-        /* Setup your scene here */
-        let background:SKSpriteNode = SKSpriteNode(imageNamed: "background")
-        background.anchorPoint = CGPoint(x: 0, y: 0)
-        background.position = CGPoint(x: 0, y: 0)
-        background.size = CGSize(width: self.size.width, height: self.size.height)
-        addChild(background)
+        let gameOverLabel: SKLabelNode = SKLabelNode(text: "You Won")
+        gameOverLabel.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5)
+        gameOverLabel.xScale = 1.0
+        gameOverLabel.yScale = 1.0
+        addChild(gameOverLabel)
         
         let startGameButton: GGButton = GGButton(defaultButtonImage: "button1", activeButtonImage: "button2", buttonAction: startGameButtonDown)
         startGameButton.xScale = 0.3
         startGameButton.yScale = 0.3
-        startGameButton.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5 )
+        startGameButton.position = CGPoint(x: size.width * 0.5, y: size.height * 0.8 )
         addChild(startGameButton)
         
         let twitterButton:GGButton = GGButton(defaultButtonImage: "twitter", activeButtonImage: "twitter", buttonAction: shareToWeibo)
@@ -35,7 +34,7 @@ class GameOverScene: SKScene, GADInterstitialDelegate {
     func startGameButtonDown(){
         let startGameAction = SKAction.runBlock{
             let reval = SKTransition.flipHorizontalWithDuration(0.5)
-            self.view?.presentScene( GamePlayScene(size: self.size), transition: reval)
+            self.view?.presentScene( GameScene(size: self.size), transition: reval)
         }
         self.runAction(startGameAction)
     }
