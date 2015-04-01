@@ -13,6 +13,7 @@ import SpriteKit
 class PlayerNode: SKSpriteNode{
     var playerWalkingFrames : NSArray
     var previousPosition : CGPoint?
+    var playerRole : NSString!
     // this is engine used for sending data to game center
     
     init(playerTextureName: NSString){
@@ -39,34 +40,31 @@ class PlayerNode: SKSpriteNode{
     func moving(Direction: String){
         previousPosition = position
         NSLog("moving to direction %s", Direction)
-        var localId = GameCenterConnector.sharedInstance().getLocalPlayerID()
         var frame_4 = playerWalkingFrames.count / 4
         switch(Direction){
         case "LEFT":
             stopMoving()
             self.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(playerWalkingFrames.subarrayWithRange(NSMakeRange(frame_4*2, frame_4)), timePerFrame: 0.1, resize: false, restore: true)), withKey: "walkingAnimation")
-            self.runAction(SKAction.repeatActionForever(SKAction.moveByX(-30, y: 0, duration: 1)), withKey: "movingLeft")
+            self.runAction(SKAction.repeatActionForever(SKAction.moveByX(-100, y: 0, duration: 1)), withKey: "movingLeft")
             break
         case "RIGHT":
             stopMoving()
             self.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(playerWalkingFrames.subarrayWithRange(NSMakeRange(frame_4*3, frame_4)), timePerFrame: 0.1, resize: false, restore: true)), withKey: "walkingAnimation")
-            self.runAction(SKAction.repeatActionForever(SKAction.moveByX(30, y: 0, duration: 1)), withKey: "movingRight")
+            self.runAction(SKAction.repeatActionForever(SKAction.moveByX(100, y: 0, duration: 1)), withKey: "movingRight")
             break
         case "UP":
             stopMoving()
             self.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(playerWalkingFrames.subarrayWithRange(NSMakeRange(0, frame_4)), timePerFrame: 0.1, resize: false, restore: true)), withKey: "walkingAnimation")
-            self.runAction(SKAction.repeatActionForever(SKAction.moveByX(0, y: 30, duration: 1)), withKey: "movingUp")
+            self.runAction(SKAction.repeatActionForever(SKAction.moveByX(0, y: 100, duration: 1)), withKey: "movingUp")
             break
         case "DOWN":
             stopMoving()
             self.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(playerWalkingFrames.subarrayWithRange(NSMakeRange(frame_4, frame_4)), timePerFrame: 0.1, resize: false, restore: true)), withKey: "walkingAnimation")
-            self.runAction(SKAction.repeatActionForever(SKAction.moveByX(0, y: -30, duration: 1)), withKey: "movingDown")
+            self.runAction(SKAction.repeatActionForever(SKAction.moveByX(0, y: -100, duration: 1)), withKey: "movingDown")
             break
         default:
             break;
         }
-//        networkEngine.sendMove(self.position, id: localId)
-        //networkEngine.sendMove()
     }
     
     //fill this part
@@ -77,11 +75,5 @@ class PlayerNode: SKSpriteNode{
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    // need to update player's location according to its move direction
-    func getCurrentLoc() -> CGPoint{
-        // apply its location here according to its move
-        return self.position;
     }
 }

@@ -5,32 +5,27 @@
 //  Created by Ji Pei on 12/16/14.
 //  Copyright (c) 2014 LUSS. All rights reserved.
 //
+// it contains 5 method. moveplayeratindex api helps one of the player in the game to get the information of another player's move information. Such as P1 get the info of P2's current position
 
 import SpriteKit
 import GameKit
-//gameplayerscene need to implement MultiplayerProtocol.
-// it contains 5 method. moveplayeratindex api helps one of the player in the game to get the information of another player's move information. Such as P1 get the info of P2's current position
-
-
 
 class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
+    // the map we gonna use for this game
     var tiledMap:JSTileMap?
-    var player = PlayerNode(playerTextureName: "player")
-    var playerWalkingFrames = NSArray()
-    var isSinglePlayer = true
+    var timer:NSTimer!
+    var physicEngine:CollisionCheck?
     
-    // this is used to transfer moving data
-    //var networkEngineDelegate: playerSceneDelegate?
+    // network layer var
+    var isSinglePlayer = true
     var networkEngine: Multiplayer!
-    //------network layer var
     var currentIndex: Int! // which player
-
-    //-----------------
+    var localPlayer = PlayerNode(playerTextureName: "player")
     var capacityOfPlayerInGame: Int! = 2
     var remote_players = Dictionary<String, PlayerNode>()
-
+    
     override func didMoveToView(view: SKView) {
-        /* Setup your scene here */
+        // Create game map
         tiledMap = JSTileMap(named:"map.tmx")
         let map = tiledMap!
         self.anchorPoint = CGPoint(x: 0, y: 0)
@@ -39,32 +34,59 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         map.position = CGPoint(x: 0, y: 0)
         self.addChild(map)
         
-
-        // GET SIZE OF REMOTE PLAYER, BUILD ARRAY TO STORE
+        // Create local player
+        localPlayer.position = CGPoint(x: self.size.width * 0.5, y: 50)
+        localPlayer.xScale = 0.8
+        localPlayer.yScale = 0.8
+        // need to set player role according to networking
+        localPlayer.playerRole = "Ghost"
+        self.addChild(localPlayer)
         
-        var gameSize : Int! = GameCenterConnector.sharedInstance().getRemoteCount()
-        NSLog("get size %d", gameSize)
-        var playerIds = GameCenterConnector.sharedInstance().getPlayerIds()
-        for var index = 0; index < gameSize; ++index{
-            var player_remote = PlayerNode(playerTextureName: "player")
-            player_remote.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height * 0.5 - 50)
-            self.remote_players[playerIds[index]] = player_remote
-            self.addChild(player_remote)
+        // If Mutiplayer, Get the number of Players
+        if !isSinglePlayer {
+            var gameSize : Int! = GameCenterConnector.sharedInstance().getRemoteCount()
+            capacityOfPlayerInGame = gameSize + 1
+            NSLog("There are %d players + one local player in the game", gameSize)
+            
+            // Create a dictionary key is player id, object is player node and add node to screen
+            var playerIds = GameCenterConnector.sharedInstance().getPlayerIds()
+            for var index = 0; index < gameSize; ++index{
+                var player_remote = PlayerNode(playerTextureName: "player")
+                player_remote.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height - 50)
+                // need to set player role according to networking
+                player_remote.playerRole = "Ghostbuster"
+                self.remote_players[playerIds[index]] = player_remote
+                self.addChild(player_remote)
+            }
         }
-//        currentIndex = -1
         
-        //Create local player
-        player.position = CGPoint(x: self.size.width * 0.5 - 50, y: self.size.height * 0.5 - 50)
-        player.xScale = 0.8
-        player.yScale = 0.8
-        self.addChild(player)
-        //virtual joystick
-        let joyStick = JoyStick(defatultArrowImage: "arrow", activeArrowImage: "arrowdown", target: player)
+        // Create JoyStick Controller
+        let joyStick = JoyStick(defatultArrowImage: "arrow", activeArrowImage: "arrowdown", target: localPlayer)
         joyStick.xScale = 0.5
         joyStick.yScale = 0.5
         joyStick.alpha = 0.5
         joyStick.position = CGPoint(x: 100, y: 100)
         self.addChild(joyStick)
+        
+        // add gesture recognizer controller
+        let swipeRight:UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: Selector("handleSwipeGesture:"))
+        swipeRight.direction = .Right
+        view.addGestureRecognizer(swipeRight)
+        let swipeLeft:UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: Selector("handleSwipeGesture:"))
+        swipeLeft.direction = .Left
+        view.addGestureRecognizer(swipeLeft)
+        let swipeUp:UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: Selector("handleSwipeGesture:"))
+        swipeUp.direction = .Up
+        view.addGestureRecognizer(swipeUp)
+        let swipeDown:UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: Selector("handleSwipeGesture:"))
+        swipeDown.direction = .Down
+        view.addGestureRecognizer(swipeDown)
+        let tap:UITapGestureRecognizer = UITapGestureRecognizer(target:self, action: Selector("handleTapGesture:"))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+        
+        // Create Physic Engine
+        physicEngine = CollisionCheck(tiledMap:map)
         
         //Add a button to end game
         let pauseButton = GGButton(defaultButtonImage: "pause", activeButtonImage: "pause", buttonAction:didTapOnPause)
@@ -72,12 +94,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         pauseButton.yScale = 1.0
         pauseButton.position = CGPoint(x: size.width * 0.85, y: size.height * 0.15 )
         self.addChild(pauseButton)
-    }
-    
-    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-//        if (currentIndex == -1){
-//            return
-//        }
+        
     }
     
     func didTapOnPause() {
@@ -89,89 +106,60 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         self.runAction(pauseGameAction)
     }
     
-//    //LOCAL PLAYER MOVE
-//    func handleSwipeGesture(gesture: UISwipeGestureRecognizer) {
-//        var direction = gesture.direction
-//        var localId = GameCenterConnector.sharedInstance().getLocalPlayerID()
-//        NSLog("swipe for playerid %s", localId)
-//        switch (direction){
-//        case UISwipeGestureRecognizerDirection.Left:
-//           
-//            //var player: PlayerNode! = players[currentIndex]
-//            player.moving("LEFT")
-//            networkEngine.sendMove(player.position, id: localId)
-//            break
-//        case UISwipeGestureRecognizerDirection.Right:
-//            
-//            //var player: PlayerNode! = players[currentIndex]
-//            player.moving("RIGHT")
-//            networkEngine.sendMove(player.position, id: localId)
-//            break
-//        case UISwipeGestureRecognizerDirection.Up:
-//            
-//            //var player: PlayerNode! = players[currentIndex]
-//            player.moving("UP")
-//            networkEngine.sendMove(player.position, id: localId)
-//            break
-//        case UISwipeGestureRecognizerDirection.Down:
-//            
-//            //var player: PlayerNode! = players[currentIndex]
-//            player.moving("DOWN")
-//            networkEngine.sendMove(player.position, id: localId)
-//            break
-//        default:
-//            break;
-//        }
-//    }
-    
+    //LOCAL PLAYER MOVE
+    func handleSwipeGesture(gesture: UISwipeGestureRecognizer) {
+        var direction = gesture.direction
+        switch (direction){
+        case UISwipeGestureRecognizerDirection.Left:
+            localPlayer.moving("LEFT")
+            break
+        case UISwipeGestureRecognizerDirection.Right:
+            localPlayer.moving("RIGHT")
+            break
+        case UISwipeGestureRecognizerDirection.Up:
+            localPlayer.moving("UP")
+            break
+        case UISwipeGestureRecognizerDirection.Down:
+            localPlayer.moving("DOWN")
+            break
+        default:
+            break;
+        }
+    }
     
     func handleTapGesture(gesture:UITapGestureRecognizer) {
-        player.stopMoving()
+        localPlayer.stopMoving()
     }
     
+    // We need to test if the ghost is found by the ghostbuster
+    // If not, check if the ghost hit any trap
+    // at last, make sure no one pass the wall
     override func update(currentTime: CFTimeInterval) {
-        var localId = GameCenterConnector.sharedInstance().getLocalPlayerID()
-        if isCollideWithTrap(player.position) || isCollideWithWall(player.position) {
-            if  isCollideWithWall(player.position) {
-             //   print("collide with wall \n")
-                player.position = player.previousPosition!
+        localPlayer.previousPosition = localPlayer.position
+    }
+    
+    override func didEvaluateActions() {
+        if physicEngine!.isCollideWithTrap(localPlayer.position) || physicEngine!.isCollideWithWall(localPlayer.position) {
+            if  physicEngine!.isCollideWithWall(localPlayer.position) {
+                localPlayer.position = localPlayer.previousPosition!
             }else{
-             //   print("collide with trap \n")
-                
+                // Change tile map to indicate ghost interect trap
                 let map = tiledMap!
                 var trap = map.layerNamed("Trap")
-                
-                
-                trap.removeTileAtCoord(tileCoordForPosition(player.position))
+                trap.removeTileAtCoord(physicEngine!.tileCoordForPosition(localPlayer.position))
                 var background = map.layerNamed("Background")
-                
-                
-                background.removeTileAtCoord(tileCoordForPosition(player.position))
-                
+                background.removeTileAtCoord(physicEngine!.tileCoordForPosition(localPlayer.position))
             }
         }else{
-          //  print("not collide \n")
         }
-
+        
         if !isSinglePlayer{
-            self.networkEngine!.sendMove(player.position, id: localId)
+            var localId = GameCenterConnector.sharedInstance().getLocalPlayerID()
+            self.networkEngine!.sendMove(localPlayer.position, id: localId)
         }
-
     }
     
-    // function to change coordinates to tile coordinates
-    // tile : (0, 0) ........ (16, 0)
-    //          .    ........   .
-    //          .    ........   .
-    //        (0, 16) ......  (16, 16)
-    //while spritekit origin is bottom left so we need to reverse y
-    func tileCoordForPosition(position: CGPoint) -> CGPoint{
-        var x = Int((position.x / (tiledMap!.tileSize.width*1.9)))
-        var y = Int((tiledMap!.mapSize.height * tiledMap!.tileSize.height*1.5 - position.y) / (tiledMap!.tileSize.height*1.5))
-        return CGPoint(x: x, y: y)
-    }
-    
-    //conform multiplayer protocol
+    //MARK Multiplayer Protocol
     func matchEnded(){
         
     }
@@ -183,85 +171,14 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     
     // THE INDEX IS THE PLAYERID
     func movePlayerAtIndex(position: CGPoint, id: String){
-       // var player: PlayerNode! = players[index] as PlayerNode
-       
-        //var remote_p : PlayerNode! = remote_players[index]
-        
-        
         remote_players[id]?.position = position
-        
-        
-//        for key in remote_players.keys {
-//            var p = remote_players[key] as PlayerNode!
-//            p.position = position
-//        }
-        //remote_p.position = position
     }
     
-    // we can check game over by only one side
-    // for example: P1 wins, we only check P1. then send game over info to P2
     func gameOver(leftWon: Bool){
         
     }
     
     func setPlayerAlias(playerAliases: NSArray){
         
-    }
-    
-    func isCollideWithWall(position:CGPoint) -> Bool{
-        // wall's layer name is Meta
-        let map = tiledMap!
-        var wall = map.layerNamed("Meta")
-        
-        // divide by the factor because of the scaling of the map
-        var adjustPosition = CGPointMake(position.x/1.9, position.y/1.5)
-        
-        // get the point for record the point means which tell it is from top left
-        var point = tileCoordForPosition(adjustPosition)
-        
-        // tileGid will give you a reference of this position
-        var tileGid = wall.tileGidAt(adjustPosition)
-        if  tileGid != 0{
-            // check collide with wall
-            var properties:NSDictionary = map.propertiesForGid(tileGid) as NSDictionary
-            // if it is the wall dict, there is a key called Collidable and it will return "true"
-            // if it is the trap dict, there is a key called trapCollidable and it will return true
-            var collision: NSString = properties.valueForKey("Collidable") as NSString
-            if collision == "True" {
-                return  true
-            }else{
-                return  false
-            }
-        }else{
-            return  false
-        }
-    }
-    
-    func isCollideWithTrap(position:CGPoint) -> Bool{
-        // wall's layer name is Meta
-        let map = tiledMap!
-        var trap = map.layerNamed("Trap")
-        
-        // divide by the factor because of the scaling of the map
-        var adjustPosition = CGPointMake(position.x/1.9, position.y/1.5)
-        
-        // get the point for record the point means which tell it is from top left
-        var point = tileCoordForPosition(adjustPosition)
-        
-        // tileGid will give you a reference of this position
-        var tileGid = trap.tileGidAt(adjustPosition)
-        if  tileGid != 0{
-            // check collide with wall
-            var properties:NSDictionary = map.propertiesForGid(tileGid) as NSDictionary
-            // if it is the trap dict, there is a key called trapCollidable and it will return true
-            var collision: NSString = properties.valueForKey("trapCollidable") as NSString
-            if collision == "true" {
-                return  true
-            }else{
-                return  false
-            }
-        }else{
-            return  false
-        }
     }
 }
