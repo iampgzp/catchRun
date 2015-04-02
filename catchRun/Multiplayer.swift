@@ -20,7 +20,7 @@ protocol MultiplayerProtocol{
     func movePlayerAtIndex(position: CGPoint, id: String)
     func gameOver(leftWon: Bool)
     func setPlayerAlias(playerAliases: NSArray)
-    func setPlayerRole(selfRand: Int, remoteDictRand: Dictionary<String, Int>)
+    //func setPlayerRole(selfRand: Int, remoteDictRand: Dictionary<String, Int>)
     
 }
 // we need separate game state
@@ -77,7 +77,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     var isP1: Bool!
     var gameState: GameState?
     var randomNumber: Int!
-    var orderOfPlayers: NSMutableArray!
+    var orderOfPlayers: Dictionary<String, Int>!
     var delegate: MultiplayerProtocol!
     let playerIdKey: String! = "playerID"
     var viewc: UIViewController!
@@ -92,9 +92,10 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         NSLog("this is my rand number %d \n" , randomNumber)
         //gamestate initiall should be waiting for a match connection to be established
         gameState = GameState.waitingForMatch
-        orderOfPlayers = NSMutableArray()
-        var dic = [playerIdKey: GKLocalPlayer.localPlayer().playerID as String, randomNumberKey: randomNumber]
-        orderOfPlayers.addObject(dic)
+        orderOfPlayers = Dictionary<String, Int>()
+        orderOfPlayers[GKLocalPlayer.localPlayer().playerID as String] = self.randomNumber;
+       // var dic = [playerIdKey: GKLocalPlayer.localPlayer().playerID as String, randomNumberKey: randomNumber]
+        
     }
     
     // CALLED BY METHOD LOOKUPPLAYER() IN GAMECENTERCONNECTOR
@@ -146,6 +147,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     func sendMove(position: CGPoint, id: String){
        // NSLog("send move message")
 //        let dataid = (id as NSString).dataUsingEncoding(NSUTF8StringEncoding)
+        NSLog("send move position \(position) with id \(id)")
         var messageMove = MessageMove(message: Message(messageType: MessageType.messageTypeMove), position: position)
         var data = encode(messageMove)
 
@@ -200,18 +202,18 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         sendData(data)
     }
     
-    func processPlayerAliases(){
-        if allRandomInfoReceived(){
-            var playerAliases: NSMutableArray! = NSMutableArray(capacity: orderOfPlayers.count)
-            for playerDetail in orderOfPlayers{
-                var playerID: NSString! = playerDetail[playerIdKey] as NSString
-                playerAliases.addObject(GameCenterConnector.sharedInstance().playerDict[playerID]!.alias)
-            }
-            if playerAliases.count > 0{
-                self.delegate.setPlayerAlias(playerAliases)
-            }
-        }
-    }
+//    func processPlayerAliases(){
+//        if allRandomInfoReceived(){
+//            var playerAliases: NSMutableArray! = NSMutableArray(capacity: orderOfPlayers.count)
+//            for playerDetail in orderOfPlayers{
+//                var playerID: NSString! = playerDetail[playerIdKey] as NSString
+//                playerAliases.addObject(GameCenterConnector.sharedInstance().playerDict[playerID]!.alias)
+//            }
+//            if playerAliases.count > 0{
+//                self.delegate.setPlayerAlias(playerAliases)
+//            }
+//        }
+//    }
     
     //change incoming data to message structure
     //this method is used for decoding incoming game data
@@ -236,15 +238,16 @@ class Multiplayer: NSObject, GameConnectorDelegate{
                 sendRandomPairingNumber()
             }else{
                 var dictionary: NSDictionary! = [playerIdKey as String: playerID as String, randomNumberKey: messageOfRandomNum.randomNumber]
+                orderOfPlayers[playerID] = messageOfRandomNum.randomNumber
                 processReceivedRandomNumber(dictionary)
             }
             if receiveAllRandomPairingNumber == true{
                 NSLog("receive all number")
-                isP1 = isLeftPlayer()
+                
             }
             if (!tie && receiveAllRandomPairingNumber == true){
                 //hacky way for two users
-                self.delegate.setPlayerRole(self.randomNumber, remoteDictRand: [playerID: messageOfRandomNum.randomNumber])
+          //      self.delegate.setPlayerRole(self.randomNumber, remoteDictRand: [playerID: messageOfRandomNum.randomNumber])
                 if gameState == GameState.waitingForRandomPairing{
                     gameState = GameState.waitingForStart
                 }
@@ -258,8 +261,8 @@ class Multiplayer: NSObject, GameConnectorDelegate{
             //self.processPlayerAliases()
         }else if message.messageType == MessageType.messageTypeMove{
             var whole_message: MessageMove = decode(data)
-//            NSLog("The id should be 1 which is \(whole_message.id)")
-
+            NSLog("******* receive position \(whole_message.position) with id \(playerID)")
+            
             self.delegate.movePlayerAtIndex(whole_message.position, id: playerID)
             
             NSLog("receive Move message")
@@ -282,27 +285,16 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     //make the highest random number to be police
     //lower random number denotes the thief
     func processReceivedRandomNumber(randomNumberDetails: NSDictionary){
-        if orderOfPlayers.containsObject(randomNumberDetails){
-            orderOfPlayers.removeObjectAtIndex(orderOfPlayers.indexOfObject(randomNumberDetails))
-        }
-        
-        orderOfPlayers.addObject(randomNumberDetails)
-        
-        var sortByRandomNumber: NSSortDescriptor! = NSSortDescriptor(key: randomNumberKey, ascending: false)
-        var sortDescriptors: NSArray! = [sortByRandomNumber]
-        orderOfPlayers.sortUsingDescriptors(sortDescriptors)
+
         if (self.allRandomInfoReceived()){
             receiveAllRandomPairingNumber = true
         }
     }
     
+    //check from order of players
     func allRandomInfoReceived() -> Bool{
-        var receiveRandomInfo: NSMutableArray! = NSMutableArray()
-        for dict in orderOfPlayers{
-            receiveRandomInfo.addObject(dict[randomNumberKey])
-        }
-        //var arrayOfUniqueRandomNum: NSArray! = NSSet(receivedRandomNumbers) allObjects
-        if receiveRandomInfo.count == (GameCenterConnector.sharedInstance().match.playerIDs.count + 1){
+
+        if orderOfPlayers.count == (GameCenterConnector.sharedInstance().match.playerIDs.count + 1){
             return true
         }
         return false
@@ -310,45 +302,17 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     
     
     
-    //-----------------------------
-    func indexForLocalPlayer() -> Int{
-        var playerId: NSString! = GKLocalPlayer.localPlayer().playerID
-        return indexForPlayerID(playerId)
-    }
-    
-    func indexForPlayerID(playerId: NSString) -> Int{
-        var index: Int = -1
-        orderOfPlayers.enumerateObjectsUsingBlock { (obj, idx, stop) -> Void in
-            var pId: NSString! = obj[self.playerIdKey] as NSString
-            if pId.isEqualToString(playerId){
-                index = idx
-                stop.initialize(true)
-            }
-        }
-        return index
-    }
-    //-----------------------------------
-    
-    
-    
-    
-    
-    
-    //P1 player
-    func isLeftPlayer() -> Bool{
-        var dictionary: NSDictionary! = orderOfPlayers[0] as NSDictionary
-        //optional are no longer considerred as boolean expression
-        if dictionary[playerIdKey]!.isEqualToString(GKLocalPlayer.localPlayer().playerID){
-            println("this is id \(GKLocalPlayer.localPlayer().playerID)")
-            //NSLog("this is %s", GKLocalPlayer.localPlayer().playerID)
-            return true
-        }
-        return false
-    }
+
+
+
     
     func matchEnded(){
         println("Match ended")
         //delegate.matchEnded()
+    }
+    
+    func getRandomNumber() -> Dictionary<String, Int>{
+        return orderOfPlayers
     }
     
 }

@@ -100,6 +100,18 @@ class GameScene: SKScene, GADInterstitialDelegate {
         var gameplayscene = GamePlayScene(size: self.size)
         var multiplayer: Multiplayer! = GameCenterConnector.sharedInstance().delegate as Multiplayer
         multiplayer.delegate = gameplayscene
+        var randomDict: Dictionary<String, Int> = multiplayer.getRandomNumber()
+        var ghostkey:String!
+        var maxvalue = randomDict[GameCenterConnector.sharedInstance().getLocalPlayerID()]
+        // find minimum key, set it as ghost key
+        for key in randomDict.keys{
+            var keyrand = randomDict[key] as Int!
+            if maxvalue >= (keyrand){
+                ghostkey = key
+                maxvalue = keyrand
+            }
+        }
+        gameplayscene.setGhostKey(ghostkey)
         gameplayscene.networkEngine = multiplayer
         gameplayscene.isSinglePlayer = false
         let startGameAction = SKAction.runBlock{

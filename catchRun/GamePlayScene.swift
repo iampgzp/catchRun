@@ -24,6 +24,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     var localPlayer = PlayerNode(playerTextureName: "player")
     var capacityOfPlayerInGame: Int! = 2
     var remote_players = Dictionary<String, PlayerNode>()
+    var ghostkey: String!
     
     override func didMoveToView(view: SKView) {
         // Create game map
@@ -153,6 +154,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     
     // record localplayer position in case it hit the wall
     override func update(currentTime: CFTimeInterval) {
+        
         localPlayer.previousPosition = localPlayer.position
     }
     
@@ -229,6 +231,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     
     // THE INDEX IS THE PLAYERID
     func movePlayerAtIndex(position: CGPoint, id: String){
+        NSLog("all remote playerid \(remote_players.keys)")
         remote_players[id]?.position = position
     }
     
@@ -245,17 +248,21 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         
     }
     
-    func setPlayerRole(selfRand: Int, remoteDictRand: Dictionary<String, Int>){
-        for keys in remoteDictRand.keys{
-            if selfRand < remoteDictRand[keys]{
-                localPlayer.playerRole = "Ghost"
-                var remoteplayer: PlayerNode = remote_players[keys] as PlayerNode!
-                remoteplayer.playerRole = "Ghostbuster"
-            }else{
-                localPlayer.playerRole = "Ghostbuster"
-                var remoteplayer: PlayerNode = remote_players[keys] as PlayerNode!
-                remoteplayer.playerRole = "Ghost"
-            }
-        }
+    func setGhostKey(ghostkey: String){
+        self.ghostkey = ghostkey
     }
+    
+//    func setPlayerRole(selfRand: Int, remoteDictRand: Dictionary<String, Int>){
+//        for keys in remoteDictRand.keys{
+//            if selfRand < remoteDictRand[keys]{
+//                localPlayer.playerRole = "Ghost"
+//                var remoteplayer: PlayerNode = remote_players[keys] as PlayerNode!
+//                remoteplayer.playerRole = "Ghostbuster"
+//            }else{
+//                localPlayer.playerRole = "Ghostbuster"
+//                var remoteplayer: PlayerNode = remote_players[keys] as PlayerNode!
+//                remoteplayer.playerRole = "Ghost"
+//            }
+//        }
+//    }
 }
