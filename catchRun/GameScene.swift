@@ -112,6 +112,7 @@ class GameScene: SKScene, GADInterstitialDelegate {
             }
         }
         gameplayscene.setGhostKey(ghostkey)
+        NSLog("The ghost playerID is \(ghostkey)")
         gameplayscene.networkEngine = multiplayer
         gameplayscene.isSinglePlayer = false
         let startGameAction = SKAction.runBlock{

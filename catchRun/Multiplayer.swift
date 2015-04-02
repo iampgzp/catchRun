@@ -74,7 +74,6 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     
     var receiveAllRandomPairingNumber: Bool?
     //use P1 to denote police
-    var isP1: Bool!
     var gameState: GameState?
     var randomNumber: Int!
     var orderOfPlayers: Dictionary<String, Int>!

@@ -248,6 +248,10 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         
     }
     
+    
+    
+    //called in gamescen page
+    //before navigating to play scene
     func setGhostKey(ghostkey: String){
         self.ghostkey = ghostkey
     }
