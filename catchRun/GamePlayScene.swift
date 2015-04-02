@@ -244,4 +244,18 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     func setPlayerAlias(playerAliases: NSArray){
         
     }
+    
+    func setPlayerRole(selfRand: Int, remoteDictRand: Dictionary<String, Int>){
+        for keys in remoteDictRand.keys{
+            if selfRand < remoteDictRand[keys]{
+                localPlayer.playerRole = "Ghost"
+                var remoteplayer: PlayerNode = remote_players[keys] as PlayerNode!
+                remoteplayer.playerRole = "Ghostbuster"
+            }else{
+                localPlayer.playerRole = "Ghostbuster"
+                var remoteplayer: PlayerNode = remote_players[keys] as PlayerNode!
+                remoteplayer.playerRole = "Ghost"
+            }
+        }
+    }
 }

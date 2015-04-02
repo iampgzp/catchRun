@@ -20,6 +20,7 @@ protocol MultiplayerProtocol{
     func movePlayerAtIndex(position: CGPoint, id: String)
     func gameOver(leftWon: Bool)
     func setPlayerAlias(playerAliases: NSArray)
+    func setPlayerRole(selfRand: Int, remoteDictRand: Dictionary<String, Int>)
     
 }
 // we need separate game state
@@ -242,6 +243,8 @@ class Multiplayer: NSObject, GameConnectorDelegate{
                 isP1 = isLeftPlayer()
             }
             if (!tie && receiveAllRandomPairingNumber == true){
+                //hacky way for two users
+                self.delegate.setPlayerRole(self.randomNumber, remoteDictRand: [playerID: messageOfRandomNum.randomNumber])
                 if gameState == GameState.waitingForRandomPairing{
                     gameState = GameState.waitingForStart
                 }
