@@ -36,29 +36,76 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         map.position = CGPoint(x: 0, y: 0)
         self.addChild(map)
         
-        // Create local player
-        localPlayer.position = CGPoint(x: self.size.width * 0.5, y: 50)
-        localPlayer.xScale = 0.8
-        localPlayer.yScale = 0.8
-        // need to set player role according to networking
-        localPlayer.playerRole = "Ghost"
-        self.addChild(localPlayer)
-        
-        // If Mutiplayer, Get the number of Players
-        if !isSinglePlayer {
+        if isSinglePlayer {
+            // single player Create local player as ghost
+            localPlayer.xScale = 0.8
+            localPlayer.yScale = 0.8
+            localPlayer.position = CGPoint(x: self.size.width * 0.5, y: 50)
+            localPlayer.playerRole = "Ghost"
+            self.addChild(localPlayer)
+        }else{
+            // multi player get how man players
             var gameSize : Int! = GameCenterConnector.sharedInstance().getRemoteCount()
             capacityOfPlayerInGame = gameSize + 1
             NSLog("There are %d players + one local player in the game", gameSize)
             
             // Create a dictionary key is player id, object is player node and add node to screen
             var playerIds = GameCenterConnector.sharedInstance().getPlayerIds()
-            for var index = 0; index < gameSize; ++index{
-                var player_remote = PlayerNode(playerTextureName: "player")
-                player_remote.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height - 50)
-                // need to set player role according to networking
-                player_remote.playerRole = "Ghostbuster"
-                self.remote_players[playerIds[index]] = player_remote
-                self.addChild(player_remote)
+            var sortPlayerIds = playerIds.sorted(<)
+            
+            // find the ghost and set position
+            if  ghostkey == GKLocalPlayer.localPlayer().playerID {
+                // local player is ghost
+                localPlayer.xScale = 0.8
+                localPlayer.yScale = 0.8
+                localPlayer.position = CGPoint(x: self.size.width * 0.5, y: 50)
+                localPlayer.playerRole = "Ghost"
+                self.addChild(localPlayer)
+                
+                // set remote players as ghostbusters
+                for var index = 0; index < gameSize; ++index{
+                    var player_remote = PlayerNode(playerTextureName: "player")
+                    player_remote.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height * 0.83)
+                    player_remote.playerRole = "Ghostbuster"
+                    self.remote_players[sortPlayerIds[index]] = player_remote
+                    self.addChild(player_remote)
+                }
+            }else{
+                // remote player is ghost find who is ghost exactly
+                for var index = 0; index < gameSize; ++index{
+                    if ghostkey == sortPlayerIds[index] {
+                        // set ghost
+                        var player_remote = PlayerNode(playerTextureName: "player")
+                        player_remote.xScale = 0.8
+                        player_remote.yScale = 0.8
+                        player_remote.position = CGPoint(x: self.size.width * 0.5, y: 50)
+                        player_remote.playerRole = "Ghost"
+                        self.remote_players[sortPlayerIds[index]] = player_remote
+                        self.addChild(player_remote)
+                        //remove ghost from sort player id in order for consistent in the position
+                        sortPlayerIds.removeAtIndex(index)
+                        break
+                    }
+                }
+                
+                // add local player and re-sort
+                sortPlayerIds.insert(GKLocalPlayer.localPlayer().playerID, atIndex: 0)
+                sortPlayerIds = sortPlayerIds.sorted(<)
+                
+                // set local player and other player
+                for var index = 0; index < gameSize; ++index{
+                    if  sortPlayerIds[index] == GKLocalPlayer.localPlayer().playerID {
+                        localPlayer.playerRole = "Ghostbuster"
+                        localPlayer.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height * 0.83)
+                        self.addChild(localPlayer)
+                    }else{
+                        var player_remote = PlayerNode(playerTextureName: "player")
+                        player_remote.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height * 0.83)
+                        player_remote.playerRole = "Ghostbuster"
+                        self.remote_players[sortPlayerIds[index]] = player_remote
+                        self.addChild(player_remote)
+                    }
+                }
             }
         }
         
@@ -154,7 +201,6 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     
     // record localplayer position in case it hit the wall
     override func update(currentTime: CFTimeInterval) {
-        
         localPlayer.previousPosition = localPlayer.position
     }
     
