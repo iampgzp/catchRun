@@ -47,7 +47,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
             // multi player get how man players
             var gameSize : Int! = GameCenterConnector.sharedInstance().getRemoteCount()
             capacityOfPlayerInGame = gameSize + 1
-            NSLog("There are %d players + one local player in the game", gameSize)
+            NSLog("There are \(gameSize) players + one local player in the game")
             
             // Create a dictionary key is player id, object is player node and add node to screen
             var playerIds = GameCenterConnector.sharedInstance().getPlayerIds()

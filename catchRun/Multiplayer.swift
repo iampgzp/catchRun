@@ -149,12 +149,6 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         NSLog("send move position \(position) with id \(id)")
         var messageMove = MessageMove(message: Message(messageType: MessageType.messageTypeMove), position: position)
         var data = encode(messageMove)
-
-       // var messageMove = MessageMove(message: Message(messageType: MessageType.messageTypeMove), position_id: MessageMoveHelper(position: position, id: id))
- //       messageMove.message.messageType = MessageType.messageTypeMove
-//        messageMove.position = position
-//        messageMove.id = id
-        //var data = NSData(bytes: &messageMove, length: sizeof(MessageMove))
         sendData(data)
     }
     
@@ -218,10 +212,6 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     //this method is used for decoding incoming game data
     func match(match: GKMatch, didReceiveData data: NSData, fromPlayer playerID: NSString) {
         var message: Message!
-//        var decoded = decode(data: data)
-        
-        
-        
         data.getBytes(&message, length: sizeof(Message))
         if (message.messageType == MessageType.messageTypeRandomNumber){
             var messageOfRandomNum: MessageRandomNumber!
@@ -265,14 +255,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
             self.delegate.movePlayerAtIndex(whole_message.position, id: playerID)
             
             NSLog("receive Move message")
-//            var test: String! = "i am test"
-//            var messageMove: MessageMove!
-//            data.getBytes(&messageMove, length: sizeof(MessageMove))
-//            var position = messageMove.position
-//            var id = messageMove.id
-//            self.delegate.movePlayerAtIndex(position, id: id)
-            //self.delegate.movePlayerAtIndex(messageMove!.id, position: messageMove!.position)
-            // convert point
+
         }else if message.messageType == MessageType.messageTypeGameOver{
             NSLog("Game Over")
             var messageGameOver: MessageGameOver!
@@ -300,10 +283,6 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     }
     
     
-    
-
-
-
     
     func matchEnded(){
         println("Match ended")
