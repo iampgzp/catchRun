@@ -58,14 +58,14 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
                 // local player is ghost
                 localPlayer.xScale = 0.8
                 localPlayer.yScale = 0.8
-                localPlayer.position = CGPoint(x: self.size.width * 0.5, y: 50)
+                localPlayer.position = CGPoint(x: self.size.width * 0.5, y: 100)
                 localPlayer.playerRole = "Ghost"
                 self.addChild(localPlayer)
                 
                 // set remote players as ghostbusters
                 for var index = 0; index < gameSize; ++index{
                     var player_remote = PlayerNode(playerTextureName: "player")
-                    player_remote.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height * 0.83)
+                    player_remote.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height * 0.70)
                     player_remote.playerRole = "Ghostbuster"
                     self.remote_players[sortPlayerIds[index]] = player_remote
                     self.addChild(player_remote)
@@ -78,7 +78,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
                         var player_remote = PlayerNode(playerTextureName: "player")
                         player_remote.xScale = 0.8
                         player_remote.yScale = 0.8
-                        player_remote.position = CGPoint(x: self.size.width * 0.5, y: 50)
+                        player_remote.position = CGPoint(x: self.size.width * 0.5, y: 100)
                         player_remote.playerRole = "Ghost"
                         self.remote_players[sortPlayerIds[index]] = player_remote
                         self.addChild(player_remote)
@@ -96,11 +96,11 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
                 for var index = 0; index < gameSize; ++index{
                     if  sortPlayerIds[index] == GKLocalPlayer.localPlayer().playerID {
                         localPlayer.playerRole = "Ghostbuster"
-                        localPlayer.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height * 0.83)
+                        localPlayer.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height * 0.70)
                         self.addChild(localPlayer)
                     }else{
                         var player_remote = PlayerNode(playerTextureName: "player")
-                        player_remote.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height * 0.83)
+                        player_remote.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height * 0.70)
                         player_remote.playerRole = "Ghostbuster"
                         self.remote_players[sortPlayerIds[index]] = player_remote
                         self.addChild(player_remote)
