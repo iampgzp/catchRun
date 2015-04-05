@@ -40,7 +40,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
             // single player Create local player as ghost
             localPlayer.xScale = 0.8
             localPlayer.yScale = 0.8
-            localPlayer.position = CGPoint(x: self.size.width * 0.5, y: 50)
+            localPlayer.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((2+1))*20, y: self.size.height * 0.80)
             localPlayer.playerRole = "Ghost"
             self.addChild(localPlayer)
         }else{
