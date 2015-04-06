@@ -9,6 +9,8 @@
 import Foundation
 import SpriteKit
 
+let ghostSpeed : CGFloat = 1;
+let ghostBusterSpeed : CGFloat = 2;
 
 class PlayerNode: SKSpriteNode{
     var playerWalkingFrames : NSArray
@@ -41,26 +43,30 @@ class PlayerNode: SKSpriteNode{
         previousPosition = position
         NSLog("moving to direction %s", Direction)
         var frame_4 = playerWalkingFrames.count / 4
+        var speed : CGFloat = ghostBusterSpeed
+        if playerRole == "Ghost"{
+            speed = ghostSpeed
+        }
         switch(Direction){
         case "LEFT":
             stopMoving()
             self.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(playerWalkingFrames.subarrayWithRange(NSMakeRange(frame_4*2, frame_4)), timePerFrame: 0.1, resize: false, restore: true)), withKey: "walkingAnimation")
-            self.runAction(SKAction.repeatActionForever(SKAction.moveByX(-100, y: 0, duration: 1)), withKey: "movingLeft")
+            self.runAction(SKAction.repeatActionForever(SKAction.moveByX(-100 * speed, y: 0, duration: 1)), withKey: "movingLeft")
             break
         case "RIGHT":
             stopMoving()
             self.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(playerWalkingFrames.subarrayWithRange(NSMakeRange(frame_4*3, frame_4)), timePerFrame: 0.1, resize: false, restore: true)), withKey: "walkingAnimation")
-            self.runAction(SKAction.repeatActionForever(SKAction.moveByX(100, y: 0, duration: 1)), withKey: "movingRight")
+            self.runAction(SKAction.repeatActionForever(SKAction.moveByX(100 * speed, y: 0, duration: 1)), withKey: "movingRight")
             break
         case "UP":
             stopMoving()
             self.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(playerWalkingFrames.subarrayWithRange(NSMakeRange(0, frame_4)), timePerFrame: 0.1, resize: false, restore: true)), withKey: "walkingAnimation")
-            self.runAction(SKAction.repeatActionForever(SKAction.moveByX(0, y: 100, duration: 1)), withKey: "movingUp")
+            self.runAction(SKAction.repeatActionForever(SKAction.moveByX(0, y: 100 * speed, duration: 1)), withKey: "movingUp")
             break
         case "DOWN":
             stopMoving()
             self.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(playerWalkingFrames.subarrayWithRange(NSMakeRange(frame_4, frame_4)), timePerFrame: 0.1, resize: false, restore: true)), withKey: "walkingAnimation")
-            self.runAction(SKAction.repeatActionForever(SKAction.moveByX(0, y: -100, duration: 1)), withKey: "movingDown")
+            self.runAction(SKAction.repeatActionForever(SKAction.moveByX(0, y: -100 * speed, duration: 1)), withKey: "movingDown")
             break
         default:
             break;

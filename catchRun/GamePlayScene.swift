@@ -15,7 +15,11 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     var tiledMap:JSTileMap?
     var timer:NSTimer!
     var countDown:SKLabelNode?
+    var preGameTimer:NSTimer!
+    var preGameCountDown:SKLabelNode?
+    var isPreGame = true
     var physicEngine:CollisionCheck?
+    
     
     // network layer var
     var isSinglePlayer = true
@@ -36,11 +40,14 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         map.position = CGPoint(x: 0, y: 0)
         self.addChild(map)
         
+        // Create Physic Engine
+        physicEngine = CollisionCheck(tiledMap:map)
+        
         if isSinglePlayer {
             // single player Create local player as ghost
             localPlayer.xScale = 0.8
             localPlayer.yScale = 0.8
-            localPlayer.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((2+1))*20, y: self.size.height * 0.80)
+            localPlayer.position = CGPoint(x: self.size.width * 0.5, y: 50)
             localPlayer.playerRole = "Ghost"
             self.addChild(localPlayer)
         }else{
@@ -109,49 +116,77 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
             }
         }
         
-        // Create JoyStick Controller
-        let joyStick = JoyStick(defatultArrowImage: "arrow", activeArrowImage: "arrowdown", target: localPlayer)
-        joyStick.xScale = 0.5
-        joyStick.yScale = 0.5
-        joyStick.alpha = 0.5
-        joyStick.position = CGPoint(x: 100, y: 100)
-        self.addChild(joyStick)
         
-        // add gesture recognizer controller
-        let swipeRight:UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: Selector("handleSwipeGesture:"))
-        swipeRight.direction = .Right
-        view.addGestureRecognizer(swipeRight)
-        let swipeLeft:UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: Selector("handleSwipeGesture:"))
-        swipeLeft.direction = .Left
-        view.addGestureRecognizer(swipeLeft)
-        let swipeUp:UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: Selector("handleSwipeGesture:"))
-        swipeUp.direction = .Up
-        view.addGestureRecognizer(swipeUp)
-        let swipeDown:UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: Selector("handleSwipeGesture:"))
-        swipeDown.direction = .Down
-        view.addGestureRecognizer(swipeDown)
-        let tap:UITapGestureRecognizer = UITapGestureRecognizer(target:self, action: Selector("handleTapGesture:"))
-        tap.cancelsTouchesInView = false
-        view.addGestureRecognizer(tap)
+        //set pre game timer
+        preGameTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: Selector("updatePreGameTimer"), userInfo: nil, repeats: true)
+        //Add pre game count down label in the midlle
+        preGameCountDown = SKLabelNode(text:"3")
+        preGameCountDown!.fontName = "chulkduster"
+        preGameCountDown!.xScale = 5.0
+        preGameCountDown!.yScale = 5.0
+        preGameCountDown!.position = CGPoint(x: size.width * 0.5, y: size.height * 0.4)
+        addChild(preGameCountDown!)
         
-        // Create Physic Engine
-        physicEngine = CollisionCheck(tiledMap:map)
-        
-        //Add a button to end game
-        let pauseButton = GGButton(defaultButtonImage: "pause", activeButtonImage: "pause", buttonAction:didTapOnPause)
-        pauseButton.xScale = 1.0
-        pauseButton.yScale = 1.0
-        pauseButton.position = CGPoint(x: size.width * 0.85, y: size.height * 0.15 )
-        self.addChild(pauseButton)
-        
-        timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: Selector("updateTimer"), userInfo: nil, repeats: true)
-        // Add A Label to count down
-        countDown = SKLabelNode(text:"30")
-        countDown!.fontName = "Helvetica Neue"
-        countDown!.xScale = 1.0
-        countDown!.yScale = 1.0
-        countDown!.position = CGPoint(x: size.width * 0.98, y: size.height * 0.83)
-        addChild(countDown!)
+    }
+    
+    func updatePreGameTimer(){
+        let nf = NSNumberFormatter()
+        nf.numberStyle = .DecimalStyle
+        let number = nf.numberFromString(preGameCountDown!.text)
+        let number2 = number!.integerValue - 1
+        if  number2 <= 0 {
+            // game begin
+            // Create JoyStick Controller
+            let joyStick = JoyStick(defatultArrowImage: "arrow", activeArrowImage: "arrowdown", target: localPlayer)
+            joyStick.xScale = 0.5
+            joyStick.yScale = 0.5
+            joyStick.alpha = 0.5
+            joyStick.position = CGPoint(x: 100, y: 100)
+            self.addChild(joyStick)
+            
+            // add gesture recognizer controller
+            let swipeRight:UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: Selector("handleSwipeGesture:"))
+            swipeRight.direction = .Right
+            self.view!.addGestureRecognizer(swipeRight)
+            let swipeLeft:UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: Selector("handleSwipeGesture:"))
+            swipeLeft.direction = .Left
+            self.view!.addGestureRecognizer(swipeLeft)
+            let swipeUp:UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: Selector("handleSwipeGesture:"))
+            swipeUp.direction = .Up
+            self.view!.addGestureRecognizer(swipeUp)
+            let swipeDown:UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: Selector("handleSwipeGesture:"))
+            swipeDown.direction = .Down
+            self.view!.addGestureRecognizer(swipeDown)
+            let tap:UITapGestureRecognizer = UITapGestureRecognizer(target:self, action: Selector("handleTapGesture:"))
+            tap.cancelsTouchesInView = false
+            self.view!.addGestureRecognizer(tap)
+            
+            
+            //Add a button to end game
+            let pauseButton = GGButton(defaultButtonImage: "pause", activeButtonImage: "pause", buttonAction:didTapOnPause)
+            pauseButton.xScale = 1.0
+            pauseButton.yScale = 1.0
+            pauseButton.position = CGPoint(x: size.width * 0.85, y: size.height * 0.15 )
+            self.addChild(pauseButton)
+
+            
+            // set up real timer and label
+            timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: Selector("updateTimer"), userInfo: nil, repeats: true)
+            // Add A Label to count down
+            countDown = SKLabelNode(text:"30")
+            countDown!.fontName = "Helvetica Neue"
+            countDown!.xScale = 1.0
+            countDown!.yScale = 1.0
+            countDown!.position = CGPoint(x: size.width * 0.98, y: size.height * 0.83)
+            addChild(countDown!)
+            
+            // remove old timer
+            preGameCountDown!.removeFromParent()
+            preGameTimer!.invalidate()
+            
+            isPreGame = false
+        }
+        preGameCountDown!.text = "\(number2)"
     }
     
     func updateTimer(){
