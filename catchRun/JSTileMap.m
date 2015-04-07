@@ -117,6 +117,28 @@
 }
 
 
+- (void)setTileGid:(uint32_t)gID atCoord:(CGPoint)coord mapInfo:(JSTileMap*)mapInfo{
+    int z = coord.x + coord.y * self.layerInfo.layerGridSize.width;
+    // set tile from GID map
+    self.layerInfo.tiles[z] = gID;
+
+
+    TMXTilesetInfo* tilesetInfo = [mapInfo tilesetInfoForGid:gID];
+    
+    SKTexture* texture = [tilesetInfo textureForGid:gID];
+    SKSpriteNode* sprite = [SKSpriteNode spriteNodeWithTexture:texture];
+    sprite.name = [NSString stringWithFormat:@"%d",(int)(coord.x + coord.y * self.layerInfo.layerGridSize.width)];
+    
+    
+    SKNode* tileNode = [self childNodeWithName:[NSString stringWithFormat:@"//%d",
+                                                (int)(coord.x + coord.y * self.layerInfo.layerGridSize.width)]];
+    [tileNode removeAllChildren];
+    
+    mapInfo.tileProperties[@(gID)] = @{@"trapCollidable": @"true"};
+    [tileNode addChild:sprite];
+}
+
+
 - (NSDictionary*)properties
 {
 	return self.layerInfo.properties;

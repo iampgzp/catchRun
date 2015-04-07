@@ -11,17 +11,26 @@ import SpriteKit
 import Social
 
 class GameOverScene: SKScene, GADInterstitialDelegate {
+    var isGhostWon:Bool?
     override func didMoveToView(view: SKView) {
-        let gameOverLabel: SKLabelNode = SKLabelNode(text: "You Won")
-        gameOverLabel.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5)
-        gameOverLabel.xScale = 1.0
-        gameOverLabel.yScale = 1.0
-        addChild(gameOverLabel)
+        if  isGhostWon! {
+            let gameOverLabel: SKLabelNode = SKLabelNode(text: "Ghost Won")
+            gameOverLabel.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5)
+            gameOverLabel.xScale = 4.0
+            gameOverLabel.yScale = 4.0
+            addChild(gameOverLabel)
+        }else{
+            let gameOverLabel: SKLabelNode = SKLabelNode(text: "GhostBuster Won")
+            gameOverLabel.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5)
+            gameOverLabel.xScale = 4.0
+            gameOverLabel.yScale = 4.0
+            addChild(gameOverLabel)
+        }
         
         let startGameButton: GGButton = GGButton(defaultButtonImage: "button1", activeButtonImage: "button2", buttonAction: startGameButtonDown)
         startGameButton.xScale = 0.3
         startGameButton.yScale = 0.3
-        startGameButton.position = CGPoint(x: size.width * 0.5, y: size.height * 0.8 )
+        startGameButton.position = CGPoint(x: 100, y: 180)
         addChild(startGameButton)
         
         let twitterButton:GGButton = GGButton(defaultButtonImage: "twitter", activeButtonImage: "twitter", buttonAction: shareToWeibo)

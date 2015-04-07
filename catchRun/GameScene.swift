@@ -81,7 +81,9 @@ class GameScene: SKScene, GADInterstitialDelegate {
     func startGameButtonDown(){
         let startGameAction = SKAction.runBlock{
             let reval = SKTransition.flipHorizontalWithDuration(0.5)
-            self.view?.presentScene( GamePlayScene(size: self.size), transition: reval)
+            let gamePlayScene = GamePlayScene(size: self.size)
+            gamePlayScene.isSinglePlayer = true
+            self.view?.presentScene( gamePlayScene, transition: reval)
         }
         //gameStarted = True
         self.runAction(startGameAction)

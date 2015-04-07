@@ -133,6 +133,7 @@ typedef enum
 - (CGPoint)coordForPoint:(CGPoint)point;
 
 - (void)removeTileAtCoord:(CGPoint)coord;
+- (void)setTileGid:(uint32_t)gID atCoord:(CGPoint)coord mapInfo:(JSTileMap*)mapInfo;
 - (SKSpriteNode*)tileAt:(CGPoint)point;
 - (SKSpriteNode*)tileAtCoord:(CGPoint)coord;
 - (int)tileGidAt:(CGPoint)point;

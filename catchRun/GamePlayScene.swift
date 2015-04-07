@@ -25,7 +25,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     var isSinglePlayer = true
     var networkEngine: Multiplayer!
     var currentIndex: Int! // which player
-    var localPlayer = PlayerNode(playerTextureName: "player")
+    var localPlayer = PlayerNode(playerTextureName: "ghost")
     var capacityOfPlayerInGame: Int! = 2
     var remote_players = Dictionary<String, PlayerNode>()
     var ghostkey: String!
@@ -43,13 +43,39 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         // Create Physic Engine
         physicEngine = CollisionCheck(tiledMap:map)
         
+        // remove all background trap for tmx
+        var background = map.layerNamed("Background")
+        background.removeTileAtCoord(CGPoint(x: 8, y: 11))
+        background.removeTileAtCoord(CGPoint(x: 8, y: 7))
+        background.removeTileAtCoord(CGPoint(x: 8, y: 3))
+        background.removeTileAtCoord(CGPoint(x: 5, y: 1))
+        background.removeTileAtCoord(CGPoint(x: 11, y: 1))
+        background.removeTileAtCoord(CGPoint(x: 5, y: 7))
+        background.removeTileAtCoord(CGPoint(x: 11, y: 7))
+        background.removeTileAtCoord(CGPoint(x: 4, y: 4))
+        background.removeTileAtCoord(CGPoint(x: 1, y: 4))
+        background.removeTileAtCoord(CGPoint(x: 13, y: 4))
+        background.removeTileAtCoord(CGPoint(x: 15, y: 5))
+        background.removeTileAtCoord(CGPoint(x: 1, y: 8))
+        background.removeTileAtCoord(CGPoint(x: 4, y: 10))
+        background.removeTileAtCoord(CGPoint(x: 13, y: 9))
+        background.removeTileAtCoord(CGPoint(x: 1, y: 12))
+        background.removeTileAtCoord(CGPoint(x: 12, y: 12))
+        
         if isSinglePlayer {
             // single player Create local player as ghost
-            localPlayer.xScale = 0.8
-            localPlayer.yScale = 0.8
+            localPlayer.xScale = 1.0
+            localPlayer.yScale = 1.0
             localPlayer.position = CGPoint(x: self.size.width * 0.5, y: 50)
             localPlayer.playerRole = "Ghost"
             self.addChild(localPlayer)
+            
+            
+            // create a dumb ghost for test
+            var ghost = PlayerNode(playerTextureName: "player")
+            ghost.position = CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.70)
+            ghost.playerRole = "Ghostbuster"
+            self.addChild(ghost)
         }else{
             // multi player get how man players
             var gameSize : Int! = GameCenterConnector.sharedInstance().getRemoteCount()
@@ -63,8 +89,8 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
             // find the ghost and set position
             if  ghostkey == GKLocalPlayer.localPlayer().playerID {
                 // local player is ghost
-                localPlayer.xScale = 0.8
-                localPlayer.yScale = 0.8
+                localPlayer.xScale = 1.0
+                localPlayer.yScale = 1.0
                 localPlayer.position = CGPoint(x: self.size.width * 0.5, y: 100)
                 localPlayer.playerRole = "Ghost"
                 self.addChild(localPlayer)
@@ -83,8 +109,8 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
                     if ghostkey == sortPlayerIds[index] {
                         // set ghost
                         var player_remote = PlayerNode(playerTextureName: "player")
-                        player_remote.xScale = 0.8
-                        player_remote.yScale = 0.8
+                        player_remote.xScale = 1.0
+                        player_remote.yScale = 1.0
                         player_remote.position = CGPoint(x: self.size.width * 0.5, y: 100)
                         player_remote.playerRole = "Ghost"
                         self.remote_players[sortPlayerIds[index]] = player_remote
@@ -121,7 +147,6 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         preGameTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: Selector("updatePreGameTimer"), userInfo: nil, repeats: true)
         //Add pre game count down label in the midlle
         preGameCountDown = SKLabelNode(text:"3")
-        preGameCountDown!.fontName = "chulkduster"
         preGameCountDown!.xScale = 5.0
         preGameCountDown!.yScale = 5.0
         preGameCountDown!.position = CGPoint(x: size.width * 0.5, y: size.height * 0.4)
@@ -173,7 +198,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
             // set up real timer and label
             timer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: Selector("updateTimer"), userInfo: nil, repeats: true)
             // Add A Label to count down
-            countDown = SKLabelNode(text:"30")
+            countDown = SKLabelNode(text:"60")
             countDown!.fontName = "Helvetica Neue"
             countDown!.xScale = 1.0
             countDown!.yScale = 1.0
@@ -255,6 +280,11 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
                 }
             }
             
+            // check dumb ghostbuster
+            if physicEngine!.isCollideWithGhost(CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.70), ghostPosition: ghost!.position){
+                gameOver(true)
+            }
+            
         }else{
             var ghostKey:NSString?
             for (key, remotePlayer) in remote_players{
@@ -283,10 +313,11 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         if  physicEngine!.isCollideWithTrap(ghost!.position) {
             // Change tile map to indicate ghost interect trap
             let map = tiledMap!
-            var trap = map.layerNamed("Trap")
-            trap.removeTileAtCoord(physicEngine!.tileCoordForPosition(localPlayer.position))
             var background = map.layerNamed("Background")
-            background.removeTileAtCoord(physicEngine!.tileCoordForPosition(localPlayer.position))
+            background.setTileGid(73, atCoord: physicEngine!.tileCoordForPosition(ghost!.position), mapInfo: map)
+            
+            let dict = ["x" : physicEngine!.tileCoordForPosition(ghost!.position).x, "y": physicEngine!.tileCoordForPosition(ghost!.position).y]
+            var trapTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: Selector("setTrapBackToNormal:"), userInfo: dict, repeats: false)
         }
         
         // check if local player hit the wall
@@ -298,6 +329,16 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
             var localId = GameCenterConnector.sharedInstance().getLocalPlayerID()
             self.networkEngine!.sendMove(localPlayer.position, id: localId)
         }
+
+    }
+    
+    func setTrapBackToNormal(timer: NSTimer){
+        let map = tiledMap!
+        var background = map.layerNamed("Background")
+        let x = timer.userInfo!["x"] as NSNumber
+        let y = timer.userInfo!["y"] as NSNumber
+        let coord = CGPoint(x: CGFloat(x.floatValue), y: CGFloat(y.floatValue))
+        background.setTileGid(3, atCoord: coord, mapInfo: map)
     }
     
     //MARK Multiplayer Protocol
@@ -316,10 +357,12 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         remote_players[id]?.position = position
     }
     
-    func gameOver(leftWon: Bool){
+    func gameOver(ghostBusterWon: Bool){
         let endGameAction = SKAction.runBlock{
             let reval = SKTransition.flipHorizontalWithDuration(0.5)
-            self.view?.presentScene( GameOverScene(size: self.size), transition: reval)
+            let gameOverScene = GameOverScene(size: self.size)
+            gameOverScene.isGhostWon = !ghostBusterWon
+            self.view?.presentScene( gameOverScene, transition: reval)
         }
         //gameStarted = True
         self.runAction(endGameAction)
@@ -329,25 +372,9 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         
     }
     
-    
-    
     //called in gamescen page
     //before navigating to play scene
     func setGhostKey(ghostkey: String){
         self.ghostkey = ghostkey
     }
-    
-//    func setPlayerRole(selfRand: Int, remoteDictRand: Dictionary<String, Int>){
-//        for keys in remoteDictRand.keys{
-//            if selfRand < remoteDictRand[keys]{
-//                localPlayer.playerRole = "Ghost"
-//                var remoteplayer: PlayerNode = remote_players[keys] as PlayerNode!
-//                remoteplayer.playerRole = "Ghostbuster"
-//            }else{
-//                localPlayer.playerRole = "Ghostbuster"
-//                var remoteplayer: PlayerNode = remote_players[keys] as PlayerNode!
-//                remoteplayer.playerRole = "Ghost"
-//            }
-//        }
-//    }
 }

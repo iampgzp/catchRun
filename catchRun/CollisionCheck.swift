@@ -75,6 +75,10 @@ class CollisionCheck : NSObject{
     }
     
     func isCollideWithGhost(PlayerPosition:CGPoint, ghostPosition:CGPoint) -> Bool{
+        let distance = pow((PlayerPosition.x - ghostPosition.x), 2) + pow((PlayerPosition.y - ghostPosition.y), 2)
+        if  distance <= 400{
+            return true
+        }
        return false
     }
     
