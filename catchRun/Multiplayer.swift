@@ -146,7 +146,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     func sendMove(position: CGPoint, id: String){
        // NSLog("send move message")
 //        let dataid = (id as NSString).dataUsingEncoding(NSUTF8StringEncoding)
-        NSLog("send move position \(position) with id \(id)")
+//        NSLog("send move position \(position) with id \(id)")
         var messageMove = MessageMove(message: Message(messageType: MessageType.messageTypeMove), position: position)
         var data = encode(messageMove)
         sendData(data)
@@ -244,17 +244,17 @@ class Multiplayer: NSObject, GameConnectorDelegate{
             }
             
         }else if message.messageType == MessageType.messageTypeGameBegin{
-            NSLog("other player begin game")
+//            NSLog("other player begin game")
             gameState = GameState.gameActive
             //self.delegate.setCurrentPlayerIndex(indexForLocalPlayer())
             //self.processPlayerAliases()
         }else if message.messageType == MessageType.messageTypeMove{
             var whole_message: MessageMove = decode(data)
-            NSLog("******* receive position \(whole_message.position) with id \(playerID)")
+//            NSLog("******* receive position \(whole_message.position) with id \(playerID)")
             
             self.delegate.movePlayerAtIndex(whole_message.position, id: playerID)
             
-            NSLog("receive Move message")
+//            NSLog("receive Move message")
 
         }else if message.messageType == MessageType.messageTypeGameOver{
             NSLog("Game Over")
