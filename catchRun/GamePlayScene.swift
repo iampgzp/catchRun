@@ -64,7 +64,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         
         if isSinglePlayer {
             // single player Create local player as ghost
-            localPlayer = PlayerNode(playerTextureName: "Ghost")
+            localPlayer = PlayerNode(playerTextureName: "ghost")
             localPlayer.xScale = 1.0
             localPlayer.yScale = 1.0
             localPlayer.position = CGPoint(x: self.size.width * 0.5, y: 50)
@@ -90,7 +90,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
             // find the ghost and set position
             if  ghostkey == GKLocalPlayer.localPlayer().playerID {
                 // local player is ghost
-                localPlayer = PlayerNode(playerTextureName: "Ghost")
+                localPlayer = PlayerNode(playerTextureName: "ghost")
                 localPlayer.xScale = 1.0
                 localPlayer.yScale = 1.0
                 localPlayer.position = CGPoint(x: self.size.width * 0.5, y: 100)
