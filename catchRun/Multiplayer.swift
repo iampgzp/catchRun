@@ -190,7 +190,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
     //send gamebegin data to other player
     func sendGameBegin(){
         NSLog("send begin message")
-        var message = MessageGameBegin(message: Message(messageType: MessageType.messageTypeRandomNumber))
+        var message = MessageGameBegin(message: Message(messageType: MessageType.messageTypeGameBegin))
         var data = NSData(bytes: &message, length: sizeof(MessageGameBegin))
         sendData(data)
     }
