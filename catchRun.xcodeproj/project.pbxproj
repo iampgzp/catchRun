@@ -24,8 +24,6 @@
 		B61467721A408996000C3550 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = B61467701A408996000C3550 /* LaunchScreen.xib */; };
 		B614677E1A408997000C3550 /* catchRunTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B614677D1A408997000C3550 /* catchRunTests.swift */; };
 		B633371E1AC8417E00D6618A /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = B633371D1AC8417E00D6618A /* GameScene.sks */; };
-		B63337221AC84FB200D6618A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B63337211AC84FB200D6618A /* Images.xcassets */; };
-		B63337241AC84FC800D6618A /* player.atlas in Resources */ = {isa = PBXBuildFile; fileRef = B63337231AC84FC800D6618A /* player.atlas */; };
 		B63337261AC8534300D6618A /* sci.png in Resources */ = {isa = PBXBuildFile; fileRef = B63337251AC8534300D6618A /* sci.png */; };
 		B63D73721A40AFB00069AB50 /* beep.wav in Resources */ = {isa = PBXBuildFile; fileRef = B63D73711A40AFB00069AB50 /* beep.wav */; };
 		B63D73761A40B1CA0069AB50 /* AudioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63D73751A40B1CA0069AB50 /* AudioController.swift */; };
@@ -35,6 +33,8 @@
 		B64535611A453220000BBEA3 /* map.tmx in Resources */ = {isa = PBXBuildFile; fileRef = B64535601A453220000BBEA3 /* map.tmx */; };
 		B66AFC9D1AD305F700AD2C26 /* ghost.atlas in Resources */ = {isa = PBXBuildFile; fileRef = B66AFC9C1AD305F700AD2C26 /* ghost.atlas */; };
 		B68DB2401A40AB6E008DA27D /* bgm.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B68DB23F1A40AB6E008DA27D /* bgm.mp3 */; };
+		B6915C261AD8604C00FE27CA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6915C251AD8604C00FE27CA /* Images.xcassets */; };
+		B6915C281AD86BF500FE27CA /* player.atlas in Resources */ = {isa = PBXBuildFile; fileRef = B6915C271AD86BF500FE27CA /* player.atlas */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,8 +70,6 @@
 		B614677C1A408997000C3550 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B614677D1A408997000C3550 /* catchRunTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = catchRunTests.swift; sourceTree = "<group>"; };
 		B633371D1AC8417E00D6618A /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
-		B63337211AC84FB200D6618A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		B63337231AC84FC800D6618A /* player.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = player.atlas; path = Images.xcassets/player.atlas; sourceTree = "<group>"; };
 		B63337251AC8534300D6618A /* sci.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sci.png; path = Images.xcassets/sci.imageset/sci.png; sourceTree = "<group>"; };
 		B63D73711A40AFB00069AB50 /* beep.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = beep.wav; sourceTree = "<group>"; };
 		B63D73751A40B1CA0069AB50 /* AudioController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioController.swift; sourceTree = "<group>"; };
@@ -84,6 +82,8 @@
 		B66AFC9C1AD305F700AD2C26 /* ghost.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = ghost.atlas; sourceTree = "<group>"; };
 		B68DB23D1A409AD5008DA27D /* catchRun-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "catchRun-Bridging-Header.h"; sourceTree = "<group>"; };
 		B68DB23F1A40AB6E008DA27D /* bgm.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = bgm.mp3; sourceTree = "<group>"; };
+		B6915C251AD8604C00FE27CA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		B6915C271AD86BF500FE27CA /* player.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = player.atlas; sourceTree = "<group>"; };
 		CB8FCD7CC1197BCA4C452E2F /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -229,14 +229,14 @@
 				B6013C7C1ABCA53000D71039 /* Physics */,
 				B6013C791ABCA38900D71039 /* Networking */,
 				B6013C801ABCA68200D71039 /* Utilities */,
+				B6915C271AD86BF500FE27CA /* player.atlas */,
+				B6915C251AD8604C00FE27CA /* Images.xcassets */,
 				1DA8484A1A4800FC0075E5BB /* GameScene.swift */,
 				1DA848481A4800F70075E5BB /* GamePlayScene.swift */,
 				1DBCE6791A480EB700030B91 /* GameOverScene.swift */,
 				B6013C7F1ABCA61100D71039 /* Maps */,
 				B68DB23E1A40AB57008DA27D /* Sound */,
 				B61467611A408996000C3550 /* Supporting Files */,
-				B63337211AC84FB200D6618A /* Images.xcassets */,
-				B63337231AC84FC800D6618A /* player.atlas */,
 				B66AFC9C1AD305F700AD2C26 /* ghost.atlas */,
 				B61467631A408996000C3550 /* AppDelegate.swift */,
 				B633371D1AC8417E00D6618A /* GameScene.sks */,
@@ -330,7 +330,7 @@
 				TargetAttributes = {
 					B614675D1A408996000C3550 = {
 						CreatedOnToolsVersion = 6.1.1;
-						DevelopmentTeam = ETU837U9KS;
+						DevelopmentTeam = MDB4L93355;
 						SystemCapabilities = {
 							com.apple.GameCenter = {
 								enabled = 1;
@@ -368,11 +368,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				B63337261AC8534300D6618A /* sci.png in Resources */,
+				B6915C261AD8604C00FE27CA /* Images.xcassets in Resources */,
+				B6915C281AD86BF500FE27CA /* player.atlas in Resources */,
 				B63D73721A40AFB00069AB50 /* beep.wav in Resources */,
 				B61467721A408996000C3550 /* LaunchScreen.xib in Resources */,
-				B63337221AC84FB200D6618A /* Images.xcassets in Resources */,
 				B64535611A453220000BBEA3 /* map.tmx in Resources */,
-				B63337241AC84FC800D6618A /* player.atlas in Resources */,
 				B614676D1A408996000C3550 /* Main.storyboard in Resources */,
 				B66AFC9D1AD305F700AD2C26 /* ghost.atlas in Resources */,
 				B633371E1AC8417E00D6618A /* GameScene.sks in Resources */,
@@ -578,6 +578,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/$(PROJECT)/catchRun-Bridging-Header.h";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -598,6 +599,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/$(PROJECT)/catchRun-Bridging-Header.h";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

@@ -50,7 +50,7 @@ struct Message{
 
 struct MessageRandomNumber{
     var message: Message
-    var randomNumber: Int
+    var randomNumber: Double
 }
 
 struct MessageGameBegin{
@@ -73,28 +73,18 @@ let gameBegin : String! = "game begin"
 class Multiplayer: NSObject, GameConnectorDelegate{
     
     var receiveAllRandomPairingNumber: Bool?
-    //use P1 to denote police
-    var gameState: GameState?
-    var randomNumber: Int!
-    var orderOfPlayers: Dictionary<String, Int>!
+    //gamestate initiall should be waiting for a match connection to be established
+    var gameState = GameState.waitingForMatch
+    var randomNumber = Double(arc4random())
+    var orderOfPlayers = Dictionary<String, Double>()
     var delegate: MultiplayerProtocol!
     let playerIdKey: String! = "playerID"
-    var viewc: UIViewController!
     let randomNumberKey: String! = "randomNumber"
-    
-    
     
     //orderOfPlayers is made up by key randomnumber and value localplayerID.
     override init(){
         super.init()
-        randomNumber = Int(arc4random())
-        NSLog("this is my rand number %d \n" , randomNumber)
-        //gamestate initiall should be waiting for a match connection to be established
-        gameState = GameState.waitingForMatch
-        orderOfPlayers = Dictionary<String, Int>()
         orderOfPlayers[GKLocalPlayer.localPlayer().playerID as String] = self.randomNumber;
-       // var dic = [playerIdKey: GKLocalPlayer.localPlayer().playerID as String, randomNumberKey: randomNumber]
-        
     }
     
     // CALLED BY METHOD LOOKUPPLAYER() IN GAMECENTERCONNECTOR
@@ -223,7 +213,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
             if messageOfRandomNum.randomNumber == randomNumber{
                 NSLog("tie")
                 tie = true
-                randomNumber = Int(arc4random())
+                randomNumber = Double(arc4random())
                 sendRandomPairingNumber()
             }else{
                 var dictionary: NSDictionary! = [playerIdKey as String: playerID as String, randomNumberKey: messageOfRandomNum.randomNumber]
@@ -289,7 +279,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
         //delegate.matchEnded()
     }
     
-    func getRandomNumber() -> Dictionary<String, Int>{
+    func getRandomNumber() -> Dictionary<String, Double>{
         return orderOfPlayers
     }
     

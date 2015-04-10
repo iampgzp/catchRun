@@ -16,42 +16,36 @@ protocol GameConnectorDelegate{
     func matchEnded()
     func match(match: GKMatch, didReceiveData data:NSData, fromPlayer playerID: NSString)
 }
+
 let presentAuthentication: String! = "present authentication view controller"
 let LocalPlayerIsAuthenticated = "local_player_authenticated"
+
+// singleton object
 var instance: GameCenterConnector?
+
 class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchDelegate{
-    
     var delegate : GameConnectorDelegate!
     //use to for easily look up player
     var playerDict: NSMutableDictionary!
-    var gameCenterEnabled: Bool!
-    var leaderboardIdentifier : String!
+    var gameCenterEnabled  = false
+
+    
     var match:GKMatch!
     var matchStarted: Bool! = false
     var authenticationViewController: UIViewController?
-    var vc: UIViewController?
-    // let presentAuthentication: String! = "present authentication view controller"
-    // use to keep track of last error
+
+    
     var lastError : NSError?
     var playerIds : Array<String>? = Array<String>()
-    override init(){
-        super.init()
-        gameCenterEnabled = true
-        // authenticatePlayer()
-    }
+    
     
     // create a singleton pattern here to keep all game center code into one spot
     class func sharedInstance() -> GameCenterConnector{
-        var onceToken: dispatch_once_t?
         if instance == nil{
             instance = GameCenterConnector()
         }
-        //        var sharedGameConnector:GameCenterConnector?
-        //        var onceToken: dispatch_once_t?
-        //        dispatch_once(&onceToken, {sharedGameConnector = GameCenterConnector()} )
         return instance!
     }
-    
     
     // authenticate user in the gamecenter
     // we can call it in viewDidLoad
@@ -60,10 +54,13 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
     func authenticatePlayer(){
         print("start authenticate player \n")
         var localPlayer: GKLocalPlayer = GKLocalPlayer.localPlayer()
+        
         if localPlayer.authenticated{
+            gameCenterEnabled = true
             print("user is already authenticated")
             NSNotificationCenter.defaultCenter().postNotificationName(LocalPlayerIsAuthenticated, object: nil)
         }
+        
         //if player is not logged into game center, game kit framework will pass a view controller to authenticate.
         localPlayer.authenticateHandler = {(viewController: UIViewController!, error:NSError!) ->Void in
             self.setLastError(error)
@@ -101,15 +98,13 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
     }
     
     
-    /*search player for game matching
-    */
+    /*search player for game matching*/
     func findMatchWithMinPlayer(minPlayer: Int, maxPlayers maxPlayer:Int, viewControllers viewController: UIViewController, delegate: GameConnectorDelegate){
         //if gamecenter is not enabled, do nothing
         if !self.gameCenterEnabled{
             return;
         }
 
-        
         self.delegate = delegate
         self.matchStarted = false
         self.match = nil
@@ -131,7 +126,6 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
         viewController.dismissViewControllerAnimated(true, completion: nil)
     }
     
-    
     // when there is error for game pairing
     func matchmakerViewController(viewController: GKMatchmakerViewController!, didFailWithError error: NSError!){
         viewController.dismissViewControllerAnimated(true, completion: nil)
@@ -150,6 +144,7 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
             lookUpPlayer()
         }
     }
+    
     // IMPLEMENT GKMATCHDELEGATE
     // DECODE INCOMING DATA
     // when another player sends data to you, this method will be called.
@@ -193,6 +188,7 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
         matchStarted = false
         self.delegate?.matchEnded()
     }
+    
     //CALLED AFTER PEER TO PEER IS FOUND
     //call lookupPlayer() when match is ready. store playerid and player object into dictionary
     func lookUpPlayer(){

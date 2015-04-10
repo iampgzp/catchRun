@@ -9,14 +9,14 @@
 import SpriteKit
 import Social
 
-protocol sceneDelegate{
+protocol GameSceneDelegate{
     func didChangeSound()
-    func autoMatch()
+    func findPlayer()
+    func showAuthenticaionViewController()
 }
 
-let multiplayerButtonPressed: String! = "multiplayer button pressed"
-class GameScene: SKScene, GADInterstitialDelegate {
-    var myDelegate:sceneDelegate?
+class GameScene: SKScene {
+    var myDelegate:GameSceneDelegate?
     var soundButton:GGButton?
     var soundOn:Bool?
     
@@ -29,6 +29,7 @@ class GameScene: SKScene, GADInterstitialDelegate {
     var players: Array<PlayerNode>!
     
     override func didMoveToView(view: SKView) {
+        NSLog("Game Scene is moved to view")
         /* Setup your scene here */
         let background:SKSpriteNode = SKSpriteNode(imageNamed: "background")
         background.anchorPoint = CGPoint(x: 0, y: 0)
@@ -36,16 +37,16 @@ class GameScene: SKScene, GADInterstitialDelegate {
         background.size = CGSize(width: self.size.width, height: self.size.height)
         addChild(background)
         
-        let startSinglePlayerGameButton: GGButton = GGButton(defaultButtonImage: "button1", activeButtonImage: "button2", buttonAction: startGameButtonDown)
-        startSinglePlayerGameButton.xScale = 0.3
-        startSinglePlayerGameButton.yScale = 0.3
-        startSinglePlayerGameButton.position = CGPoint(x: size.width * 0.5, y: size.height * 0.45 )
+        let startSinglePlayerGameButton: GGButton = GGButton(defaultButtonImage: "singlePlayerButton", activeButtonImage: "singlePlayerButton", buttonAction: startGameButtonDown)
+        startSinglePlayerGameButton.xScale = 0.6
+        startSinglePlayerGameButton.yScale = 0.6
+        startSinglePlayerGameButton.position = CGPoint(x: size.width * 0.5, y: size.height * 0.53 )
         addChild(startSinglePlayerGameButton)
         
-        let startMultiPlayerGameButton: GGButton = GGButton(defaultButtonImage: "button1", activeButtonImage: "button2", buttonAction: startMultiPlayerGameButtonDown)
-        startMultiPlayerGameButton.xScale = 0.3
-        startMultiPlayerGameButton.yScale = 0.3
-        startMultiPlayerGameButton.position = CGPoint(x: size.width * 0.5, y: size.height * 0.55 )
+        let startMultiPlayerGameButton: GGButton = GGButton(defaultButtonImage: "multiPlayerButton", activeButtonImage: "multiPlayerButton", buttonAction: startMultiPlayerGameButtonDown)
+        startMultiPlayerGameButton.xScale = 0.6
+        startMultiPlayerGameButton.yScale = 0.6
+        startMultiPlayerGameButton.position = CGPoint(x: size.width * 0.5, y: size.height * 0.37 )
         addChild(startMultiPlayerGameButton)
         
         let twitterButton:GGButton = GGButton(defaultButtonImage: "twitter", activeButtonImage: "twitter", buttonAction: twitter)
@@ -83,18 +84,16 @@ class GameScene: SKScene, GADInterstitialDelegate {
             let reval = SKTransition.flipHorizontalWithDuration(0.5)
             let gamePlayScene = GamePlayScene(size: self.size)
             gamePlayScene.isSinglePlayer = true
+            gamePlayScene.myDelegate = self.myDelegate
             self.view?.presentScene( gamePlayScene, transition: reval)
         }
-        //gameStarted = True
         self.runAction(startGameAction)
     }
 
     
     func startMultiPlayerGameButtonDown(){
-        NSNotificationCenter.defaultCenter().postNotificationName(multiplayerButtonPressed, object: nil)
-        //TODO implement the networking button here!
+        myDelegate!.findPlayer()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "navigateToGameScene", name: gameBegin, object: nil)
-        NSLog("auto- match start")
     }
     
     //NAVIGATE TO PLAY SCENE
@@ -102,12 +101,12 @@ class GameScene: SKScene, GADInterstitialDelegate {
         var gameplayscene = GamePlayScene(size: self.size)
         var multiplayer: Multiplayer! = GameCenterConnector.sharedInstance().delegate as Multiplayer
         multiplayer.delegate = gameplayscene
-        var randomDict: Dictionary<String, Int> = multiplayer.getRandomNumber()
+        var randomDict: Dictionary<String, Double> = multiplayer.getRandomNumber()
         var ghostkey:String!
         var maxvalue = randomDict[GameCenterConnector.sharedInstance().getLocalPlayerID()]
         // find minimum key, set it as ghost key
         for key in randomDict.keys{
-            var keyrand = randomDict[key] as Int!
+            var keyrand = randomDict[key] as Double!
             if maxvalue >= (keyrand){
                 ghostkey = key
                 maxvalue = keyrand
@@ -117,6 +116,7 @@ class GameScene: SKScene, GADInterstitialDelegate {
         NSLog("The ghost playerID is \(ghostkey)")
         gameplayscene.networkEngine = multiplayer
         gameplayscene.isSinglePlayer = false
+        gameplayscene.myDelegate = self.myDelegate
         let startGameAction = SKAction.runBlock{
             let reval = SKTransition.flipHorizontalWithDuration(0.5)
             self.view?.presentScene(gameplayscene, transition: reval)
@@ -141,34 +141,5 @@ class GameScene: SKScene, GADInterstitialDelegate {
         }
         self.myDelegate?.didChangeSound()
     }
-    
-    override func update(currentTime: CFTimeInterval) {
-        /* Called before each frame is rendered */
-    }
-    
-    //conform multiplayer protocol
-    func matchEnded(){
-        
-    }
-    
-    // set current player index, such as P1
-    func setCurrentPlayerIndex(index: Int){
-        currentIndex = index
-    }
-    
-    // move p1 or p2, to which direction
-    func movePlayerAtIndex(index: String, position: CGPoint){
-//        var player: PlayerNode! = players[index] as PlayerNode
-//        player.moving(direction)
-    }
-    
-    // we can check game over by only one side
-    // for example: P1 wins, we only check P1. then send game over info to P2
-    func gameOver(leftWon: Bool){
-        
-    }
-    
-    func setPlayerAlias(playerAliases: NSArray){
-        
-    }
+
 }

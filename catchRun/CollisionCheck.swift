@@ -94,5 +94,4 @@ class CollisionCheck : NSObject{
         var y = Int((tiledMap.mapSize.height * tiledMap.tileSize.height*1.5 - position.y) / (tiledMap.tileSize.height*1.5))
         return CGPoint(x: x, y: y)
     }
-
 }

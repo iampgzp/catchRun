@@ -26,21 +26,37 @@ extension SKNode {
     }
 }
 
-class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstitialDelegate, sceneDelegate{
-    var networkEngine: Multiplayer!
-    var fullAd:GADInterstitial?
-    var audioControl : AudioController?
+class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstitialDelegate, GameSceneDelegate{
+    var networkEngine : Multiplayer?
+    var fullAd = GADInterstitial()
+    var audioControl = AudioController()
     
+    //MARK : UIViewController Methods
     override func viewDidLoad() {
+        NSLog("Game View Controller view did load")
         super.viewDidLoad()
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showAuthenticaionViewController", name: presentAuthentication, object: nil)
-        GameCenterConnector.sharedInstance().authenticatePlayer()
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showMultiButton", name: LocalPlayerIsAuthenticated, object: nil)
-     
-        audioControl = AudioController()
-        audioControl!.tryPlayMusic()
+        // add banner ad and full screen ad
+        var banner = GADBannerView(adSize: kGADAdSizeSmartBannerLandscape)
+        banner.adUnitID = "ca-app-pub-6314301496407347/1491324510"
+        banner.delegate = self
+        banner.rootViewController = self
+        self.view.addSubview(banner)
+        fullAd.adUnitID = "ca-app-pub-6314301496407347/6061124916"
+        fullAd.delegate = self
         
+        var request:GADRequest = GADRequest()
+        request.testDevices = [GAD_SIMULATOR_ID]
+        banner.loadRequest(request)
+        fullAd.loadRequest(request)
+        
+        // add notification for authentication
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showAuthenticaionViewController", name: presentAuthentication, object: nil)
+        
+        // try authenticate player will invoke presentAuthentication if not already authenticated
+        GameCenterConnector.sharedInstance().authenticatePlayer()
+        
+        // load the game scene
         if let scene = GameScene.unarchiveFromFile("GameScene") as? GameScene {
             // Configure the view.
             let skView = self.view as SKView
@@ -52,36 +68,16 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
             
             /* Set the scale mode to scale to fit the window */
             scene.scaleMode = .AspectFill
+            
+            // my delegate is used for getting the event for gameScene sound button
             scene.myDelegate = self
             scene.soundOn = true
+            
             skView.presentScene(scene)
         }
-    }
-    
-    
-    func showAuthenticaionViewController(){
-        self.presentViewController(GameCenterConnector.sharedInstance().authenticationViewController!, animated: true, completion: nil)
-    }
-    
-    func showMultiButton(){
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "playerAuthenticated", name: multiplayerButtonPressed, object: nil)
-    }
-    
-
-    func playerAuthenticated(){
-        print("game scene")
-        // DELEGATE POINT TO MULTIPLAYER 
-//        var skview: SKView! = self.view as SKView
-//        var scene : GameScene! = skview.scene as GameScene
-//        var playScene: GamePlayScene? = GamePlayScene.sharedInstance(scene.size)
-        self.networkEngine = Multiplayer()
-//        networkEngine.delegate = playScene
-//        playScene?.networkEngine = self.networkEngine
-        //networkEngine.delegate = playerScene
-        //playerScene.networkEngine = self.networkEngine
-        //networkEngine.delegate = scene
-        //scene.networkEngine = self.networkEngine
-        GameCenterConnector.sharedInstance().findMatchWithMinPlayer(2, maxPlayers: 2, viewControllers: self, delegate: self.networkEngine)
+        
+        // try play music
+        audioControl.tryPlayMusic()
     }
     
     override func prefersStatusBarHidden() -> Bool {
@@ -93,38 +89,43 @@ class GameViewController: UIViewController, GADBannerViewDelegate, GADInterstiti
     }
     
     override func supportedInterfaceOrientations() -> Int {
+        // only allow two orientations
         return Int(UIInterfaceOrientationMask.Landscape.rawValue)
     }
     
     //MARK: GADIntersititialDelegate
     func interstitialDidReceiveAd(ad: GADInterstitial!) {
-        fullAd!.presentFromRootViewController(self)
+        // got the full screen ad, let's display it
+        fullAd.presentFromRootViewController(self)
+        NSLog("Full Screen Ad is on")
     }
     
     //MARK: Scene Delegate
     func didChangeSound() {
-        if audioControl!.backgroundMusicPlaying{
-            audioControl!.stopMusic()
+        if audioControl.backgroundMusicPlaying{
+            audioControl.stopMusic()
+            NSLog("stop playing music")
         }else{
-            audioControl!.tryPlayMusic()
+            audioControl.tryPlayMusic()
+            NSLog("start playing music")
         }
     }
     
-    func autoMatch() {
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "playerAuthenticated", name: LocalPlayerIsAuthenticated, object: nil)
-        print("notification is triggered")
+    func showAuthenticaionViewController(){
+        NSLog("Present Game Center View")
+        self.presentViewController(GameCenterConnector.sharedInstance().authenticationViewController!, animated: true, completion: nil)
     }
     
-    //MARK: match delegate
-    func match(match: GKMatch, didReceiveData data: NSData, fromPlayer playerID: NSString) {
-        print("receive data")
-    }
-    
-    func matchEnded() {
-        print("match ended")
-    }
-    
-    func matchStarted() {
-        print("match started")
+    func findPlayer(){
+        NSLog("Try find player")
+        if GameCenterConnector.sharedInstance().gameCenterEnabled {
+            NSLog("Game Center is enabled")
+            if  self.networkEngine == nil{
+                self.networkEngine = Multiplayer()
+            }
+            GameCenterConnector.sharedInstance().findMatchWithMinPlayer(2, maxPlayers: 2, viewControllers: self, delegate: self.networkEngine!)
+        }else{
+            NSLog("Game Center is disabled")
+        }
     }
 }

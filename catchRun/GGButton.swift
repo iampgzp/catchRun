@@ -2,10 +2,10 @@
 //  Button.swift
 //  button
 //
-//  A button class to avoid the use of UIbutton
+//  A good game button class to avoid the use of UIbutton
 //
 //  Created by seehao on 14/12/17.
-//  Copyright (c) 2014年 seehao. All rights reserved.
+//  Copyright (c) 2014 seehao. All rights reserved.
 //
 
 import Foundation
@@ -19,14 +19,14 @@ class GGButton: SKNode {
     init(defaultButtonImage: String, activeButtonImage: String, buttonAction: () -> Void){
         defaultButton = SKSpriteNode(imageNamed: defaultButtonImage)
         activeButton = SKSpriteNode(imageNamed: activeButtonImage)
-        activeButton.hidden = true
         action = buttonAction
         
         super.init()
         
-        userInteractionEnabled = true
         addChild(defaultButton)
         addChild(activeButton)
+        activeButton.hidden = true
+        userInteractionEnabled = true
     }
     
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {

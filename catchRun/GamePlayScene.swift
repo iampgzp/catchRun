@@ -11,6 +11,9 @@ import SpriteKit
 import GameKit
 
 class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
+    
+    var myDelegate:GameSceneDelegate?
+    
     // the map we gonna use for this game
     var tiledMap:JSTileMap?
     var timer:NSTimer!
@@ -64,18 +67,14 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         
         if isSinglePlayer {
             // single player Create local player as ghost
-            localPlayer = PlayerNode(playerTextureName: "ghost")
-            localPlayer.xScale = 1.0
-            localPlayer.yScale = 1.0
-            localPlayer.position = CGPoint(x: self.size.width * 0.5, y: 50)
-            localPlayer.playerRole = "Ghost"
+            localPlayer = PlayerNode(playerTextureName: "ghost",playerRole:Role.ghost)
+            localPlayer.position = CGPoint(x: self.size.width * 0.5, y: 80)
             self.addChild(localPlayer)
             
             
-            // create a dumb ghost for test
-            var ghost = PlayerNode(playerTextureName: "player")
+            // create a dumb pplayer for test
+            var ghost = PlayerNode(playerTextureName: "player",playerRole:Role.ghostBuster)
             ghost.position = CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.70)
-            ghost.playerRole = "Ghostbuster"
             self.addChild(ghost)
         }else{
             // multi player get how man players
@@ -90,19 +89,15 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
             // find the ghost and set position
             if  ghostkey == GKLocalPlayer.localPlayer().playerID {
                 // local player is ghost
-                localPlayer = PlayerNode(playerTextureName: "ghost")
-                localPlayer.xScale = 1.0
-                localPlayer.yScale = 1.0
+                localPlayer = PlayerNode(playerTextureName: "ghost",playerRole:Role.ghost)
                 localPlayer.position = CGPoint(x: self.size.width * 0.5, y: 100)
-                localPlayer.playerRole = "Ghost"
                 self.addChild(localPlayer)
                 NSLog("local player is ghost")
         
                 // set remote players as ghostbusters
                 for var index = 0; index < gameSize; ++index{
-                    var player_remote = PlayerNode(playerTextureName: "player")
+                    var player_remote = PlayerNode(playerTextureName: "player",playerRole:Role.ghostBuster)
                     player_remote.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height * 0.70)
-                    player_remote.playerRole = "Ghostbuster"
                     self.remote_players[sortPlayerIds[index]] = player_remote
                     self.addChild(player_remote)
                 }
@@ -111,11 +106,8 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
                 for var index = 0; index < gameSize; ++index{
                     if ghostkey == sortPlayerIds[index] {
                         // set ghost
-                        var player_remote = PlayerNode(playerTextureName: "ghost")
-                        player_remote.xScale = 1.0
-                        player_remote.yScale = 1.0
+                        var player_remote = PlayerNode(playerTextureName: "ghost",playerRole:Role.ghost)
                         player_remote.position = CGPoint(x: self.size.width * 0.5, y: 100)
-                        player_remote.playerRole = "Ghost"
                         self.remote_players[sortPlayerIds[index]] = player_remote
                         self.addChild(player_remote)
                         //remove ghost from sort player id in order for consistent in the position
@@ -134,14 +126,12 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
                 // set local player and other player
                 for var index = 0; index < gameSize; ++index{
                     if  sortPlayerIds[index] == GKLocalPlayer.localPlayer().playerID {
-                        localPlayer = PlayerNode(playerTextureName: "player")
-                        localPlayer.playerRole = "Ghostbuster"
+                        localPlayer = PlayerNode(playerTextureName: "player",playerRole:Role.ghostBuster)
                         localPlayer.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height * 0.70)
                         self.addChild(localPlayer)
                     }else{
-                        var player_remote = PlayerNode(playerTextureName: "player")
+                        var player_remote = PlayerNode(playerTextureName: "player",playerRole:Role.ghostBuster)
                         player_remote.position = CGPoint(x: self.size.width * 0.5 - 50 + CGFloat((index+1))*20, y: self.size.height * 0.70)
-                        player_remote.playerRole = "Ghostbuster"
                         self.remote_players[sortPlayerIds[index]] = player_remote
                         self.addChild(player_remote)
                     }
@@ -235,7 +225,9 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     func didTapOnPause() {
         let pauseGameAction = SKAction.runBlock{
             let reval = SKTransition.flipHorizontalWithDuration(0.5)
-            self.view?.presentScene( GameScene(size: self.size), transition: reval)
+            let gameScene = GameScene(size:self.size)
+            gameScene.myDelegate = self.myDelegate
+            self.view?.presentScene( gameScene, transition: reval)
         }
         //gameStarted = True
         self.runAction(pauseGameAction)
@@ -246,16 +238,16 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         var direction = gesture.direction
         switch (direction){
         case UISwipeGestureRecognizerDirection.Left:
-            localPlayer.moving("LEFT")
+            localPlayer.moving(Direction.Left)
             break
         case UISwipeGestureRecognizerDirection.Right:
-            localPlayer.moving("RIGHT")
+            localPlayer.moving(Direction.Right)
             break
         case UISwipeGestureRecognizerDirection.Up:
-            localPlayer.moving("UP")
+            localPlayer.moving(Direction.Up)
             break
         case UISwipeGestureRecognizerDirection.Down:
-            localPlayer.moving("DOWN")
+            localPlayer.moving(Direction.Down)
             break
         default:
             break;
@@ -277,7 +269,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     override func didEvaluateActions() {
         // get the ghost node and check if caught
         var ghost:PlayerNode?
-        if  localPlayer.playerRole == "Ghost"{
+        if  localPlayer.playerRole == Role.ghost{
             ghost = localPlayer
 
             // check if caught
@@ -295,7 +287,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         }else{
             var ghostKey:NSString?
             for (key, remotePlayer) in remote_players{
-                if remotePlayer.playerRole == "Ghost" {
+                if remotePlayer.playerRole == Role.ghost{
                     ghost = remotePlayer
                     ghostKey = key
                 }
@@ -328,8 +320,24 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         }
         
         // check if local player hit the wall
-        if physicEngine!.isCollideWithWall(localPlayer.position) {
-            localPlayer.position = localPlayer.previousPosition!
+        // need to fix a little bit for the size of the picture
+        var edge : CGPoint
+        switch localPlayer.movingDirection{
+        case Direction.Up:
+            edge = CGPoint(x: localPlayer.position.x, y: localPlayer.position.y+21)
+            break
+        case Direction.Down:
+            edge = CGPoint(x: localPlayer.position.x, y: localPlayer.position.y-21)
+            break
+        case Direction.Left:
+            edge = CGPoint(x: localPlayer.position.x-16, y: localPlayer.position.y)
+            break
+        case Direction.Right:
+            edge = CGPoint(x: localPlayer.position.x+16, y: localPlayer.position.y)
+            break
+        }
+        if physicEngine!.isCollideWithWall(edge) {
+            localPlayer.position = localPlayer.previousPosition
         }
         
         if !isSinglePlayer{
@@ -369,6 +377,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
             let reval = SKTransition.flipHorizontalWithDuration(0.5)
             let gameOverScene = GameOverScene(size: self.size)
             gameOverScene.isGhostWon = !ghostBusterWon
+            gameOverScene.myDelegate = self.myDelegate
             self.view?.presentScene( gameOverScene, transition: reval)
         }
         //gameStarted = True

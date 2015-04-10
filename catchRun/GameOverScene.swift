@@ -11,6 +11,7 @@ import SpriteKit
 import Social
 
 class GameOverScene: SKScene, GADInterstitialDelegate {
+    var myDelegate:GameSceneDelegate?
     var isGhostWon:Bool?
     override func didMoveToView(view: SKView) {
         if  isGhostWon! {
@@ -43,7 +44,9 @@ class GameOverScene: SKScene, GADInterstitialDelegate {
     func startGameButtonDown(){
         let startGameAction = SKAction.runBlock{
             let reval = SKTransition.flipHorizontalWithDuration(0.5)
-            self.view?.presentScene( GameScene(size: self.size), transition: reval)
+            let gameScene =  GameScene(size: self.size)
+            gameScene.myDelegate = self.myDelegate
+            self.view?.presentScene(gameScene, transition: reval)
         }
         self.runAction(startGameAction)
     }
