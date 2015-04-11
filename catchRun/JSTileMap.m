@@ -82,6 +82,22 @@
 	return _layerInfo.tiles[ idx ];
 }
 
+-(int)tileGidAtTile:(CGPoint)tilePoint{
+    
+    int idx = tilePoint.x + (tilePoint.y * self.layerInfo.layerGridSize.width);
+    
+    // bounds check, invalid GID if out of bounds
+    if(idx > (_layerInfo.layerGridSize.width * _layerInfo.layerGridSize.height) ||
+       idx < 0)
+    {
+        NSAssert(true, @"index out of bounds!");
+        return 0;
+    }
+    
+    // return the Gid
+    return _layerInfo.tiles[ idx ];
+}
+
 
 - (SKSpriteNode*)tileAt:(CGPoint)point
 {

@@ -137,6 +137,7 @@ typedef enum
 - (SKSpriteNode*)tileAt:(CGPoint)point;
 - (SKSpriteNode*)tileAtCoord:(CGPoint)coord;
 - (int)tileGidAt:(CGPoint)point;
+- (int)tileGidAtTile:(CGPoint)tilePoint;
 - (id) propertyWithName:(NSString*)name;
 - (NSDictionary*)properties;
 

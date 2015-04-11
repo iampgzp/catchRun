@@ -25,11 +25,31 @@ class CollisionCheck : NSObject{
         // divide by the factor because of the scaling of the map
         var adjustPosition = CGPointMake(position.x/1.9, position.y/1.5)
         
-        // get the point for record the point means which tell it is from top left
-        var point = tileCoordForPosition(adjustPosition)
-        
         // tileGid will give you a reference of this position
         var tileGid = wall.tileGidAt(adjustPosition)
+        if  tileGid != 0{
+            // check collide with wall
+            var properties:NSDictionary = map.propertiesForGid(tileGid) as NSDictionary
+            // if it is the wall dict, there is a key called Collidable and it will return "true"
+            // if it is the trap dict, there is a key called trapCollidable and it will return true
+            var collision: NSString = properties.valueForKey("Collidable") as NSString
+            if collision == "True" {
+                return  true
+            }else{
+                return  false
+            }
+        }else{
+            return  false
+        }
+    }
+    
+    func isCollideWithWallAtTile(tilePosition:CGPoint) -> Bool{
+        // wall's layer name is Meta
+        let map = tiledMap
+        var wall = map.layerNamed("Meta")
+        
+        // tileGid will give you a reference of this position
+        var tileGid = wall.tileGidAtTile(tilePosition)
         if  tileGid != 0{
             // check collide with wall
             var properties:NSDictionary = map.propertiesForGid(tileGid) as NSDictionary
@@ -75,8 +95,9 @@ class CollisionCheck : NSObject{
     }
     
     func isCollideWithGhost(PlayerPosition:CGPoint, ghostPosition:CGPoint) -> Bool{
-        let distance = pow((PlayerPosition.x - ghostPosition.x), 2) + pow((PlayerPosition.y - ghostPosition.y), 2)
-        if  distance <= 400{
+        let playerTile = tileCoordForPosition(PlayerPosition)
+        let ghostTile = tileCoordForPosition(ghostPosition)
+        if playerTile == ghostTile {
             return true
         }
        return false
@@ -94,4 +115,11 @@ class CollisionCheck : NSObject{
         var y = Int((tiledMap.mapSize.height * tiledMap.tileSize.height*1.5 - position.y) / (tiledMap.tileSize.height*1.5))
         return CGPoint(x: x, y: y)
     }
+    
+    func getCenterForTile(tile:CGPoint) ->CGPoint{
+        var x = tile.x * tiledMap.tileSize.width*1.9 + tiledMap.tileSize.width*1.9/2
+        var y = tiledMap.mapSize.height * tiledMap.tileSize.height*1.5 - tile.y * tiledMap.tileSize.height*1.5 - tiledMap.tileSize.height*1.5/2
+        return CGPoint(x: x, y: y)
+    }
+    
 }

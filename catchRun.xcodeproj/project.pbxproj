@@ -35,6 +35,7 @@
 		B68DB2401A40AB6E008DA27D /* bgm.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B68DB23F1A40AB6E008DA27D /* bgm.mp3 */; };
 		B6915C261AD8604C00FE27CA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6915C251AD8604C00FE27CA /* Images.xcassets */; };
 		B6915C281AD86BF500FE27CA /* player.atlas in Resources */ = {isa = PBXBuildFile; fileRef = B6915C271AD86BF500FE27CA /* player.atlas */; };
+		B6CA903A1AD990DE000F9355 /* ghostBusterBrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CA90391AD990DE000F9355 /* ghostBusterBrain.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,6 +85,7 @@
 		B68DB23F1A40AB6E008DA27D /* bgm.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = bgm.mp3; sourceTree = "<group>"; };
 		B6915C251AD8604C00FE27CA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B6915C271AD86BF500FE27CA /* player.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = player.atlas; sourceTree = "<group>"; };
+		B6CA90391AD990DE000F9355 /* ghostBusterBrain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ghostBusterBrain.swift; sourceTree = "<group>"; };
 		CB8FCD7CC1197BCA4C452E2F /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -174,6 +176,7 @@
 			isa = PBXGroup;
 			children = (
 				1DBCE6771A48057E00030B91 /* PlayerNode.swift */,
+				B6CA90391AD990DE000F9355 /* ghostBusterBrain.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -441,6 +444,7 @@
 				B614676A1A408996000C3550 /* GameViewController.swift in Sources */,
 				B645355D1A452AD7000BBEA3 /* LFCGzipUtility.m in Sources */,
 				B61467641A408996000C3550 /* AppDelegate.swift in Sources */,
+				B6CA903A1AD990DE000F9355 /* ghostBusterBrain.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

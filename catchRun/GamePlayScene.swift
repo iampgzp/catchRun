@@ -33,6 +33,8 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     var remote_players = Dictionary<String, PlayerNode>()
     var ghostkey: String!
     
+    var singlePlayerOpponent : PlayerNode!
+    
     override func didMoveToView(view: SKView) {
         // Create game map
         tiledMap = JSTileMap(named:"map.tmx")
@@ -73,9 +75,10 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
             
             
             // create a dumb pplayer for test
-            var ghost = PlayerNode(playerTextureName: "player",playerRole:Role.ghostBuster)
-            ghost.position = CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.70)
-            self.addChild(ghost)
+            singlePlayerOpponent = PlayerNode(playerTextureName: "player",playerRole:Role.ghostBuster)
+            singlePlayerOpponent.position = CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.65)
+            singlePlayerOpponent.brain.physicEngine = self.physicEngine
+            self.addChild(singlePlayerOpponent)
         }else{
             // multi player get how man players
             var gameSize : Int! = GameCenterConnector.sharedInstance().getRemoteCount()
@@ -216,6 +219,10 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
         nf.numberStyle = .DecimalStyle
         let number = nf.numberFromString(countDown!.text)
         let number2 = number!.integerValue - 1
+        
+        // test
+        singlePlayerOpponent.ChasingGhostAt(localPlayer.position)
+        
         if  number2 <= 0 {
             gameOver(false)
         }
@@ -280,7 +287,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
             }
             
             // check dumb ghostbuster
-            if physicEngine!.isCollideWithGhost(CGPoint(x: self.size.width * 0.5, y: self.size.height * 0.70), ghostPosition: ghost!.position){
+            if physicEngine!.isCollideWithGhost(singlePlayerOpponent.position, ghostPosition: ghost!.position){
                 gameOver(true)
             }
             

@@ -30,7 +30,8 @@ class PlayerNode: SKSpriteNode{
     var playerWalkingFrames : NSArray
     var playerRole : Role
     let frameCount : Int
-    let movingSpeed:CGFloat
+    let movingSpeed: CGFloat
+    var brain : ghostBusterBrain = ghostBusterBrain()
     
     // use for collistion engine to reset player position
     var previousPosition = CGPoint(x: 0, y: 0)
@@ -62,8 +63,9 @@ class PlayerNode: SKSpriteNode{
             movingSpeed = ghostBusterSpeed
         }
         
+        
         // SKSpriteNode init
-        super.init(texture: playerWalkingFrames[0] as SKTexture, color: UIColor.clearColor(), size: (playerWalkingFrames[0] as SKTexture).size())
+        super.init(texture: playerWalkingFrames[3] as SKTexture, color: UIColor.clearColor(), size: (playerWalkingFrames[0] as SKTexture).size())
         
         if self.playerRole == Role.ghost{
             xScale = 1.0
@@ -107,7 +109,7 @@ class PlayerNode: SKSpriteNode{
         stopMoving()
         
         // check which way player is moving for animation
-        if  pow(destination.x - position.x, 2) > pow(destination.y - position.y, 2) {
+        if  pow(destination.x - position.x, 2) < pow(destination.y - position.y, 2) {
             // node is moving horizontally
             if destination.y > position.y{
                 // destination is to the up
@@ -130,6 +132,55 @@ class PlayerNode: SKSpriteNode{
         self.runAction(SKAction.repeatActionForever(SKAction.moveTo(destination, duration: 1)), withKey: "moving")
     }
     
+    func movingByPath(path:Array<CGPoint>){
+        var actionArray : Array<SKAction> = Array()
+        for index in 1...path.count-1 {
+            var previousPosition : CGPoint
+            if index == 1 {
+                previousPosition = position
+            }else{
+                previousPosition = path[index-1]
+            }
+            var destination :CGPoint = path[index]
+            
+            var animationAction : SKAction
+            // check which way player is moving for animation
+            if  pow(destination.x - previousPosition.x, 2) < pow(destination.y - previousPosition.y, 2) {
+                // node is moving horizontally
+                if destination.y > previousPosition.y{
+                    // destination is to the up
+                    animationAction = SKAction.repeatAction((SKAction.animateWithTextures(playerWalkingFrames.subarrayWithRange(NSMakeRange(0, frameCount)), timePerFrame: 0.1, resize: false, restore: true)), count: 1)
+                }else{
+                    // destination is to the down
+                    
+                    animationAction = SKAction.repeatAction((SKAction.animateWithTextures(playerWalkingFrames.subarrayWithRange(NSMakeRange(frameCount, frameCount)), timePerFrame: 0.1, resize: false, restore: true)), count: 1)
+                }
+            }else{
+                // node is moving vertically
+                if destination.x < previousPosition.x{
+                    // destination is to the left
+                    animationAction = SKAction.repeatAction((SKAction.animateWithTextures(playerWalkingFrames.subarrayWithRange(NSMakeRange(frameCount*2, frameCount)), timePerFrame: 0.1, resize: false, restore: true)), count: 1)
+                }else{
+                    // destination is to the right
+                    
+                    animationAction = SKAction.repeatAction((SKAction.animateWithTextures(playerWalkingFrames.subarrayWithRange(NSMakeRange(frameCount*3, frameCount)), timePerFrame: 0.1, resize: false, restore: true)), count: 1)
+                }
+            }
+            
+            let moveAction = SKAction.moveTo(destination, duration: 0.3)
+            let groupActionArray = [moveAction, animationAction]
+            let groupAction = SKAction.group(groupActionArray)
+            actionArray.append(groupAction)
+        }
+        
+        self.runAction(SKAction.sequence(actionArray))
+    }
+    
+    func movingToPointWithShortestPath(destination: CGPoint){
+        var path = brain.pathForMovingToPosition(position, destination: destination)
+        movingByPath(path)
+    }
+    
     func stopMoving(){
         self.removeActionForKey("walkingAnimation")
         self.removeActionForKey("movingUp")
@@ -137,6 +188,12 @@ class PlayerNode: SKSpriteNode{
         self.removeActionForKey("movingRight")
         self.removeActionForKey("movingLeft")
         self.removeActionForKey("moving")
+    }
+    
+    func ChasingGhostAt(destination: CGPoint){
+        // stop all animation re-cal and chase
+        self.removeAllActions()
+        self.movingToPointWithShortestPath(destination)
     }
     
     required init?(coder aDecoder: NSCoder) {
