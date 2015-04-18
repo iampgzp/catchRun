@@ -19,7 +19,7 @@ class tileScore : NSObject {
         copy.coord = self.coord
         copy.score = self.score
         copy.addedInIteration = self.addedInIteration
-        copy.parent = (self.parent?.copy() as tileScore)
+        copy.parent = (self.parent?.copy() as! tileScore)
         return copy
     }
     

@@ -99,7 +99,7 @@ class GameScene: SKScene {
     //NAVIGATE TO PLAY SCENE
     func navigateToGameScene(){
         var gameplayscene = GamePlayScene(size: self.size)
-        var multiplayer: Multiplayer! = GameCenterConnector.sharedInstance().delegate as Multiplayer
+        var multiplayer: Multiplayer! = GameCenterConnector.sharedInstance().delegate as! Multiplayer
         multiplayer.delegate = gameplayscene
         var randomDict: Dictionary<String, Double> = multiplayer.getRandomNumber()
         var ghostkey:String!

@@ -29,13 +29,13 @@ class GGButton: SKNode {
         userInteractionEnabled = true
     }
     
-    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
         activeButton.hidden = false
         defaultButton.hidden = true
     }
     
-    override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
-        var touch: UITouch = touches.allObjects[0] as UITouch
+    override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
+        var touch: UITouch = (touches as NSSet).allObjects[0] as! UITouch
         var location: CGPoint = touch.locationInNode(self)
         
         if defaultButton.containsPoint(location) {
@@ -47,8 +47,8 @@ class GGButton: SKNode {
         }
     }
     
-    override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
-        var touch: UITouch = touches.allObjects[0] as UITouch
+    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
+        var touch: UITouch = (touches as NSSet).allObjects[0] as! UITouch
         var location: CGPoint = touch.locationInNode(self)
         
         if defaultButton.containsPoint(location){

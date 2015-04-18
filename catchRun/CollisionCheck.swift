@@ -32,7 +32,7 @@ class CollisionCheck : NSObject{
             var properties:NSDictionary = map.propertiesForGid(tileGid) as NSDictionary
             // if it is the wall dict, there is a key called Collidable and it will return "true"
             // if it is the trap dict, there is a key called trapCollidable and it will return true
-            var collision: NSString = properties.valueForKey("Collidable") as NSString
+            var collision: NSString = properties.valueForKey("Collidable") as! NSString
             if collision == "True" {
                 return  true
             }else{
@@ -55,7 +55,7 @@ class CollisionCheck : NSObject{
             var properties:NSDictionary = map.propertiesForGid(tileGid) as NSDictionary
             // if it is the wall dict, there is a key called Collidable and it will return "true"
             // if it is the trap dict, there is a key called trapCollidable and it will return true
-            var collision: NSString = properties.valueForKey("Collidable") as NSString
+            var collision: NSString = properties.valueForKey("Collidable") as! NSString
             if collision == "True" {
                 return  true
             }else{
@@ -83,7 +83,7 @@ class CollisionCheck : NSObject{
             // check collide with wall
             var properties:NSDictionary = map.propertiesForGid(tileGid) as NSDictionary
             // if it is the trap dict, there is a key called trapCollidable and it will return true
-            var collision: NSString = properties.valueForKey("trapCollidable") as NSString
+            var collision: NSString = properties.valueForKey("trapCollidable") as! NSString
             if collision == "true" {
                 return  true
             }else{

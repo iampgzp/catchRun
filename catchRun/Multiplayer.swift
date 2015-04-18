@@ -217,7 +217,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
                 sendRandomPairingNumber()
             }else{
                 var dictionary: NSDictionary! = [playerIdKey as String: playerID as String, randomNumberKey: messageOfRandomNum.randomNumber]
-                orderOfPlayers[playerID] = messageOfRandomNum.randomNumber
+                orderOfPlayers[playerID as String] = messageOfRandomNum.randomNumber
                 processReceivedRandomNumber(dictionary)
             }
             if receiveAllRandomPairingNumber == true{
@@ -242,7 +242,7 @@ class Multiplayer: NSObject, GameConnectorDelegate{
             var whole_message: MessageMove = decode(data)
 //            NSLog("******* receive position \(whole_message.position) with id \(playerID)")
             
-            self.delegate.movePlayerAtIndex(whole_message.position, id: playerID)
+            self.delegate.movePlayerAtIndex(whole_message.position, id: playerID as String)
             
 //            NSLog("receive Move message")
 

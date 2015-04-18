@@ -322,7 +322,7 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
             var background = map.layerNamed("Background")
             background.setTileGid(73, atCoord: physicEngine!.tileCoordForPosition(ghost!.position), mapInfo: map)
             
-            let dict = ["x" : physicEngine!.tileCoordForPosition(ghost!.position).x, "y": physicEngine!.tileCoordForPosition(ghost!.position).y]
+            let dict : [String : NSNumber] = ["x" : physicEngine!.tileCoordForPosition(ghost!.position).x, "y": physicEngine!.tileCoordForPosition(ghost!.position).y]
             var trapTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: Selector("setTrapBackToNormal:"), userInfo: dict, repeats: false)
         }
         
@@ -357,9 +357,11 @@ class GamePlayScene: SKScene, GADInterstitialDelegate, MultiplayerProtocol {
     func setTrapBackToNormal(timer: NSTimer){
         let map = tiledMap!
         var background = map.layerNamed("Background")
-        let x = timer.userInfo!["x"] as NSNumber
-        let y = timer.userInfo!["y"] as NSNumber
-        let coord = CGPoint(x: CGFloat(x.floatValue), y: CGFloat(y.floatValue))
+        let dict = timer.userInfo! as! [String : NSNumber]
+        let x = dict["x"]
+        let y = dict["y"]
+        
+        let coord = CGPoint(x: CGFloat(x!.floatValue), y: CGFloat(y!.floatValue))
         background.setTileGid(3, atCoord: coord, mapInfo: map)
     }
     

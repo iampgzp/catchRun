@@ -52,14 +52,15 @@ class JoyStickButton: SKNode {
         addChild(activeButton)
     }
     
-    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+    
+    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
         activeButton.hidden = false
         defaultButton.hidden = true
         target.moving(movingDirection)
     }
     
-    override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
-        var touch: UITouch = touches.allObjects[0] as UITouch
+    override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
+        var touch: UITouch = (touches as NSSet).allObjects[0] as! UITouch
         var location: CGPoint = touch.locationInNode(self)
         
         if defaultButton.containsPoint(location) {
@@ -72,7 +73,7 @@ class JoyStickButton: SKNode {
         }
     }
     
-    override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
         activeButton.hidden = true
         defaultButton.hidden = false
         target.stopMoving()

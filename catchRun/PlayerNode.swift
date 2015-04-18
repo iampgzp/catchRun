@@ -41,10 +41,10 @@ class PlayerNode: SKSpriteNode{
         NSLog("A \(playerRole) node is created")
         // load sktexture atlas and put all the texture into playerWalkingFrames to init
         var playerWalkingFramesTemp = NSMutableArray()
-        let playerAnimatedAtlas:SKTextureAtlas = SKTextureAtlas(named: playerTextureName)
+        let playerAnimatedAtlas:SKTextureAtlas = SKTextureAtlas(named: playerTextureName as String)
         let numImages = playerAnimatedAtlas.textureNames.count;
         for index in 1...numImages {
-            var textureName = playerTextureName.stringByAppendingString(NSString(format: "%d", index))
+            var textureName = playerTextureName.stringByAppendingString(NSString(format: "%d", index) as String)
             var temp:SKTexture = playerAnimatedAtlas.textureNamed(textureName)
             playerWalkingFramesTemp.addObject(temp)
         }
@@ -65,7 +65,7 @@ class PlayerNode: SKSpriteNode{
         
         
         // SKSpriteNode init
-        super.init(texture: playerWalkingFrames[3] as SKTexture, color: UIColor.clearColor(), size: (playerWalkingFrames[0] as SKTexture).size())
+        super.init(texture: playerWalkingFrames[3] as! SKTexture, color: UIColor.clearColor(), size: (playerWalkingFrames[0] as! SKTexture).size())
         
         if self.playerRole == Role.ghost{
             xScale = 1.0
@@ -134,6 +134,9 @@ class PlayerNode: SKSpriteNode{
     
     func movingByPath(path:Array<CGPoint>){
         var actionArray : Array<SKAction> = Array()
+        if path.count <= 1 {
+            return
+        }
         for index in 1...path.count-1 {
             var previousPosition : CGPoint
             if index == 1 {

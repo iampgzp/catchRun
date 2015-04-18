@@ -63,9 +63,9 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
         
         //if player is not logged into game center, game kit framework will pass a view controller to authenticate.
         localPlayer.authenticateHandler = {(viewController: UIViewController!, error:NSError!) ->Void in
-            self.setLastError(error)
+            self.customSetLastError(error)
             if viewController != nil{
-                self.setAuthenticationViewController(viewController)
+                self.customSetAuthenticationViewController(viewController)
                 println("prepare to show log in page \n")
             }else{
                 // authenticated is a property for GKLocalPlayer, if it is false, it means user currenly is not successfully log into game center
@@ -83,14 +83,14 @@ class GameCenterConnector: NSObject,GKMatchmakerViewControllerDelegate, GKMatchD
     }
     
     // store viewcontroller and send notification
-    func setAuthenticationViewController(viewController: UIViewController?){
+    func customSetAuthenticationViewController(viewController: UIViewController?){
         if (viewController != nil){
             self.authenticationViewController = viewController
             NSNotificationCenter.defaultCenter().postNotificationName(presentAuthentication, object: self)
         }
     }
     
-    func setLastError(error: NSError?){
+    func customSetLastError(error: NSError?){
         self.lastError = error?.copy() as? NSError
         if ((self.lastError) != nil){
             println(self.lastError?.userInfo?.description)
