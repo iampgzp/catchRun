@@ -1,14 +1,6 @@
-catchRun
-========
-
-swift spritekit game
-Build by LUSS Studio
+##catchRun
 
 
-CHECK-LIST:
-1. change array to dict which store key-value pair as playerId and Player object.
-2. finish PlayerNode’s moving(postion: CGPoint) API
-3. Passing move data to other user. --> Actually it is already implemented, but with step 2, it will not show other user’s moving.
-4. need to check collision for player
-5. problem with bad access in “data.getBytes(&messageMove, length: sizeof(MessageMove))” in Multiplayer.swift line 237, 238.:
-personal guess --> not able to decode NSData to a struct contains three property.
+CatchRun is a puzzle game developed in Swift using SpriteKit framework
+
+The ghost will be hiden while the player tries to catch them in the maze
